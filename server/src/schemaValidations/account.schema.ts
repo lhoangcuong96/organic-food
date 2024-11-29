@@ -3,8 +3,8 @@ import z from 'zod'
 export const AccountRes = z
   .object({
     data: z.object({
-      id: z.number(),
-      name: z.string(),
+      id: z.string(),
+      fullname: z.string(),
       email: z.string()
     }),
     message: z.string()

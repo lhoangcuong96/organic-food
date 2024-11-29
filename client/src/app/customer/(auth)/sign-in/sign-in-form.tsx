@@ -3,24 +3,66 @@
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
+import envConfig from "@/envConfig";
+import { useAppContext } from "@/provider/app-provider";
 import { Divider, Form, FormProps } from "antd";
+import useMessage from "antd/es/message/useMessage";
 import Link from "next/link";
 
 type FieldType = {
-  username?: string;
+  email?: string;
   password?: string;
   remember?: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
 export function SignInForm() {
+  const [messageAPI, contextHolder] = useMessage();
+  const { setSessionToken } = useAppContext();
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    delete values.remember;
+    try {
+      const response = await fetch(
+        `${envConfig?.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          body: JSON.stringify(values),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      const token = responseData.data.token;
+
+      // gửi token lên để client server set cookie về => mỗi lần request thì client server có thể lấy dc token
+      const resultFromNextServer = await fetch("/api/auth", {
+        method: "POST",
+        body: JSON.stringify({ token: token }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const resultFromNextServerData = await resultFromNextServer.json();
+      if (!resultFromNextServer.ok) {
+        throw new Error(resultFromNextServerData.message);
+      }
+
+      messageAPI.success("Đăng nhập thành công");
+      setSessionToken(token);
+    } catch (error) {
+      messageAPI.error((error as Error).message);
+    }
+  };
+
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+    errorInfo
+  ) => {
+    console.log("Failed:", errorInfo);
+  };
+
   return (
     <Form
       name="basic"
@@ -30,9 +72,10 @@ export function SignInForm() {
       autoComplete="off"
       className="flex flex-col max-w-[500px] w-full"
     >
+      {contextHolder}
       <Form.Item<FieldType>
-        name="username"
-        rules={[{ required: true, message: "Please input your username!" }]}
+        name="email"
+        rules={[{ required: true, message: "Xin vui lòng nhập email!" }]}
       >
         <FormInput placeholder="Email" className="w-full" />
       </Form.Item>

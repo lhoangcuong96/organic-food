@@ -10,10 +10,27 @@ import ms from 'ms'
 
 export const registerController = async (body: RegisterBodyType) => {
   try {
+    const existingUser = await prisma.account.findFirst({
+      where: {
+        OR: [
+          {
+            email: body.email
+          },
+          {
+            phoneNumber: body.phoneNumber
+          }
+        ]
+      }
+    })
+
+    if (existingUser) {
+      throw new Error('Email hoặc số điện thoại đã tồn tại!')
+    }
     const hashedPassword = await hashPassword(body.password)
     const account = await prisma.account.create({
       data: {
-        name: body.name,
+        fullname: body.fullname,
+        phoneNumber: body.phoneNumber,
         email: body.email,
         password: hashedPassword
       }

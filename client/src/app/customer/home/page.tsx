@@ -10,6 +10,7 @@ import { FeaturedCategories } from "./featured-categories";
 import FoodSection from "./food-section";
 import { OurSpecialServices } from "./our-special-services";
 import { PromotionalProducts } from "./promotional-products";
+import { Suspense } from "react";
 
 // type Props = {
 //   params: Promise<{ id: string }>;
@@ -59,19 +60,26 @@ export default async function CustomerHomePage() {
     <div>
       <HeroImage src="/images/slider_1.webp"></HeroImage>
       <div className="flex flex-col items-center gap-8">
-        <FeaturedCategories
-          categories={categories}
-          error={error}
-        ></FeaturedCategories>
-        <PromotionalProducts
-          products={products}
-          error={error}
-        ></PromotionalProducts>
+        <Suspense fallback={<p>...Loading</p>}>
+          <FeaturedCategories
+            categories={categories}
+            error={error}
+          ></FeaturedCategories>
+        </Suspense>
+        <Suspense fallback={<p>...Loading</p>}>
+          <PromotionalProducts
+            products={products}
+            error={error}
+          ></PromotionalProducts>
+        </Suspense>
+
         <OurSpecialServices></OurSpecialServices>
-        <FoodSection
-          categories={categoriesWithProducts}
-          error={getCategoriesWithProductsError}
-        ></FoodSection>
+        <Suspense fallback={<p>...Loading</p>}>
+          <FoodSection
+            categories={categoriesWithProducts}
+            error={getCategoriesWithProductsError}
+          ></FoodSection>
+        </Suspense>
       </div>
     </div>
   );

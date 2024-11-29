@@ -1,106 +1,139 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import { Divider, Form, FormProps } from "antd";
+import envConfig from "@/envConfig";
+import { SignUpFormData, signUpSchema } from "@/validation-schema/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Divider, Form, message } from "antd";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 
-type FieldType = {
-  fullname: string;
-  phoneNumber: number;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+export function SignUpForm() {
+  const [messageApi, contextHolder] = message.useMessage();
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-};
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      fullname: "",
+      phoneNumber: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+  const onSubmit = async (values: SignUpFormData) => {
+    try {
+      const result = await fetch(
+        `${envConfig?.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+          body: JSON.stringify(values),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        }
+      );
+      if (!result.ok) {
+        const errorData = await result.json();
+        throw new Error(
+          errorData.errors?.map((error: any) => error.message).join(",") ||
+            errorData.message
+        );
+      }
+      messageApi.success("Đăng kí thành công.");
+    } catch (errors) {
+      (errors as Error).message.split(",").forEach((error) => {
+        messageApi.error(error);
+      });
+    }
+  };
 
-export function SignInForm() {
+  console.log(errors);
+
   return (
     <Form
-      name="basic"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
+      onFinish={handleSubmit(onSubmit)}
       className="flex flex-col max-w-[500px] w-full"
     >
-      <Form.Item<FieldType>
-        name="fullname"
-        rules={[{ required: true, message: "Xin vui lòng nhập họ và tên!" }]}
-      >
-        <FormInput placeholder="Họ và tên" className="w-full" />
-      </Form.Item>
-      <Form.Item<FieldType>
-        name="phoneNumber"
-        rules={[
-          { required: true, message: "Xin vui lòng nhập số điện thoại!" },
-        ]}
-      >
+      {contextHolder}
+      <div className="mb-4">
         <FormInput
+          {...register("fullname")}
+          placeholder="Họ và tên"
+          className="w-full"
+        />
+        {errors.fullname && (
+          <p className="text-red-500">{errors.fullname.message}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <FormInput
+          {...register("phoneNumber")}
           placeholder="Số điện thoại"
           className="w-full"
-          type="number"
+          type="tel"
         />
-      </Form.Item>
-      <Form.Item<FieldType>
-        name="email"
-        rules={[{ required: true, message: "Xin vui lòng nhập email!" }]}
-      >
-        <FormInput placeholder="Email" className="w-full" />
-      </Form.Item>
+        {errors.phoneNumber && (
+          <p className="text-red-500">{errors.phoneNumber.message}</p>
+        )}
+      </div>
 
-      <Form.Item<FieldType>
-        name="password"
-        rules={[
-          { required: true, message: "Xin vui lòng nhập mật khẩu!" },
-          {
-            min: 6,
-            message: "Mật khẩu phải có ít nhất 6 kí tự!",
-          },
-        ]}
-      >
-        <FormInput.Password placeholder="Mật khẩu" className="w-full" />
-      </Form.Item>
-      <Form.Item<FieldType>
-        name="confirmPassword"
-        rules={[
-          { required: true, message: "Xin vui lòng nhập lại mật khẩu!" },
-          ({ getFieldValue }) => ({
-            validator(rule, value) {
-              if (!value || getFieldValue("password") === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject("Mật khẩu không trùng khớp!");
-            },
-          }),
-        ]}
-      >
+      <div className="mb-4">
+        <FormInput
+          {...register("email")}
+          placeholder="Email"
+          className="w-full"
+          type="email"
+        />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
         <FormInput.Password
+          {...register("password")}
+          placeholder="Mật khẩu"
+          className="w-full"
+        />
+        {errors.password && (
+          <p className="text-red-500">{errors.password.message}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <FormInput.Password
+          {...register("confirmPassword")}
           placeholder="Nhập lại mật khẩu"
           className="w-full"
         />
-      </Form.Item>
+        {errors.confirmPassword && (
+          <p className="text-red-500">{errors.confirmPassword.message}</p>
+        )}
+      </div>
 
-      <Form.Item label={null} className="self-center w-fit">
+      <div className="self-center w-fit mb-4">
         <DefaultButton htmlType="submit" className="uppercase">
           Đăng ký
         </DefaultButton>
-      </Form.Item>
+      </div>
+
       <Link
         href={routePath.customer.signIn}
         className="text-green-600 underline hover:text-green-600 hover:underline block m-auto font-semibold"
       >
         Đăng nhập
       </Link>
-      <Divider></Divider>
+      <Divider />
       <p className="text-center">Hoặc đăng kí bằng</p>
     </Form>
   );

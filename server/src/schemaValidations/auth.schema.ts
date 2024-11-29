@@ -2,10 +2,13 @@ import z from 'zod'
 
 export const RegisterBody = z
   .object({
-    name: z.string().trim().min(2).max(256),
-    email: z.string().email(),
-    password: z.string().min(6).max(100),
-    confirmPassword: z.string().min(6).max(100)
+    fullname: z.string().trim().min(2, 'Họ và tên ít nhất 2 kí tự').max(256, 'Họ và tên nhiều nhất 256 kí tự'),
+    phoneNumber: z
+      .string()
+      .regex(new RegExp('^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$'), 'Số điện thoại không đúng!'),
+    email: z.string().email('Email không đúng!'),
+    password: z.string().min(6, 'Password ít nhất 6 kí tự').max(100, 'Password nhiều nhất 100 kí tự'),
+    confirmPassword: z.string().min(6, 'Password ít nhất kí tự').max(100, 'Password nhiều nhất 100 kí tự')
   })
   .strict()
   .superRefine(({ confirmPassword, password }, ctx) => {
@@ -25,8 +28,8 @@ export const RegisterRes = z.object({
     token: z.string(),
     expiresAt: z.string(),
     account: z.object({
-      id: z.number(),
-      name: z.string(),
+      id: z.string(),
+      fullname: z.string(),
       email: z.string()
     })
   }),

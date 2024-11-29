@@ -1,6 +1,6 @@
 import AppBreadcrumb from "@/components/customer/layout/breadcrumb";
 import { Metadata } from "next";
-import { SignInForm } from "./sign-up-form";
+import { SignUpForm } from "./sign-up-form";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
@@ -27,7 +27,7 @@ export default function SignIn() {
       ></AppBreadcrumb>
       <div className="max-w-[500px] w-screen p-8">
         <h3 className="text-3xl font-semibold text-center mb-5">ĐĂNG KÝ</h3>
-        <SignInForm></SignInForm>
+        <SignUpForm></SignUpForm>
       </div>
     </div>
   );
