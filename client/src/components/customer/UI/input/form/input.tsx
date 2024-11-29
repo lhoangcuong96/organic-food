@@ -5,12 +5,18 @@ import { PasswordProps } from "antd/es/input";
 const FormInput = (
   props: InputProps & {
     className?: string;
+    error?: string;
   }
 ) => {
+  const { error, className, ...rest } = props;
   return (
     <Input
-      {...props}
-      className={`!ring-inherit h-10 rounded-sm focus-visible:!border-lime-700 hover:!border-lime-700 ${props.className} `}
+      {...rest}
+      className={`!ring-inherit h-10 rounded-sm focus:!shadow-none ${
+        error
+          ? "!border-2 !border-red-500 focus:!border-red-500 focus-visible:!border-red-500 hover:!border-red-500"
+          : " focus-visible:!border-lime-700 hover:!border-lime-700"
+      } ${className} `}
     ></Input>
   );
 };
@@ -18,13 +24,20 @@ const FormInput = (
 FormInput.Password = (
   props: PasswordProps & {
     className?: string;
+    error?: string;
   }
 ) => {
+  const { error, className, ...rest } = props;
+
   return (
     <Input
       type="password"
-      {...props}
-      className={`!ring-inherit h-10 rounded-sm focus-visible:!border-lime-700 hover:!border-lime-700 ${props.className} `}
+      {...rest}
+      className={`!ring-inherit h-10 rounded-sm focus-visible:!border-lime-700 hover:!border-lime-700 ${
+        error
+          ? "!border-2 !border-red-500 focus:!border-red-500 focus-visible:!border-red-500 hover:!border-red-500"
+          : " focus-visible:!border-lime-700 hover:!border-lime-700"
+      } ${className} `}
     />
   );
 };

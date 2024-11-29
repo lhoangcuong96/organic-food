@@ -4,7 +4,6 @@ import { z } from "zod";
 const envConfigSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string(),
 });
-
 const configProject = envConfigSchema.safeParse({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 });

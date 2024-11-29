@@ -1,97 +1,116 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Divider } from "antd";
+import Link from "next/link";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+
+import { authApiRequest } from "@/api-request/auth";
 import DefaultButton from "@/components/customer/UI/button/default-button";
+import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import envConfig from "@/envConfig";
 import { useAppContext } from "@/provider/app-provider";
-import { Divider, Form, FormProps } from "antd";
+import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
-import Link from "next/link";
-
-type FieldType = {
-  email?: string;
-  password?: string;
-  remember?: string;
-};
+import { HttpError } from "@/lib/http";
+import { useRouter } from "next/router";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
   const { setSessionToken } = useAppContext();
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    delete values.remember;
-    try {
-      const response = await fetch(
-        `${envConfig?.NEXT_PUBLIC_API_URL}/auth/login`,
-        {
-          body: JSON.stringify(values),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const responseData = await response.json();
-      if (!response.ok) {
-        throw new Error(responseData.message);
-      }
-      const token = responseData.data.token;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-      // gửi token lên để client server set cookie về => mỗi lần request thì client server có thể lấy dc token
-      const resultFromNextServer = await fetch("/api/auth", {
-        method: "POST",
-        body: JSON.stringify({ token: token }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const resultFromNextServerData = await resultFromNextServer.json();
-      if (!resultFromNextServer.ok) {
-        throw new Error(resultFromNextServerData.message);
-      }
+  const { control, handleSubmit } = useForm<SignInRequestDataType>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: SignInRequestDataType) => {
+    setIsSubmitting(true);
+    try {
+      const response = await authApiRequest.login(data);
+      const token = response.payload.data.token;
+
+      // Send token to client server to set cookie
+      await authApiRequest.setToken(token);
 
       messageAPI.success("Đăng nhập thành công");
       setSessionToken(token);
+      router.push(routePath.customer.home);
     } catch (error) {
-      messageAPI.error((error as Error).message);
+      if ((error as HttpError).payload.errors?.length) {
+        (error as HttpError).payload.errors.forEach((error: any) => {
+          messageAPI.error(error.message);
+        });
+      } else {
+        messageAPI.error((error as HttpError).payload.message);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo
-  ) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
-    <Form
-      name="basic"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col max-w-[500px] w-full"
     >
       {contextHolder}
-      <Form.Item<FieldType>
-        name="email"
-        rules={[{ required: true, message: "Xin vui lòng nhập email!" }]}
-      >
-        <FormInput placeholder="Email" className="w-full" />
-      </Form.Item>
+      <div className="mb-4">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput
+                {...field}
+                placeholder="Email"
+                className="w-full"
+                type="email"
+                formNoValidate
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
+        />
+      </div>
 
-      <Form.Item<FieldType>
-        name="password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <FormInput.Password placeholder="Password" className="w-full" />
-      </Form.Item>
+      <div className="mb-4">
+        <Controller
+          control={control}
+          name="password"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput.Password
+                {...field}
+                placeholder="Mật khẩu"
+                className="w-full"
+                formNoValidate
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
+        />
+      </div>
 
-      <Form.Item label={null} className="self-center w-fit">
-        <DefaultButton htmlType="submit" className="uppercase">
-          Đăng Nhập
+      <div className="self-center w-fit mb-4">
+        <DefaultButton
+          htmlType="submit"
+          disabled={isSubmitting}
+          className="uppercase"
+        >
+          {isSubmitting ? "Đang xử lý..." : "Đăng Nhập"}
         </DefaultButton>
-      </Form.Item>
+      </div>
+
       <Link
         href={routePath.customer.signUp}
         className="text-green-600 underline hover:text-green-600 hover:underline block m-auto font-semibold"
@@ -104,8 +123,8 @@ export function SignInForm() {
       >
         Đăng kí
       </Link>
-      <Divider></Divider>
+      <Divider />
       <p className="text-center">Hoặc đăng nhập bằng</p>
-    </Form>
+    </form>
   );
 }

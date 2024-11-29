@@ -1,3 +1,5 @@
+import envConfig from "@/envConfig";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class HttpError extends Error {
   status: number;
@@ -22,7 +24,7 @@ export const request = async <T>(
   const baseHeader = {
     "Content-Type": "application/json",
   };
-  const baseUrl = option?.baseUrl || process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = option?.baseUrl ?? envConfig?.NEXT_PUBLIC_API_URL;
 
   const fullUrl = url.startsWith("/")
     ? `${baseUrl}${url}`

@@ -1,9 +1,22 @@
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(1, { message: "Please input your password!" }),
+  email: z.string().email("Email không đúng!"),
+  password: z.string().min(1, { message: "Xin vui lòng nhập mật khẩu!" }),
   remember: z.boolean().optional(),
+});
+
+export const signInResponseSchema = z.object({
+  data: z.object({
+    token: z.string(),
+    expiresAt: z.string(),
+    account: z.object({
+      id: z.string(),
+      fullname: z.string(),
+      email: z.string(),
+    }),
+  }),
+  message: z.string(),
 });
 
 export const signUpSchema = z
@@ -22,5 +35,21 @@ export const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-export type SignUpFormData = z.infer<typeof signUpSchema>;
-export type SignInFormData = z.infer<typeof signInSchema>;
+export const signUpResponseType = z.object({
+  data: z.object({
+    token: z.string(),
+    expiresAt: z.string(),
+    account: z.object({
+      id: z.string(),
+      fullname: z.string(),
+      email: z.string(),
+    }),
+  }),
+  message: z.string(),
+});
+
+export type SignInRequestDataType = z.infer<typeof signInSchema>;
+export type SignInResponseType = z.infer<typeof signInResponseSchema>;
+
+export type SignUpRequestDataType = z.infer<typeof signUpSchema>;
+export type SignUpResponseDataType = z.infer<typeof signUpResponseType>;

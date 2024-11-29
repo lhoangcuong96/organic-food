@@ -1,24 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { authApiRequest } from "@/api-request/auth";
 import DefaultButton from "@/components/customer/UI/button/default-button";
+import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import envConfig from "@/envConfig";
-import { SignUpFormData, signUpSchema } from "@/validation-schema/auth";
+import { HttpError } from "@/lib/http";
+import { useAppContext } from "@/provider/app-provider";
+import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Divider, Form, message } from "antd";
+import { Divider, Form } from "antd";
+import useMessage from "antd/es/message/useMessage";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export function SignUpForm() {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageAPI, contextHolder] = useMessage();
+  const { setSessionToken } = useAppContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpFormData>({
+  const { control, handleSubmit } = useForm<SignUpRequestDataType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       fullname: "",
@@ -29,34 +34,30 @@ export function SignUpForm() {
     },
   });
 
-  const onSubmit = async (values: SignUpFormData) => {
+  const onSubmit = async (data: SignUpRequestDataType) => {
+    setIsSubmitting(true);
     try {
-      const result = await fetch(
-        `${envConfig?.NEXT_PUBLIC_API_URL}/auth/register`,
-        {
-          body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        }
-      );
-      if (!result.ok) {
-        const errorData = await result.json();
-        throw new Error(
-          errorData.errors?.map((error: any) => error.message).join(",") ||
-            errorData.message
-        );
+      const response = await authApiRequest.login(data);
+      const token = response.payload.data.token;
+
+      // Send token to client server to set cookie
+      await authApiRequest.setToken(token);
+
+      messageAPI.success("Đăng nhập thành công");
+      setSessionToken(token);
+      router.push(routePath.customer.home);
+    } catch (error) {
+      if ((error as HttpError).payload.errors?.length) {
+        (error as HttpError).payload.errors.forEach((error: any) => {
+          messageAPI.error(error.message);
+        });
+      } else {
+        messageAPI.error((error as HttpError).payload.message);
       }
-      messageApi.success("Đăng kí thành công.");
-    } catch (errors) {
-      (errors as Error).message.split(",").forEach((error) => {
-        messageApi.error(error);
-      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  console.log(errors);
 
   return (
     <Form
@@ -65,65 +66,105 @@ export function SignUpForm() {
     >
       {contextHolder}
       <div className="mb-4">
-        <FormInput
-          {...register("fullname")}
-          placeholder="Họ và tên"
-          className="w-full"
+        <Controller
+          control={control}
+          name="fullname"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput
+                {...field}
+                placeholder="Họ và tên"
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
         />
-        {errors.fullname && (
-          <p className="text-red-500">{errors.fullname.message}</p>
-        )}
       </div>
 
       <div className="mb-4">
-        <FormInput
-          {...register("phoneNumber")}
-          placeholder="Số điện thoại"
-          className="w-full"
-          type="tel"
+        <Controller
+          control={control}
+          name="phoneNumber"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput
+                {...field}
+                placeholder="Số điện thoại"
+                className="w-full"
+                type="tel"
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
         />
-        {errors.phoneNumber && (
-          <p className="text-red-500">{errors.phoneNumber.message}</p>
-        )}
+      </div>
+      <div className="mb-4">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput
+                {...field}
+                placeholder="Email"
+                className="w-full"
+                type="email"
+                formNoValidate
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
+        />
       </div>
 
       <div className="mb-4">
-        <FormInput
-          {...register("email")}
-          placeholder="Email"
-          className="w-full"
-          type="email"
+        <Controller
+          control={control}
+          name="password"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput.Password
+                {...field}
+                placeholder="Mật khẩu"
+                className="w-full"
+                formNoValidate
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
         />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message}</p>
-        )}
       </div>
 
       <div className="mb-4">
-        <FormInput.Password
-          {...register("password")}
-          placeholder="Mật khẩu"
-          className="w-full"
+        <Controller
+          control={control}
+          name="confirmPassword"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <FormInput
+                {...field}
+                placeholder="Nhập lại mật khẩu"
+                className="w-full"
+                formNoValidate
+                error={error?.message}
+              />
+              {error?.message && <FormError error={error.message} />}
+            </>
+          )}
         />
-        {errors.password && (
-          <p className="text-red-500">{errors.password.message}</p>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <FormInput.Password
-          {...register("confirmPassword")}
-          placeholder="Nhập lại mật khẩu"
-          className="w-full"
-        />
-        {errors.confirmPassword && (
-          <p className="text-red-500">{errors.confirmPassword.message}</p>
-        )}
       </div>
 
       <div className="self-center w-fit mb-4">
-        <DefaultButton htmlType="submit" className="uppercase">
-          Đăng ký
+        <DefaultButton
+          htmlType="submit"
+          disabled={isSubmitting}
+          className="uppercase"
+        >
+          {isSubmitting ? "Đang xử lý..." : "Đăng Nhập"}
         </DefaultButton>
       </div>
 
