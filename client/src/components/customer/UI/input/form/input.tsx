@@ -33,7 +33,7 @@ FormInput.Password = (
     <Input
       type="password"
       {...rest}
-      className={`!ring-inherit h-10 rounded-sm focus-visible:!border-lime-700 hover:!border-lime-700 ${
+      className={`!ring-inherit h-10 rounded-sm focus:!shadow-none  ${
         error
           ? "!border-2 !border-red-500 focus:!border-red-500 focus-visible:!border-red-500 hover:!border-red-500"
           : " focus-visible:!border-lime-700 hover:!border-lime-700"

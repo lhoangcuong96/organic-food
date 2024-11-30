@@ -1,12 +1,15 @@
 "use client";
 
 import { Account } from "@prisma/client";
+import useMessage from "antd/es/message/useMessage";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext, ReactNode, useContext, useState } from "react";
+import type { MessageInstance } from "antd/es/message/interface";
 
 const AppContext = createContext({
   sessionToken: "",
   setSessionToken: (sessionToken: string) => {},
+  messageApi: {} as MessageInstance,
 });
 
 export const useAppContext = () => {
@@ -27,8 +30,10 @@ export default function AppProvider({
   initialSessionToken?: string;
 }) {
   const [sessionToken, setSessionToken] = useState(initialSessionToken || "");
+  const [messageApi, contextHolder] = useMessage();
   return (
-    <AppContext.Provider value={{ sessionToken, setSessionToken }}>
+    <AppContext.Provider value={{ messageApi, sessionToken, setSessionToken }}>
+      {contextHolder}
       {children}
     </AppContext.Provider>
   );

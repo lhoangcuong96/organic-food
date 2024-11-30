@@ -12,18 +12,20 @@ import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
 import { useAppContext } from "@/provider/app-provider";
+import { useErrorHandler } from "@/utils/hooks";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
+import { useRouter } from "next/navigation";
 import { HttpError } from "@/lib/http";
-import { useRouter } from "next/router";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
+  const { handleError } = useErrorHandler();
   const { setSessionToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const { control, handleSubmit } = useForm<SignInRequestDataType>({
+  const { control, handleSubmit, setError } = useForm<SignInRequestDataType>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
@@ -44,13 +46,10 @@ export function SignInForm() {
       setSessionToken(token);
       router.push(routePath.customer.home);
     } catch (error) {
-      if ((error as HttpError).payload.errors?.length) {
-        (error as HttpError).payload.errors.forEach((error: any) => {
-          messageAPI.error(error.message);
-        });
-      } else {
-        messageAPI.error((error as HttpError).payload.message);
-      }
+      handleError({
+        error,
+        setError,
+      });
     } finally {
       setIsSubmitting(false);
     }

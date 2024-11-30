@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { authApiRequest } from "@/api-request/auth";
@@ -8,22 +7,24 @@ import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
 import { HttpError } from "@/lib/http";
 import { useAppContext } from "@/provider/app-provider";
+import { useErrorHandler } from "@/utils/hooks";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Divider, Form } from "antd";
 import useMessage from "antd/es/message/useMessage";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 export function SignUpForm() {
   const [messageAPI, contextHolder] = useMessage();
+  const { handleError } = useErrorHandler();
   const { setSessionToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const { control, handleSubmit } = useForm<SignUpRequestDataType>({
+  const { control, handleSubmit, setError } = useForm<SignUpRequestDataType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       fullname: "",
@@ -37,23 +38,17 @@ export function SignUpForm() {
   const onSubmit = async (data: SignUpRequestDataType) => {
     setIsSubmitting(true);
     try {
-      const response = await authApiRequest.login(data);
+      const response = await authApiRequest.register(data);
       const token = response.payload.data.token;
 
       // Send token to client server to set cookie
       await authApiRequest.setToken(token);
 
-      messageAPI.success("Đăng nhập thành công");
+      messageAPI.success("Đăng kí thành công");
       setSessionToken(token);
       router.push(routePath.customer.home);
     } catch (error) {
-      if ((error as HttpError).payload.errors?.length) {
-        (error as HttpError).payload.errors.forEach((error: any) => {
-          messageAPI.error(error.message);
-        });
-      } else {
-        messageAPI.error((error as HttpError).payload.message);
-      }
+      handleError({ error, setError });
     } finally {
       setIsSubmitting(false);
     }
@@ -145,7 +140,7 @@ export function SignUpForm() {
           name="confirmPassword"
           render={({ field, fieldState: { error } }) => (
             <>
-              <FormInput
+              <FormInput.Password
                 {...field}
                 placeholder="Nhập lại mật khẩu"
                 className="w-full"

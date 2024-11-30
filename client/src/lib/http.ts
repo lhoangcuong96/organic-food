@@ -1,13 +1,37 @@
 import envConfig from "@/envConfig";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+export type HTTPPayload = {
+  message: string;
+  [key: string]: any;
+};
 export class HttpError extends Error {
   status: number;
-  payload: any;
-  constructor({ status, payload }: { status: number; payload: any }) {
+  payload: HTTPPayload;
+  constructor({ status, payload }: { status: number; payload: HTTPPayload }) {
     super("Http Error");
     this.status = status;
     this.payload = payload;
+  }
+}
+
+export type EntityErrorPayload = {
+  message: string;
+  errors: {
+    field: string;
+    message: string;
+  }[];
+};
+// Lỗi validate dữ liệu
+export class EntityError extends HttpError {
+  status = 422;
+  payload: EntityErrorPayload;
+  constructor({ status, payload }: { status: number; payload: any }) {
+    if (status !== 422) {
+      throw new Error("EntityError must have status 422");
+    }
+    super({ status, payload });
+    this.payload = payload;
+    this.status = status;
   }
 }
 
@@ -43,7 +67,19 @@ export const request = async <T>(
     payload,
   };
   if (!res.ok) {
-    throw new HttpError(data);
+    // nếu là lỗi validate dữ liệu thì ném ra
+    if (res.status === 422) {
+      console.log(data);
+
+      throw new EntityError(data);
+    } else {
+      throw new HttpError(
+        data as {
+          status: number;
+          payload: HTTPPayload;
+        }
+      );
+    }
   }
   return data;
 };
