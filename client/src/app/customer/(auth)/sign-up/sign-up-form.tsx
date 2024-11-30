@@ -7,7 +7,7 @@ import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
 import { HttpError } from "@/lib/http";
 import { useAppContext } from "@/provider/app-provider";
-import { useErrorHandler } from "@/utils/hooks";
+import { useHandleMessage } from "@/utils/hooks";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Divider, Form } from "antd";
@@ -19,7 +19,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export function SignUpForm() {
   const [messageAPI, contextHolder] = useMessage();
-  const { handleError } = useErrorHandler();
+  const { handleError } = useHandleMessage();
   const { setSessionToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();

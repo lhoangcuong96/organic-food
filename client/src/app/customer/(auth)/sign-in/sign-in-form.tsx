@@ -12,15 +12,14 @@ import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
 import { useAppContext } from "@/provider/app-provider";
-import { useErrorHandler } from "@/utils/hooks";
+import { useHandleMessage } from "@/utils/hooks";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
 import { useRouter } from "next/navigation";
-import { HttpError } from "@/lib/http";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
-  const { handleError } = useErrorHandler();
+  const { handleError } = useHandleMessage();
   const { setSessionToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();

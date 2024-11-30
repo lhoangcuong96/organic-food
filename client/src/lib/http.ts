@@ -1,3 +1,4 @@
+import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
 
 export type HTTPPayload = {
@@ -69,9 +70,24 @@ export const request = async <T>(
   if (!res.ok) {
     // nếu là lỗi validate dữ liệu thì ném ra
     if (res.status === 422) {
-      console.log(data);
-
       throw new EntityError(data);
+    } else if (res.status === 401) {
+      /*
+        Nếu là lỗi không có quyền truy cập thì logout(trên client)
+        Vì là session đã hết hạn(xoá trên server nodejs) => chỉ gọi lên trên nextjs server để xoá cookie thôi
+      */
+      if (typeof window !== "undefined") {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          body: JSON.stringify({
+            forceLogout: true,
+          }),
+          headers: {
+            ...baseHeader,
+          },
+        });
+        location.href = routePath.customer.signIn;
+      }
     } else {
       throw new HttpError(
         data as {

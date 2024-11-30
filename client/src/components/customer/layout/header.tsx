@@ -12,6 +12,7 @@ import { routePath } from "@/constants/routes";
 import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
 import Menu from "./menu";
+import { ButtonLogout } from "../UI/button/button-logout";
 
 const profileItems: MenuProps["items"] = [
   {
@@ -23,6 +24,10 @@ const profileItems: MenuProps["items"] = [
     label: <Link href={routePath.customer.signUp}>Đăng ký</Link>,
     key: routePath.customer.signUp,
     icon: <UserOutlined className="!text-lg" />,
+  },
+  {
+    label: <ButtonLogout></ButtonLogout>,
+    key: "logout",
   },
 ];
 export default function Header() {

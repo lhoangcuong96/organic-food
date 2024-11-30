@@ -15,7 +15,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/customer/sign-in", request.url));
   }
 
-  if (sessionToken && publicPaths.some((path) => pathname.startsWith(path))) {
+  if (
+    sessionToken &&
+    sessionToken.value &&
+    publicPaths.some((path) => pathname.startsWith(path))
+  ) {
     return NextResponse.redirect(new URL("/customer/home", request.url));
   }
 

@@ -5,7 +5,7 @@ import { EntityError } from "@/lib/http";
 import { UseFormSetError } from "react-hook-form";
 import { useAppContext } from "@/provider/app-provider";
 
-export const useErrorHandler = () => {
+export const useHandleMessage = () => {
   const { messageApi } = useAppContext();
 
   const handleError = useCallback(
@@ -32,7 +32,7 @@ export const useErrorHandler = () => {
     [messageApi]
   );
 
-  return { handleError };
+  return { handleError, messageApi };
 };
 
 import { useState, useEffect } from "react";

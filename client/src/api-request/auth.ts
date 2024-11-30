@@ -5,6 +5,7 @@ import {
   SignUpRequestDataType,
   SignUpResponseDataType,
 } from "@/validation-schema/auth";
+import { MessageResponseType } from "@/validation-schema/common";
 
 export const authApiRequest = {
   login: (data: SignInRequestDataType) =>
@@ -20,6 +21,24 @@ export const authApiRequest = {
       },
       {
         baseUrl: "",
+      }
+    ),
+  logoutFromClientToNextServer: ({ forceLogout }: { forceLogout?: boolean }) =>
+    http.post<MessageResponseType>(
+      "/api/auth/sign-out",
+      { forceLogout },
+      {
+        baseUrl: "",
+      }
+    ),
+  logoutFromNextServerToApiServer: (sessionToken: string) =>
+    http.post<MessageResponseType>(
+      "/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
       }
     ),
 };
