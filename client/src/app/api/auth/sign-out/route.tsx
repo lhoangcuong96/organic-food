@@ -1,28 +1,31 @@
 import { authApiRequest } from "@/api-request/auth";
+import { TokenType } from "@/constants/types";
 import { HttpError } from "@/lib/http";
-import { console } from "inspector";
 import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
   const requestBody = await request.json();
   /*
-    Vì sessionToken đã hết hạn (sessionToken đã xoá trên server nodejs)
-    => client gọi forceLogout=true để server nextjs set lại cookie
+    - Có 2 trường hợp là 
+      + Người dùng logout bình thường
+      + 2 là hết hạn phiên đăng nhập => forceLogout = true
   */
   const forceLogout = requestBody.forceLogout as boolean | undefined;
-  console.log(forceLogout);
-  const sessionToken = cookieStore.get("sessionToken");
-  if (!sessionToken || !sessionToken.value) {
+  const accessToken = cookieStore.get(TokenType.AccessToken);
+  if (!accessToken || !accessToken.value) {
     return Response.json(
       {
-        message: "Không nhận được sessionToken",
+        message: "Không nhận được token",
       },
       {
         status: 401,
       }
     );
   }
+  const headers = new Headers();
+  headers.append("Set-Cookie", "accessToken=; Path=/; HttpOnly");
+  headers.append("Set-Cookie", "refreshToken=; Path=/; HttpOnly");
   if (forceLogout) {
     return Response.json(
       {
@@ -30,21 +33,17 @@ export async function POST(request: Request) {
       },
       {
         status: 200,
-        headers: {
-          "Set-Cookie": `sessionToken=; PATH=/; HttpOnly`,
-        },
+        headers,
       }
     );
   }
   try {
     const result = await authApiRequest.logoutFromNextServerToApiServer(
-      sessionToken.value
+      accessToken.value
     );
     return Response.json(result, {
       status: 200,
-      headers: {
-        "Set-Cookie": `sessionToken=; PATH=/; HttpOnly`,
-      },
+      headers,
     });
   } catch (error) {
     if (error instanceof HttpError) {

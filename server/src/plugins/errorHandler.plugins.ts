@@ -1,3 +1,4 @@
+import { TokenType } from '@/constants/type'
 import { AuthError, EntityError, ForbiddenError, StatusError, isPrismaClientKnownRequestError } from '@/utils/errors'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { FastifyError } from 'fastify'
@@ -47,6 +48,7 @@ export const errorHandlerPlugin = fastifyPlugin(async (fastify) => {
     request,
     reply
   ) {
+    console.error(error)
     if (isEntityError(error)) {
       return reply.status(error.status).send({
         message: 'Lỗi xảy ra khi xác thực dữ liệu...',
@@ -60,7 +62,13 @@ export const errorHandlerPlugin = fastifyPlugin(async (fastify) => {
       })
     } else if (isAuthError(error)) {
       return reply
-        .setCookie('sessionToken', '', {
+        .setCookie(TokenType.AccessToken, '', {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'none',
+          secure: true
+        })
+        .setCookie(TokenType.RefreshToken, '', {
           path: '/',
           httpOnly: true,
           sameSite: 'none',

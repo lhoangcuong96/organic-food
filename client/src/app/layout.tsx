@@ -22,9 +22,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("sessionToken");
+  const accessToken = cookieStore.get("accessToken");
+  const refreshToken = cookieStore.get("refreshToken");
   let user = null;
-  if (sessionToken?.value) {
+  if (accessToken?.value) {
     const response = await fetch(`${envConfig?.NEXT_PUBLIC_API_URL}/auth/me`);
     if (!response.ok) {
       const responseJson = await response.json();
@@ -39,7 +40,11 @@ export default async function RootLayout({
       <body
         className={`${quicksand.className} antialiased bg-white text-gray-700`}
       >
-        <AppProvider initialSessionToken={sessionToken?.value} user={user}>
+        <AppProvider
+          initialAccessToken={accessToken?.value}
+          initialRefreshToken={refreshToken?.value}
+          user={user}
+        >
           <AntdRegistry>{children}</AntdRegistry>
         </AppProvider>
       </body>

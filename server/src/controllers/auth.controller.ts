@@ -1,12 +1,9 @@
-import envConfig from '@/config'
 import { PrismaErrorCode } from '@/constants/error-reference'
 import prisma from '@/database'
 import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema'
 import { comparePassword, hashPassword } from '@/utils/crypto'
-import { EntityError, isPrismaClientKnownRequestError } from '@/utils/errors'
-import { signSessionToken } from '@/utils/jwt'
-import { addMilliseconds } from 'date-fns'
-import ms from 'ms'
+import { EntityError, isPrismaClientKnownRequestError, StatusError } from '@/utils/errors'
+import { createPairTokens } from '@/utils/jwt'
 
 export const registerController = async (body: RegisterBodyType) => {
   try {
@@ -36,15 +33,15 @@ export const registerController = async (body: RegisterBodyType) => {
       }
     })
 
-    const sessionToken = signSessionToken({
+    const { accessToken, refreshToken } = createPairTokens({
       userId: account.id
     })
-    const expiresAt = addMilliseconds(new Date(), ms(envConfig.SESSION_TOKEN_EXPIRES_IN))
+
     const session = await prisma.session.create({
       data: {
         accountId: account.id,
-        token: sessionToken,
-        expiresAt
+        accessToken,
+        refreshToken
       }
     })
     return {
@@ -60,31 +57,21 @@ export const registerController = async (body: RegisterBodyType) => {
     throw error
   }
 }
-export const logoutController = async (sessionToken: string) => {
-  await prisma.session.delete({
+export const logoutController = async (accessToken: string) => {
+  const session = await prisma.session.findFirst({
     where: {
-      token: sessionToken
+      accessToken
     }
+  })
+  if (session === null) {
+    throw new StatusError({ message: 'Session không tồn tại', status: 404 })
+  }
+  await prisma.session.delete({
+    where: { id: session.id }
   })
   return 'Đăng xuất thành công'
 }
 
-/**
- * Tăng thời gian hết hạn của session token lên
- * @param sessionToken
- */
-export const slideSessionController = async (sessionToken: string) => {
-  const expiresAt = addMilliseconds(new Date(), ms(envConfig.SESSION_TOKEN_EXPIRES_IN))
-  const session = await prisma.session.update({
-    where: {
-      token: sessionToken
-    },
-    data: {
-      expiresAt
-    }
-  })
-  return session
-}
 export const loginController = async (body: LoginBodyType) => {
   const account = await prisma.account.findUnique({
     where: {
@@ -98,20 +85,45 @@ export const loginController = async (body: LoginBodyType) => {
   if (!isPasswordMatch) {
     throw new EntityError([{ field: 'password', message: 'Email hoặc mật khẩu không đúng' }])
   }
-  const sessionToken = signSessionToken({
+  const { accessToken, refreshToken } = createPairTokens({
     userId: account.id
   })
-  const expiresAt = addMilliseconds(new Date(), ms(envConfig.SESSION_TOKEN_EXPIRES_IN))
-
   const session = await prisma.session.create({
     data: {
       accountId: account.id,
-      token: sessionToken,
-      expiresAt
+      accessToken,
+      refreshToken
     }
   })
   return {
     account,
+    session
+  }
+}
+
+export const refreshTokenController = async (accessToken: string, refreshToken: string) => {
+  const session = await prisma.session.findFirst({
+    where: {
+      refreshToken,
+      accessToken
+    }
+  })
+  if (!session) {
+    throw new StatusError({ message: 'Refresh token không tồn tại', status: 404 })
+  }
+  const { accessToken: newAccessToken, refreshToken: newRefreshToken } = createPairTokens({
+    userId: session.accountId
+  })
+  await prisma.session.update({
+    where: {
+      id: session.id
+    },
+    data: {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken
+    }
+  })
+  return {
     session
   }
 }

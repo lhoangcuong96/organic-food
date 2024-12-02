@@ -134,7 +134,7 @@ export function PromotionalProducts({
           >
             {products.map((product) => {
               return (
-                <SwiperSlide key={product.id} className="p-2">
+                <SwiperSlide key={product.id} className="p-2 !w-fit !mr-2">
                   <ProductCard product={product}></ProductCard>
                 </SwiperSlide>
               );

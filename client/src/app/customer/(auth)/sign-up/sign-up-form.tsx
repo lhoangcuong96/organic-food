@@ -5,7 +5,6 @@ import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import { HttpError } from "@/lib/http";
 import { useAppContext } from "@/provider/app-provider";
 import { useHandleMessage } from "@/utils/hooks";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
@@ -20,7 +19,7 @@ import { Controller, useForm } from "react-hook-form";
 export function SignUpForm() {
   const [messageAPI, contextHolder] = useMessage();
   const { handleError } = useHandleMessage();
-  const { setSessionToken } = useAppContext();
+  const { setAccessToken, setRefreshToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -38,14 +37,15 @@ export function SignUpForm() {
   const onSubmit = async (data: SignUpRequestDataType) => {
     setIsSubmitting(true);
     try {
-      const response = await authApiRequest.register(data);
-      const token = response.payload.data.token;
-
+      const response = await authApiRequest.login(data);
+      const accessToken = response.payload.data.accessToken;
+      const refreshToken = response.payload.data.refreshToken;
       // Send token to client server to set cookie
-      await authApiRequest.setToken(token);
+      await authApiRequest.setToken(accessToken, refreshToken);
 
       messageAPI.success("Đăng kí thành công");
-      setSessionToken(token);
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
       handleError({ error, setError });

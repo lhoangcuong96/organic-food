@@ -1,20 +1,25 @@
 import envConfig from '@/config'
 import prisma from '@/database'
 import { AuthError } from '@/utils/errors'
+import { verifyToken } from '@/utils/jwt'
 import { FastifyRequest } from 'fastify'
 
-export const requireLoginedHook = async (request: FastifyRequest) => {
-  const sessionToken = envConfig.COOKIE_MODE ? request.cookies.sessionToken : request.headers.authorization
+export const requireLoggedHook = async (request: FastifyRequest) => {
+  const accessToken = envConfig.COOKIE_MODE ? request.cookies.accessToken : request.headers.authorization
 
-  if (!sessionToken) throw new AuthError('Không nhận được session token')
-  const session_row = await prisma.session.findFirst({
+  if (!accessToken) throw new AuthError('Không nhận được session token')
+  const token = accessToken.split(' ')[1] // Tách "Bearer" ra khỏi token
+  const session = await prisma.session.findFirst({
     where: {
-      token: sessionToken as string
+      accessToken: token
     },
     include: {
       account: true
     }
   })
-  if (!session_row) throw new AuthError('Session Token không tồn tại')
-  request.account = session_row.account
+  if (!session) throw new AuthError('Token không tồn tại')
+
+  // kiểm tra xem access token đã hết hạn chưa
+  await verifyToken(token)
+  request.account = session.account
 }

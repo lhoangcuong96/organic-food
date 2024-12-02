@@ -14,7 +14,7 @@ export function ButtonLogout(
   const { messageApi, handleError } = useHandleMessage();
   const handleLogOut = async () => {
     try {
-      await authApiRequest.logoutFromClientToNextServer();
+      await authApiRequest.logoutFromClientToNextServer({ forceLogout: false });
       messageApi.success("Đăng xuất thành công");
     } catch (error) {
       handleError({ error });

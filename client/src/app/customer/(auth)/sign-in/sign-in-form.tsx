@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
   const { handleError } = useHandleMessage();
-  const { setSessionToken } = useAppContext();
+  const { setAccessToken, setRefreshToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -36,13 +36,14 @@ export function SignInForm() {
     setIsSubmitting(true);
     try {
       const response = await authApiRequest.login(data);
-      const token = response.payload.data.token;
+      const accessToken = response.payload.data.accessToken;
+      const refreshToken = response.payload.data.refreshToken;
 
       // Send token to client server to set cookie
-      await authApiRequest.setToken(token);
-
+      await authApiRequest.setToken(accessToken, refreshToken);
       messageAPI.success("Đăng nhập thành công");
-      setSessionToken(token);
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
       handleError({
@@ -105,7 +106,11 @@ export function SignInForm() {
           disabled={isSubmitting}
           className="uppercase"
         >
-          {isSubmitting ? "Đang xử lý..." : "Đăng Nhập"}
+          {isSubmitting ? (
+            <p className="loading-animation">Đang xử lý</p>
+          ) : (
+            "Đăng Nhập"
+          )}
         </DefaultButton>
       </div>
 

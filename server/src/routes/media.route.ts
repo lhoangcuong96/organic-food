@@ -1,11 +1,11 @@
-import { requireLoginedHook } from '@/hooks/auth.hooks'
+import { requireLoggedHook } from '@/hooks/auth.hooks'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import fastifyMultipart from '@fastify/multipart'
 import { uploadImage } from '@/controllers/media.controller'
 
 export default async function mediaRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.register(fastifyMultipart)
-  fastify.addHook('preValidation', fastify.auth([requireLoginedHook]))
+  fastify.addHook('preValidation', fastify.auth([requireLoggedHook]))
 
   fastify.post('/upload', {}, async (request, reply) => {
     const data = await request.file({

@@ -10,10 +10,12 @@ declare global {
 
 declare module 'fastify' {
   interface FastifyInstance {}
-  interface FastifyRequest {
+  interface FastifyRequest<T = unknown> {
     account?: Account
     cookies: {
-      sessionToken?: string
+      accessToken?: string
+      refreshToken?: string
     }
+    body?: T
   }
 }

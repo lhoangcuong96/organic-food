@@ -1,19 +1,20 @@
 import { routePath } from "@/constants/routes";
+import { TokenType } from "@/constants/types";
 import envConfig from "@/envConfig";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function Profile() {
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("sessionToken");
-  if (!sessionToken) {
+  const accessToken = cookieStore.get(TokenType.AccessToken);
+  if (!accessToken) {
     return redirect(routePath.customer.home);
   }
   const response = await fetch(`${envConfig?.NEXT_PUBLIC_API_URL}/account/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      authorization: sessionToken?.value,
+      authorization: accessToken?.value,
     },
   });
 

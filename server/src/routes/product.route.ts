@@ -5,7 +5,7 @@ import {
   getProductList,
   updateProduct
 } from '@/controllers/product.controller'
-import { requireLoginedHook } from '@/hooks/auth.hooks'
+import { requireLoggedHook } from '@/hooks/auth.hooks'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import {
   CreateProductBody,
@@ -76,7 +76,7 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
           200: ProductRes
         }
       },
-      preValidation: fastify.auth([requireLoginedHook])
+      preValidation: fastify.auth([requireLoggedHook])
     },
     async (request, reply) => {
       const product = await createProduct(request.body)
@@ -101,7 +101,7 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
           200: ProductRes
         }
       },
-      preValidation: fastify.auth([requireLoginedHook])
+      preValidation: fastify.auth([requireLoggedHook])
     },
     async (request, reply) => {
       const product = await updateProduct(request.params.id, request.body)
@@ -124,7 +124,7 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
           200: MessageRes
         }
       },
-      preValidation: fastify.auth([requireLoginedHook])
+      preValidation: fastify.auth([requireLoggedHook])
     },
     async (request, reply) => {
       await deleteProduct(request.params.id)

@@ -3,12 +3,14 @@
 import { Account } from "@prisma/client";
 import useMessage from "antd/es/message/useMessage";
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext, ReactNode, useContext, useState } from "react";
 import type { MessageInstance } from "antd/es/message/interface";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 const AppContext = createContext({
-  sessionToken: "",
-  setSessionToken: (sessionToken: string) => {},
+  accessToken: "",
+  refreshToken: "",
+  setAccessToken: (token: string) => {},
+  setRefreshToken: (token: string) => {},
   messageApi: {} as MessageInstance,
 });
 
@@ -23,16 +25,28 @@ export const useAppContext = () => {
 export default function AppProvider({
   children,
   user,
-  initialSessionToken,
+  initialAccessToken,
+  initialRefreshToken,
 }: {
   children: ReactNode;
   user?: Partial<Account>;
-  initialSessionToken?: string;
+  initialAccessToken?: string;
+  initialRefreshToken?: string;
 }) {
-  const [sessionToken, setSessionToken] = useState(initialSessionToken || "");
+  const [accessToken, setAccessToken] = useState(initialAccessToken || "");
+  const [refreshToken, setRefreshToken] = useState(initialRefreshToken || "");
+
   const [messageApi, contextHolder] = useMessage();
   return (
-    <AppContext.Provider value={{ messageApi, sessionToken, setSessionToken }}>
+    <AppContext.Provider
+      value={{
+        messageApi,
+        accessToken,
+        refreshToken,
+        setAccessToken,
+        setRefreshToken,
+      }}
+    >
       {contextHolder}
       {children}
     </AppContext.Provider>

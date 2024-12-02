@@ -1,7 +1,7 @@
+import { config } from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import z from 'zod'
-import { config } from 'dotenv'
 
 config({
   path: '.env'
@@ -19,8 +19,9 @@ checkEnv()
 const configSchema = z.object({
   PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string(),
-  SESSION_TOKEN_SECRET: z.string(),
-  SESSION_TOKEN_EXPIRES_IN: z.string(),
+  TOKEN_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRES_IN: z.string(),
+  REFRESH_TOKEN_EXPIRES_IN: z.string(),
   DOMAIN: z.string(),
   PROTOCOL: z.string(),
   UPLOAD_FOLDER: z.string(),

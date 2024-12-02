@@ -1,27 +1,28 @@
 import envConfig from '@/config'
+import { TokenType } from '@/constants/type'
 import {
   loginController,
   logoutController,
-  slideSessionController,
+  refreshTokenController,
   registerController
 } from '@/controllers/auth.controller'
-import { requireLoginedHook } from '@/hooks/auth.hooks'
+import { requireLoggedHook } from '@/hooks/auth.hooks'
 import {
   LoginBody,
   LoginBodyType,
   LoginRes,
   LoginResType,
-  SlideSessionBody,
-  SlideSessionBodyType,
-  SlideSessionRes,
-  SlideSessionResType,
+  RefreshTokenBodyType,
+  RefreshTokenResType,
   RegisterBody,
   RegisterBodyType,
   RegisterRes,
   RegisterResType
 } from '@/schemaValidations/auth.schema'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
-import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+import { addMilliseconds } from 'date-fns'
+import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify'
+import ms from 'ms'
 
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.post<{
@@ -42,19 +43,27 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       const { session, account } = await registerController(body)
       if (envConfig.COOKIE_MODE) {
         reply
-          .setCookie('sessionToken', session.token, {
+          .setCookie(TokenType.AccessToken, session.accessToken, {
             path: '/',
             httpOnly: true,
             secure: true,
-            expires: session.expiresAt,
+            expires: addMilliseconds(new Date(), ms(envConfig.ACCESS_TOKEN_EXPIRES_IN)),
+            sameSite: 'none',
+            domain: envConfig.DOMAIN
+          })
+          .setCookie(TokenType.RefreshToken, session.accessToken, {
+            path: '/',
+            httpOnly: true,
+            secure: true,
+            expires: addMilliseconds(new Date(), ms(envConfig.ACCESS_TOKEN_EXPIRES_IN)),
             sameSite: 'none',
             domain: envConfig.DOMAIN
           })
           .send({
             message: 'Đăng ký thành công',
             data: {
-              token: session.token,
-              expiresAt: session.expiresAt.toISOString(),
+              accessToken: session.accessToken,
+              refreshToken: session.refreshToken,
               account
             }
           })
@@ -62,8 +71,8 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
         reply.send({
           message: 'Đăng ký thành công',
           data: {
-            token: session.token,
-            expiresAt: session.expiresAt.toISOString(),
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
             account
           }
         })
@@ -78,16 +87,22 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
           200: MessageRes
         }
       },
-      preValidation: fastify.auth([requireLoginedHook])
+      preValidation: fastify.auth([requireLoggedHook])
     },
     async (request, reply) => {
-      const sessionToken = envConfig.COOKIE_MODE
-        ? request.cookies.sessionToken
+      const accessToken = envConfig.COOKIE_MODE
+        ? request.cookies.accessToken
         : request.headers.authorization?.split(' ')[1]
-      const message = await logoutController(sessionToken as string)
+      const message = await logoutController(accessToken as string)
       if (envConfig.COOKIE_MODE) {
         reply
-          .clearCookie('sessionToken', {
+          .clearCookie(TokenType.AccessToken, {
+            path: '/',
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true
+          })
+          .clearCookie(TokenType.RefreshToken, {
             path: '/',
             httpOnly: true,
             sameSite: 'none',
@@ -118,19 +133,27 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       const { session, account } = await loginController(body)
       if (envConfig.COOKIE_MODE) {
         reply
-          .setCookie('sessionToken', session.token, {
+          .setCookie('accessToken', session.accessToken, {
             path: '/',
             httpOnly: true,
             secure: true,
-            expires: session.expiresAt,
+            expires: addMilliseconds(new Date(), ms(envConfig.ACCESS_TOKEN_EXPIRES_IN)),
+            sameSite: 'none',
+            domain: envConfig.DOMAIN
+          })
+          .setCookie('accessToken', session.accessToken, {
+            path: '/',
+            httpOnly: true,
+            secure: true,
+            expires: addMilliseconds(new Date(), ms(envConfig.ACCESS_TOKEN_EXPIRES_IN)),
             sameSite: 'none',
             domain: envConfig.DOMAIN
           })
           .send({
             message: 'Đăng nhập thành công',
             data: {
-              token: session.token,
-              expiresAt: session.expiresAt.toISOString(),
+              accessToken: session.accessToken,
+              refreshToken: session.refreshToken,
               account
             }
           })
@@ -138,8 +161,8 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
         reply.send({
           message: 'Đăng nhập thành công',
           data: {
-            token: session.token,
-            expiresAt: session.expiresAt.toISOString(),
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
             account
           }
         })
@@ -147,50 +170,27 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     }
   )
 
-  fastify.post<{ Reply: SlideSessionResType; Body: SlideSessionBodyType }>(
-    '/slide-session',
+  fastify.post(
+    '/refresh-token',
     {
       schema: {
         response: {
-          200: SlideSessionRes
-        },
-        body: SlideSessionBody
+          200: LoginRes
+        }
       },
-      preValidation: fastify.auth([requireLoginedHook])
+      preValidation: fastify.auth([requireLoggedHook])
     },
     async (request, reply) => {
-      const sessionToken = envConfig.COOKIE_MODE
-        ? request.cookies.sessionToken
-        : request.headers.authorization?.split(' ')[1]
-      const session = await slideSessionController(sessionToken as string)
-      if (envConfig.COOKIE_MODE) {
-        reply
-          .setCookie('sessionToken', session.token, {
-            path: '/',
-            httpOnly: true,
-            secure: true,
-            expires: session.expiresAt,
-            sameSite: 'none',
-            domain: envConfig.DOMAIN
-          })
-          .send({
-            message: 'Refresh session thành công',
-            data: {
-              token: session.token,
-              account: request.account!,
-              expiresAt: session.expiresAt.toISOString()
-            }
-          })
-      } else {
-        reply.send({
-          message: 'Refresh session thành công',
-          data: {
-            token: session.token,
-            expiresAt: session.expiresAt.toISOString(),
-            account: request.account!
-          }
-        })
-      }
+      const { refreshToken } = request.body as RefreshTokenBodyType
+      const accessToken = request.headers.authorization!.split(' ')[1]
+      const { session } = await refreshTokenController(accessToken, refreshToken)
+      reply.send({
+        message: 'Đăng nhập thành công',
+        data: {
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken
+        }
+      })
     }
   )
 }

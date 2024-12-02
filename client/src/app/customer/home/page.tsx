@@ -49,7 +49,6 @@ export default async function CustomerHomePage() {
   let getCategoriesWithProductsError = "";
   try {
     categoriesWithProducts = await CategoryService.getCategoriesWithProducts();
-    console.log(categoriesWithProducts);
   } catch (error) {
     console.error("Error fetching products:", error);
     getCategoriesWithProductsError =

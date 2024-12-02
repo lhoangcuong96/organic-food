@@ -13,17 +13,22 @@ export const authApiRequest = {
   register: (data: SignUpRequestDataType) =>
     http.post<SignUpResponseDataType>("/auth/register", data),
   // lấy token từ server nodejs gửi lên server nextjs để set cookie
-  setToken: (token: string) =>
+  setToken: (accessToken: string, refreshToken: string) =>
     http.post(
       "/api/auth",
       {
-        token,
+        accessToken,
+        refreshToken,
       },
       {
         baseUrl: "",
       }
     ),
-  logoutFromClientToNextServer: ({ forceLogout }: { forceLogout?: boolean }) =>
+  logoutFromClientToNextServer: ({
+    forceLogout = false,
+  }: {
+    forceLogout?: boolean;
+  }) =>
     http.post<MessageResponseType>(
       "/api/auth/sign-out",
       { forceLogout },
@@ -31,13 +36,13 @@ export const authApiRequest = {
         baseUrl: "",
       }
     ),
-  logoutFromNextServerToApiServer: (sessionToken: string) =>
+  logoutFromNextServerToApiServer: (accessToken: string) =>
     http.post<MessageResponseType>(
       "/auth/logout",
       {},
       {
         headers: {
-          Authorization: `Bearer ${sessionToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     ),

@@ -1,5 +1,6 @@
 export const TokenType = {
   ForgotPasswordToken: 'forgotPasswordToken',
   EmailVerifyToken: 'emailVerifyToken',
-  SessionToken: 'sessionToken'
+  AccessToken: 'accessToken',
+  RefreshToken: 'refreshToken'
 } as const

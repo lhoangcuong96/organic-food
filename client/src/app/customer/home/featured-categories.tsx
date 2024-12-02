@@ -110,7 +110,7 @@ export function FeaturedCategories({
           <Swiper
             ref={swiperRef}
             modules={[Navigation, Pagination, Scrollbar, A11y]}
-            spaceBetween={10}
+            spaceBetween={0}
             slidesPerView={6}
             navigation
             pagination={{ clickable: true }}
@@ -119,7 +119,7 @@ export function FeaturedCategories({
           >
             {categories.map((category) => {
               return (
-                <SwiperSlide key={category.id}>
+                <SwiperSlide key={category.id} className="!w-fit !mr-2">
                   <CategoryCard category={category} key={category.id} />
                 </SwiperSlide>
               );

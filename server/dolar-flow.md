@@ -9,6 +9,7 @@ This document outlines the flow of the Dolar application.
     1. [Sign In](#sign-in).
     2. [Sign Up](#sign-up)
     3. [Sign Out](#sign-out)
+    4. [Tự động đăng xuất khi hết hạn](#tự-động-đăng-xuất-khi-hết-hạn)
 2. [Setup](#setup)
 3. [Flow Steps](#flow-steps)
 4. [Conclusion](#conclusion)
@@ -21,6 +22,14 @@ This document outlines the flow of the Dolar application.
 - Nextjs server sẽ gọi tới api của Nodejs server để xoá đi cookie
 - Sau khi xoá thành công và trả về response cho Nextjs server
 - Nextjs server sẽ set rỗng cho cookie và trả về cho client
+### Tự động đăng xuất khi hết hạn
+- Sau khi nhận về status 401(Unauthorized)
+- Sẽ có 2 trường hợp là client gọi thẳng tới Nodejs server và gọi thông qua Server nextjs
+    - Client:
+        - Client sẽ gọi đến Nextjs server để force logout (set lại cookie) mà không cần phải gọi tới Nodejs vì sessionToken đã bị xoá r
+    - Server nextjs:
+        - Vì server không có cookie => redirect về 1 page logout để gửi request logout lên
+
 
 
 ## Setup

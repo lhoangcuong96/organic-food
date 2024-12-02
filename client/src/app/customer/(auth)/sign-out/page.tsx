@@ -5,8 +5,6 @@ import { routePath } from "@/constants/routes";
 import { useHandleMessage } from "@/utils/hooks";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import styles from "./styles.module.scss";
-
 export default function Page() {
   const { handleError } = useHandleMessage();
   const router = useRouter();
@@ -24,7 +22,7 @@ export default function Page() {
   }, []);
   return (
     <div className={`min-h-[600px] flex items-center font-semibold `}>
-      <p className={styles.loadingAnimation}>Đang xử lý</p>
+      <p className="loading-animation font-lg">Đang xử lý</p>
     </div>
   );
 }

@@ -10,14 +10,14 @@ const publicPaths = ["/customer/sign-up", "/customer/sign-in"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("sessionToken");
-  if (!sessionToken && privatePaths.some((path) => pathname.startsWith(path))) {
+  const accessToken = cookieStore.get("accessToken");
+  if (!accessToken && privatePaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.redirect(new URL("/customer/sign-in", request.url));
   }
 
   if (
-    sessionToken &&
-    sessionToken.value &&
+    accessToken &&
+    accessToken.value &&
     publicPaths.some((path) => pathname.startsWith(path))
   ) {
     return NextResponse.redirect(new URL("/customer/home", request.url));
