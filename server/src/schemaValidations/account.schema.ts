@@ -1,11 +1,14 @@
-import z from 'zod'
+import z, { nullable } from 'zod'
 
 export const AccountRes = z
   .object({
     data: z.object({
       id: z.string(),
       fullname: z.string(),
-      email: z.string()
+      email: z.string(),
+      phoneNumber: z.string(),
+      gender: z.enum(['MALE', 'FEMALE', 'OTHER']).nullable().optional(),
+      dateOfBirth: z.date().nullable().optional()
     }),
     message: z.string()
   })
@@ -13,8 +16,14 @@ export const AccountRes = z
 
 export type AccountResType = z.TypeOf<typeof AccountRes>
 
-export const UpdateMeBody = z.object({
-  name: z.string().trim().min(2).max(256)
+export const UpdateProfileBody = z.object({
+  fullname: z.string().trim().min(2, 'Họ và tên ít nhất 2 kí tự').max(256, 'Họ và tên nhiều nhất 256 kí tự'),
+  phoneNumber: z
+    .string()
+    .regex(new RegExp('^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$'), 'Số điện thoại không đúng!'),
+  address: z.string().optional(),
+  gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional(),
+  dateOfBirth: z.date().optional()
 })
 
-export type UpdateMeBodyType = z.TypeOf<typeof UpdateMeBody>
+export type UpdateProfileBodyType = z.TypeOf<typeof UpdateProfileBody>

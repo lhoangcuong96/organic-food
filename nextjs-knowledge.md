@@ -8,7 +8,7 @@ This document outlines of the Nextjs.
 1. [Rendering](#rendering)
     1. [Client Component](#client-component)
     2. [Server Component](#server-component)
-2. [Setup](#setup)
+2. [Error handling](#error-handling)
 3. [Flow Steps](#flow-steps)
 4. [Conclusion](#conclusion)
 
@@ -46,8 +46,28 @@ This document outlines of the Nextjs.
 
 
 
-## Setup
-Describe the setup process for the application, including any prerequisites and installation steps.
+## Error handling
+- Xử lý error trên server component
+    ``` 
+        export default async function Page() {
+            const res = await fetch(`https://...`)
+            const data = await res.json()
+            
+            if (!res.ok) {
+                return 'There was an error.'
+            }
+            
+            return '...'
+        }
+    ```
+- Xử lý error trên client component
+    - Sẽ sử dụng try catch như bình thường
+- Nếu 1 unexpected error xuất hiện(Error không được catched)
+    - Client: sẽ bị redirect qua trang error.tsx
+    - Server: sẽ bị redirect qua trang 500.tsx<br/>
+#### Lưu ý là nếu lỗi xảy ra trong layout thì 2 page này đều sẽ không catch được lỗi
+#### Để catch được error ở trong layout phải define ra global-error.tsx và sử dụng cấu trúc html khác
+##### error.tsx, global-error.tsx hay 500 chỉ được sử dụng trên production thôi 
 
 ## Flow Steps
 Detail each step of the flow in the application. Use subheadings for each major step.

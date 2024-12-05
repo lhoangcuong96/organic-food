@@ -63,6 +63,7 @@ export const logoutController = async (accessToken: string) => {
       accessToken
     }
   })
+  console.log(session)
   if (session === null) {
     throw new StatusError({ message: 'Session không tồn tại', status: 404 })
   }
@@ -109,12 +110,12 @@ export const refreshTokenController = async (accessToken: string, refreshToken: 
     }
   })
   if (!session) {
-    throw new StatusError({ message: 'Refresh token không tồn tại', status: 404 })
+    throw new StatusError({ message: 'Session không tồn tại', status: 404 })
   }
   const { accessToken: newAccessToken, refreshToken: newRefreshToken } = createPairTokens({
     userId: session.accountId
   })
-  await prisma.session.update({
+  const newSession = await prisma.session.update({
     where: {
       id: session.id
     },
@@ -124,6 +125,6 @@ export const refreshTokenController = async (accessToken: string, refreshToken: 
     }
   })
   return {
-    session
+    session: newSession
   }
 }

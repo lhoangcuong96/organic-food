@@ -13,7 +13,7 @@ import {
   LoginRes,
   LoginResType,
   RefreshTokenBodyType,
-  RefreshTokenResType,
+  RefreshTokenRes,
   RegisterBody,
   RegisterBodyType,
   RegisterRes,
@@ -21,7 +21,7 @@ import {
 } from '@/schemaValidations/auth.schema'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { addMilliseconds } from 'date-fns'
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify'
+import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import ms from 'ms'
 
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -175,7 +175,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     {
       schema: {
         response: {
-          200: LoginRes
+          200: RefreshTokenRes
         }
       },
       preValidation: fastify.auth([requireLoggedHook])

@@ -21,8 +21,6 @@ export const RegisterBody = z
     }
   })
 
-export type RegisterBodyType = z.TypeOf<typeof RegisterBody>
-
 export const RegisterRes = z.object({
   data: z.object({
     accessToken: z.string(),
@@ -35,8 +33,6 @@ export const RegisterRes = z.object({
   }),
   message: z.string()
 })
-
-export type RegisterResType = z.TypeOf<typeof RegisterRes>
 
 export const LoginBody = z
   .object({
@@ -51,12 +47,20 @@ export const RefreshTokenBody = z
   })
   .strict()
 
+export const RefreshTokenRes = z.object({
+  data: z.object({
+    accessToken: z.string(),
+    refreshToken: z.string()
+  }),
+  message: z.string()
+})
+
+export type RegisterBodyType = z.TypeOf<typeof RegisterBody>
+export type RegisterResType = z.TypeOf<typeof RegisterRes>
+
 export type LoginBodyType = z.TypeOf<typeof LoginBody>
-
 export const LoginRes = RegisterRes
-
 export type LoginResType = z.TypeOf<typeof LoginRes>
 
-export const RefreshTokenRes = RegisterRes
 export type RefreshTokenBodyType = z.TypeOf<typeof RefreshTokenBody>
 export type RefreshTokenResType = z.TypeOf<typeof RefreshTokenRes>

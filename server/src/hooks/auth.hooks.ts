@@ -6,20 +6,25 @@ import { FastifyRequest } from 'fastify'
 
 export const requireLoggedHook = async (request: FastifyRequest) => {
   const accessToken = envConfig.COOKIE_MODE ? request.cookies.accessToken : request.headers.authorization
-
+  console.log(accessToken)
   if (!accessToken) throw new AuthError('Không nhận được session token')
   const token = accessToken.split(' ')[1] // Tách "Bearer" ra khỏi token
-  const session = await prisma.session.findFirst({
-    where: {
-      accessToken: token
-    },
-    include: {
-      account: true
-    }
-  })
-  if (!session) throw new AuthError('Token không tồn tại')
+  try {
+    const session = await prisma.session.findFirst({
+      where: {
+        accessToken: token
+      },
+      include: {
+        account: true
+      }
+    })
+    if (!session) throw new AuthError('Session không tồn tại')
 
-  // kiểm tra xem access token đã hết hạn chưa
-  await verifyToken(token)
-  request.account = session.account
+    // kiểm tra xem access token đã hết hạn chưa
+    await verifyToken(token)
+    request.account = session.account
+  } catch (error) {
+    console.error(error)
+    throw new AuthError('Lỗi xác thực người dùng')
+  }
 }

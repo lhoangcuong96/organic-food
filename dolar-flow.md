@@ -10,6 +10,7 @@ This document outlines the flow of the Dolar application.
     2. [Sign Up](#sign-up)
     3. [Sign Out](#sign-out)
     4. [Tự động đăng xuất khi hết hạn](#tự-động-đăng-xuất-khi-hết-hạn)
+    5. [Tự động refresh token khi hết hạn](#tự-động-refresh-token-khi-hết-hạn)
 2. [Setup](#setup)
 3. [Flow Steps](#flow-steps)
 4. [Conclusion](#conclusion)
@@ -84,6 +85,13 @@ This document outlines the flow of the Dolar application.
         - Vì server không có cookie => redirect về 1 page logout để gửi request logout lên
 
 
+### Tự động refresh token khi hết hạn
+- Sẽ có 2 trường gợp
+    - TH1: Khi user sẽ vào lần đầu tiên và vào 1 private route cần call để lấy data
+        - Vấn đề: Nếu call API server sẽ trả về 401 => logout luôn
+        - Solution: Kiểm tra token ở middleware và gọi refresh token sau đó sẽ set lại cookie cho request và tiếp tục
+    - TH2: Hết hạn dưới client
+        - setInterval kiểm trả tra token nếu hết sẽ call lên API server lấy lại token và tiếp tục call api set cookie lên Nextjs server như login flow
 
 ## Setup
 Describe the setup process for the application, including any prerequisites and installation steps.

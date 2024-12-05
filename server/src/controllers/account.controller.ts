@@ -1,13 +1,13 @@
 import prisma from '@/database'
-import { UpdateMeBodyType } from '@/schemaValidations/account.schema'
+import { UpdateProfileBodyType } from '@/schemaValidations/account.schema'
 
-export const updateMeController = async (accountId: number, body: UpdateMeBodyType) => {
+export const updateMeController = async (accountId: string, body: UpdateProfileBodyType) => {
   const account = prisma.account.update({
     where: {
       id: accountId
     },
     data: {
-      name: body.name
+      ...body
     }
   })
   return account

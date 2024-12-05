@@ -1,6 +1,6 @@
 import { updateMeController } from '@/controllers/account.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
-import { AccountRes, AccountResType, UpdateMeBodyType } from '@/schemaValidations/account.schema'
+import { AccountRes, AccountResType, UpdateProfileBodyType } from '@/schemaValidations/account.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -24,7 +24,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
 
   fastify.put<{
     Reply: AccountResType
-    Body: UpdateMeBodyType
+    Body: UpdateProfileBodyType
   }>(
     '/me',
     {
@@ -35,7 +35,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       }
     },
     async (request, reply) => {
-      const result = await updateMeController(request.account?.id as number, request.body)
+      const result = await updateMeController(request.account!.id, request.body)
       reply.send({
         data: result,
         message: 'Cập nhật thông tin thành công'

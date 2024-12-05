@@ -16,7 +16,7 @@ const accessTokenSigner = createSigner({
 const refreshTokenSigner = createSigner({
   key: envConfig.TOKEN_SECRET,
   algorithm: 'HS256',
-  expiresIn: ms(envConfig.ACCESS_TOKEN_EXPIRES_IN)
+  expiresIn: ms(envConfig.REFRESH_TOKEN_EXPIRES_IN)
 })
 
 export const createPairTokens = (payload: Pick<TokenPayload, 'userId'>) => {
