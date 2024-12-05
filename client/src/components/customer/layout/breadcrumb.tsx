@@ -1,29 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import Breadcrumb, {
-  BreadcrumbItemType,
-  ItemType,
-} from "antd/es/breadcrumb/Breadcrumb";
-import { AnyObject } from "antd/es/_util/type";
 
-function itemRender(
-  item: ItemType,
-  params: AnyObject,
-  items: ItemType[],
-  paths: string[]
-) {
-  const isLast = item?.title === items[items.length - 1]?.title;
-
-  return isLast ? (
-    <span className="text-lime-600 w-fit">{item.title}</span>
-  ) : (
-    <Link href={`/${paths.join("/")}`} className="!text-white w-fit">
-      {item.title}
-    </Link>
-  );
-}
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default function AppBreadcrumb({
   src,
@@ -32,7 +17,7 @@ export default function AppBreadcrumb({
 }: {
   src: string;
   pageTitle: string;
-  breadcrumbItems: BreadcrumbItemType[];
+  breadcrumbItems: { title: string; href?: string }[];
 }) {
   return (
     <div className="relative">
@@ -49,12 +34,29 @@ export default function AppBreadcrumb({
         <div className="absolute w-full h-full z-20 top-0 left-0 bg-gradient-to-t from-[#000000cc] to-[#0000004d] "></div>
         <div className="z-30 relative flex flex-col items-center justify-center h-full">
           <h3 className="text-white text-2xl font-semibold">{pageTitle}</h3>
-          <Breadcrumb
-            style={{ color: "white" }}
-            separator={<p className="text-white">/</p>}
-            items={breadcrumbItems}
-            itemRender={itemRender}
-          ></Breadcrumb>
+          <Breadcrumb>
+            <BreadcrumbList>
+              {breadcrumbItems.map((item, index) => (
+                <>
+                  <BreadcrumbItem className={`cursor-pointer text-white`}>
+                    <BreadcrumbLink
+                      href={item.href}
+                      className={`cursor-pointer hover:text-lime-500 ${
+                        index === breadcrumbItems.length - 1
+                          ? "text-lime-500"
+                          : "text-white"
+                      }`}
+                    >
+                      {item.title}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  {index < breadcrumbItems.length - 1 && (
+                    <BreadcrumbSeparator className="text-white" />
+                  )}
+                </>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
     </div>

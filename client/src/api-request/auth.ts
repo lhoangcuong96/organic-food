@@ -1,5 +1,6 @@
 import { http } from "@/lib/http";
 import {
+  RefreshTokenResponseDataType,
   SignInRequestDataType,
   SignInResponseType,
   SignUpRequestDataType,
@@ -40,6 +41,29 @@ export const authApiRequest = {
     http.post<MessageResponseType>(
       "/auth/logout",
       {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ),
+  refreshTokenFromClientToNextServer: () =>
+    http.post<RefreshTokenResponseDataType>(
+      "/api/auth/refresh-token",
+      {},
+      {
+        baseUrl: "",
+      }
+    ),
+  refreshTokenFromNextServerToApiServer: (
+    accessToken: string,
+    refreshToken: string
+  ) =>
+    http.post<RefreshTokenResponseDataType>(
+      "/auth/refresh-token",
+      {
+        refreshToken,
+      },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

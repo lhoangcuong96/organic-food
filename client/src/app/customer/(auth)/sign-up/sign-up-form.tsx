@@ -37,7 +37,7 @@ export function SignUpForm() {
   const onSubmit = async (data: SignUpRequestDataType) => {
     setIsSubmitting(true);
     try {
-      const response = await authApiRequest.login(data);
+      const response = await authApiRequest.register(data);
       const accessToken = response.payload.data.accessToken;
       const refreshToken = response.payload.data.refreshToken;
       // Send token to client server to set cookie
@@ -48,6 +48,7 @@ export function SignUpForm() {
       setRefreshToken(refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
+      console.error(error);
       handleError({ error, setError });
     } finally {
       setIsSubmitting(false);

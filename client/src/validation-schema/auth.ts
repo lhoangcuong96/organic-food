@@ -38,8 +38,8 @@ export const signUpSchema = z
 
 export const signUpResponseType = z.object({
   data: z.object({
-    token: z.string(),
-    expiresAt: z.string(),
+    accessToken: z.string(),
+    refreshToken: z.string(),
     account: z.object({
       id: z.string(),
       fullname: z.string(),
@@ -57,6 +57,17 @@ export const setCookieSchema = z
   })
   .strict();
 
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string(),
+});
+export const refreshTokenResponseType = z.object({
+  data: z.object({
+    accessToken: z.string(),
+    refreshToken: z.string(),
+  }),
+  message: z.string(),
+});
+
 export type SignInRequestDataType = z.infer<typeof signInSchema>;
 export type SignInResponseType = z.infer<typeof signInResponseSchema>;
 
@@ -64,3 +75,8 @@ export type SignUpRequestDataType = z.infer<typeof signUpSchema>;
 export type SignUpResponseDataType = z.infer<typeof signUpResponseType>;
 
 export type SetCookieRequestDataType = z.infer<typeof setCookieSchema>;
+
+export type RefreshTokenRequestDataType = z.infer<typeof refreshTokenSchema>;
+export type RefreshTokenResponseDataType = z.infer<
+  typeof refreshTokenResponseType
+>;

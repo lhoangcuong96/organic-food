@@ -18,6 +18,8 @@ export const useHandleMessage = () => {
       setError?: UseFormSetError<any>;
       duration?: number;
     }) => {
+      console.log(typeof error);
+
       if (error instanceof EntityError && setError) {
         error.payload.errors.forEach((item) => {
           setError(item.field, {
@@ -26,7 +28,10 @@ export const useHandleMessage = () => {
           });
         });
       } else {
-        messageApi.error(error.payload.message, duration || 3);
+        messageApi.error(
+          error.payload?.message || "Lỗi không xác định",
+          duration || 3
+        );
       }
     },
     [messageApi]

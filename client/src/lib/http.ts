@@ -1,5 +1,6 @@
 import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
+import { redirect } from "next/navigation";
 
 export type HTTPPayload = {
   message: string;
@@ -9,7 +10,7 @@ export class HttpError extends Error {
   status: number;
   payload: HTTPPayload;
   constructor({ status, payload }: { status: number; payload: HTTPPayload }) {
-    super("Http Error");
+    super(payload.message || "http error");
     this.status = status;
     this.payload = payload;
   }
@@ -40,11 +41,36 @@ type CustomOption = RequestInit & {
   baseUrl?: string;
 };
 
+const handleLogout = async () => {
+  if (typeof window === "undefined") {
+    await fetch("/api/auth/sign-out", {
+      method: "POST",
+      body: JSON.stringify({
+        forceLogout: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    location.href = routePath.customer.signIn;
+  } else {
+    redirect(routePath.customer.signOut);
+  }
+};
 export const request = async <T>(
   method: "GET" | "POST" | "PUT" | "DELETE",
   url: string,
   option?: CustomOption | undefined
 ) => {
+  // Kiểm tra token còn hạn không nếu không thì sẽ refresh token
+  // Chỉ trên server side
+  // if (!window) {
+  //   const isExpired = await isTokenExpired();
+  //   if (isExpired) {
+  //     handleLogout();
+  //   }
+  // }
+
   const body = option?.body ? JSON.stringify(option.body) : undefined;
   const baseHeader = {
     "Content-Type": "application/json",
@@ -76,19 +102,9 @@ export const request = async <T>(
         Nếu là lỗi không có quyền truy cập thì logout(trên client)
         Vì là session đã hết hạn(xoá trên server nodejs) => chỉ gọi lên trên nextjs server để xoá cookie thôi
       */
-      if (typeof window !== "undefined") {
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          body: JSON.stringify({
-            forceLogout: true,
-          }),
-          headers: {
-            ...baseHeader,
-          },
-        });
-        location.href = routePath.customer.signIn;
-      }
+      handleLogout();
     } else {
+      console.log("----------------------", res);
       throw new HttpError(
         data as {
           status: number;

@@ -12,9 +12,10 @@ export default function Page() {
   const signOut = async () => {
     try {
       await authApiRequest.logoutFromClientToNextServer({ forceLogout: true });
-      router.replace(`${routePath.customer.signIn}?redirect=${pathName}`);
     } catch (error) {
       handleError({ error });
+    } finally {
+      router.replace(`${routePath.customer.signIn}?redirect=${pathName}`);
     }
   };
   useEffect(() => {

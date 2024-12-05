@@ -46,6 +46,7 @@ export function SignInForm() {
       setRefreshToken(refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
+      console.error(error);
       handleError({
         error,
         setError,

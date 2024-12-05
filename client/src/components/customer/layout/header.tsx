@@ -1,4 +1,3 @@
-import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
@@ -7,6 +6,8 @@ import { IoCartOutline, IoLocationOutline } from "react-icons/io5";
 import { RiLoginBoxLine } from "react-icons/ri";
 import DefaultButton from "../UI/button/default-button";
 import DefaultInput from "../UI/input/default-input";
+import { IoSearchOutline } from "react-icons/io5";
+import { FaUserCircle } from "react-icons/fa";
 
 import { routePath } from "@/constants/routes";
 import { Dropdown, MenuProps } from "antd";
@@ -23,7 +24,7 @@ const profileItems: MenuProps["items"] = [
   {
     label: <Link href={routePath.customer.signUp}>Đăng ký</Link>,
     key: routePath.customer.signUp,
-    icon: <UserOutlined className="!text-lg" />,
+    icon: <FaUserCircle className="!text-lg" />,
   },
   {
     label: <ButtonLogout></ButtonLogout>,
@@ -45,16 +46,17 @@ export default function Header() {
         </Link>
 
         <DefaultInput
-          className="max-w-[400px]"
+          wrapperClassName="max-w-[400px] w-full"
           suffix={
             <DefaultButton
-              icon={<SearchOutlined></SearchOutlined>}
+              className="w-10 h-10"
+              suffix={<IoSearchOutline className="!w-5 !h-5"></IoSearchOutline>}
             ></DefaultButton>
           }
         ></DefaultInput>
         <div className="flex flex-1 gap-3">
           <DefaultButton
-            icon={<BiSolidPhoneCall className="text-2xl"></BiSolidPhoneCall>}
+            suffix={<BiSolidPhoneCall className="!w-6 !h-6"></BiSolidPhoneCall>}
             className="!font-semibold"
           >
             0582134596
@@ -65,21 +67,23 @@ export default function Header() {
             arrow={true}
           >
             <DefaultButton
-              icon={<CgProfile className="text-2xl"></CgProfile>}
+              suffix={<CgProfile className="!w-6 !h-6"></CgProfile>}
               className="!font-semibold"
             ></DefaultButton>
           </Dropdown>
 
           <DefaultButton
-            icon={<IoLocationOutline className="text-2xl"></IoLocationOutline>}
+            suffix={
+              <IoLocationOutline className="!w-6 !h-6"></IoLocationOutline>
+            }
             className="!font-semibold"
           ></DefaultButton>
           <DefaultButton
-            icon={<FaRegHeart className="text-2xl"></FaRegHeart>}
+            suffix={<FaRegHeart className="!w-6 !h-6"></FaRegHeart>}
             className="!font-semibold"
           ></DefaultButton>
           <DefaultButton
-            icon={<IoCartOutline className="text-2xl"></IoCartOutline>}
+            suffix={<IoCartOutline className="!w-6 !h-6"></IoCartOutline>}
             className="!font-semibold"
           ></DefaultButton>
         </div>

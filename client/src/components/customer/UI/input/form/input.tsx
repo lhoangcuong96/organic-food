@@ -1,13 +1,8 @@
 /* eslint-disable react/display-name */
-import { Input, InputProps } from "antd";
-import { PasswordProps } from "antd/es/input";
 
-const FormInput = (
-  props: InputProps & {
-    className?: string;
-    error?: string;
-  }
-) => {
+import { Input } from "@/components/ui/input";
+
+const FormInput = (props: { className?: string; error?: string }) => {
   const { error, className, ...rest } = props;
   return (
     <Input
@@ -21,12 +16,7 @@ const FormInput = (
   );
 };
 
-FormInput.Password = (
-  props: PasswordProps & {
-    className?: string;
-    error?: string;
-  }
-) => {
+FormInput.Password = (props: { className?: string; error?: string }) => {
   const { error, className, ...rest } = props;
 
   return (

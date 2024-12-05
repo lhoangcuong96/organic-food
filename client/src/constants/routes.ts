@@ -13,4 +13,5 @@ export const routePath = {
     contact: "/customer/contact",
     membershipPolicy: "/customer/membership-policy",
   },
+  error: "/error",
 };

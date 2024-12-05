@@ -3,9 +3,12 @@ import { z } from "zod";
 // chỉ sử dụng ở client
 const envConfigSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string(),
+  NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN: z.string(),
 });
 const configProject = envConfigSchema.safeParse({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN:
+    process.env.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN,
 });
 
 if (configProject.error?.issues) {

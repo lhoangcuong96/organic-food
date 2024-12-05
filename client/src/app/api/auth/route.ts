@@ -1,6 +1,6 @@
 import { TokenType } from "@/constants/types";
-import { decodeJWT } from "@/utils";
 import { SetCookieRequestDataType } from "@/validation-schema/auth";
+import { jwtDecode } from "jwt-decode";
 
 type PayloadJWT = {
   iat: number; // thời gian tạo token(issue at)
@@ -24,10 +24,9 @@ export async function POST(request: Request) {
       }
     );
   }
-  console.log(accessToken, refreshToken);
   // lấy expired time từ token
-  const accessTokenPayload = decodeJWT<PayloadJWT>(accessToken);
-  const refreshTokenPayload = decodeJWT<PayloadJWT>(refreshToken);
+  const accessTokenPayload = jwtDecode<PayloadJWT>(accessToken);
+  const refreshTokenPayload = jwtDecode<PayloadJWT>(refreshToken);
 
   const accessTokenExpiredTime = new Date(
     accessTokenPayload.exp * 1000
