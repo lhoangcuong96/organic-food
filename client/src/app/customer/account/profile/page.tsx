@@ -29,7 +29,7 @@ export default async function Profile() {
 
   return (
     <div className="mx-auto">
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-gray-100 font-medium">
         <LeftSidebar profile={response.payload.data} />
         <ProfileContent profile={response.payload.data} />
       </div>

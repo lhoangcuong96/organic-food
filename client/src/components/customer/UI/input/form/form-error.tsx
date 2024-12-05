@@ -1,3 +1,11 @@
-export function FormError({ error }: { error: string }) {
-  return <p className="text-red-500 text-sm font-semibold">{error}</p>;
+export function FormError({
+  error,
+  className,
+}: {
+  error: string;
+  className?: string;
+}) {
+  return (
+    <p className={`text-red-500 text-sm font-semibold ${className}`}>{error}</p>
+  );
 }

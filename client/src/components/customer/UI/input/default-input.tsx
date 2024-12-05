@@ -4,10 +4,8 @@ import { ReactNode, Ref } from "react";
 export default function DefaultInput(
   props: React.ComponentProps<"input"> & {
     wrapperClassName?: string;
-    className?: string;
     suffix?: ReactNode;
     suffixClassName?: string;
-    placeholder?: string;
   }
 ) {
   const { suffix, className, suffixClassName, wrapperClassName, ref, ...rest } =

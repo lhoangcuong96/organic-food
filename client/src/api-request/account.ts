@@ -1,5 +1,8 @@
 import { http } from "@/lib/http";
-import { ProfileResponseDataType } from "@/validation-schema/account";
+import {
+  ProfileResponseDataType,
+  UpdateProfileDataType,
+} from "@/validation-schema/account";
 
 export const accountApiRequest = {
   getProfile: async (accessToken: string) =>
@@ -8,4 +11,11 @@ export const accountApiRequest = {
         Authorization: `Bearer ${accessToken}`,
       },
     }),
+  updateProfile: async (accessToken: string, data: UpdateProfileDataType) => {
+    return http.put<ProfileResponseDataType>("/account/me", data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  },
 };

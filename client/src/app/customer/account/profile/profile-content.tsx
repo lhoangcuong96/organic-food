@@ -1,19 +1,29 @@
 "use client";
 
-import { ProfileDataType, profileSchema } from "@/validation-schema/account";
+import {
+  ProfileDataType,
+  UpdateProfileDataType,
+  updateProfileSchema,
+} from "@/validation-schema/account";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { formatDate } from "date-fns";
 
+import DefaultButton from "@/components/customer/UI/button/default-button";
+import { LinkButton } from "@/components/customer/UI/button/link-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { LinkButton } from "@/components/customer/UI/button/link-button";
-import DefaultButton from "@/components/customer/UI/button/default-button";
+import { FormError } from "@/components/customer/UI/input/form/form-error";
+import { authApiRequest } from "@/api-request/auth";
+import { accountApiRequest } from "@/api-request/account";
+import { useAppContext } from "@/provider/app-provider";
+import { useHandleMessage } from "@/utils/hooks";
 
 export default function ProfileContent({
   profile,
@@ -21,6 +31,8 @@ export default function ProfileContent({
   profile: ProfileDataType;
 }) {
   const [avatar, setAvatar] = useState<string | null>(null);
+  const { accessToken } = useAppContext();
+  const { handleError, messageApi } = useHandleMessage();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,21 +47,33 @@ export default function ProfileContent({
       alert("File size must be less than 1MB");
     }
   };
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProfileDataType>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      ...profile,
-    },
-  });
+  const { control, register, handleSubmit, setError } =
+    useForm<UpdateProfileDataType>({
+      resolver: zodResolver(updateProfileSchema),
+      defaultValues: {
+        ...profile,
+        gender: profile.gender || "OTHER",
+        dateOfBirth: profile.dateOfBirth
+          ? formatDate(profile.dateOfBirth, "yyyy-MM-dd")
+          : "",
+      },
+    });
 
-  const onSubmit = (data: ProfileDataType) => {
-    console.log("Form values:", data);
-    // message.success("Profile updated successfully");
+  const onSubmit = async (data: UpdateProfileDataType) => {
+    try {
+      const dateOfBirth = new Date(data.dateOfBirth) as unknown as string;
+      const res = await accountApiRequest.updateProfile(accessToken, {
+        ...data,
+        dateOfBirth,
+      });
+      if (res.payload.data) {
+        messageApi.success("Cập nhật thông tin thành công");
+      } else {
+        messageApi.error("Cập nhật thông tin thất bại");
+      }
+    } catch (error) {
+      handleError({ error, setError });
+    }
   };
   return (
     <Card className="w-full mx-auto py-2 px-8 h-fit rounded-sm">
@@ -60,28 +84,41 @@ export default function ProfileContent({
         </p>
       </CardHeader>
       <CardContent>
-        <form className="flex flex-col md:flex-row gap-8">
+        <form
+          className="flex flex-col md:flex-row gap-8"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="flex-1 space-y-8">
-            <div className="space-y-2 flex flex-row items-center gap-2">
-              <Label htmlFor="email" className="w-32">
+            <div className="grid grid-cols-[100px_auto] gap-2">
+              <Label htmlFor="fullname" className="mt-2">
                 Họ và tên
               </Label>
-              <Input id="fullname" {...register("fullname")} />
+              <Controller
+                name="fullname"
+                control={control}
+                render={({ field, fieldState }) => {
+                  return (
+                    <div className="grid w-full">
+                      <Input
+                        error={fieldState.error?.message}
+                        {...field}
+                        value={field.value || ""}
+                        className="block"
+                      />
+                      {fieldState.error?.message && (
+                        <FormError error={fieldState.error?.message} />
+                      )}
+                    </div>
+                  );
+                }}
+              />
             </div>
-            <div className="space-y-2 flex flex-row items-center gap-2">
-              <Label htmlFor="email" className="w-32">
+            <div className="grid grid-cols-[100px_auto] items-center gap-2">
+              <Label htmlFor="email" className="">
                 Email
               </Label>
               <div className="flex items-center gap-2 !m-0 w-full">
                 <p>{profile.email}</p>
-                <Input
-                  id="email"
-                  type="email"
-                  readOnly
-                  className="hidden"
-                  disabled
-                  {...register("email")}
-                />
                 <LinkButton
                   variant="link"
                   className="text-primary whitespace-nowrap"
@@ -91,20 +128,12 @@ export default function ProfileContent({
               </div>
             </div>
 
-            <div className="space-y-2 flex flex-row items-center gap-2">
-              <Label htmlFor="phone" className="w-32">
+            <div className="grid grid-cols-[100px_auto] items-center gap-2">
+              <Label htmlFor="phone" className="">
                 Số điện thoại
               </Label>
               <div className="flex items-center gap-2 !m-0 w-full">
                 <p>{profile.phoneNumber}</p>
-                <Input
-                  id="phone"
-                  value="*********96"
-                  readOnly
-                  className="hidden"
-                  disabled
-                  {...register("phoneNumber")}
-                />
                 <LinkButton
                   variant="link"
                   className="text-primary whitespace-nowrap"
@@ -114,11 +143,11 @@ export default function ProfileContent({
               </div>
             </div>
 
-            <div className="space-y-2 flex flex-row items-center gap-2">
+            <div className="grid grid-cols-[100px_auto] items-center gap-2">
               <Label className="w-28">Giới tính</Label>
               <RadioGroup
-                defaultValue={profile.gender || "OTHER"}
                 className="flex gap-4"
+                defaultValue={profile.gender || "OTHER"}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
@@ -147,16 +176,34 @@ export default function ProfileContent({
               </RadioGroup>
             </div>
 
-            <div className="space-y-2 flex flex-row items-center gap-2">
-              <Label htmlFor="birthday" className="w-32">
+            <div className="grid grid-cols-[100px_auto] gap-2">
+              <Label htmlFor="birthday" className="mt-2">
                 Ngày sinh
               </Label>
               <div className="flex items-center gap-2 !m-0 w-full">
-                <Input
-                  id="birthday"
-                  type="date"
-                  defaultValue="1996-01-01"
-                  className="w-fit"
+                <Controller
+                  name="dateOfBirth"
+                  control={control}
+                  render={({ field, fieldState }) => {
+                    return (
+                      <div className="grid w-full">
+                        <Input
+                          id="birthday"
+                          type="date"
+                          className="!w-fit"
+                          error={fieldState.error?.message}
+                          {...field}
+                          value={field.value || ""}
+                        />
+                        {fieldState.error?.message && (
+                          <FormError
+                            error={fieldState.error?.message}
+                            className="mt-[4px]"
+                          />
+                        )}
+                      </div>
+                    );
+                  }}
                 />
               </div>
             </div>
