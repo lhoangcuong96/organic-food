@@ -34,7 +34,13 @@ export const registerController = async (body: RegisterBodyType) => {
     })
 
     const { accessToken, refreshToken } = createPairTokens({
-      userId: account.id
+      account: {
+        id: account.id,
+        email: account.email,
+        phoneNumber: account.phoneNumber,
+        fullname: account.fullname,
+        avatar: account.avatar
+      }
     })
 
     const session = await prisma.session.create({
@@ -79,6 +85,7 @@ export const loginController = async (body: LoginBodyType) => {
       email: body.email
     }
   })
+  console.log(account)
   if (!account) {
     throw new EntityError([{ field: 'email', message: 'Email không tồn tại' }])
   }
@@ -87,7 +94,13 @@ export const loginController = async (body: LoginBodyType) => {
     throw new EntityError([{ field: 'password', message: 'Email hoặc mật khẩu không đúng' }])
   }
   const { accessToken, refreshToken } = createPairTokens({
-    userId: account.id
+    account: {
+      id: account.id,
+      email: account.email,
+      phoneNumber: account.phoneNumber,
+      fullname: account.fullname,
+      avatar: account.avatar
+    }
   })
   const session = await prisma.session.create({
     data: {
@@ -107,13 +120,22 @@ export const refreshTokenController = async (accessToken: string, refreshToken: 
     where: {
       refreshToken,
       accessToken
+    },
+    include: {
+      account: true
     }
   })
   if (!session) {
     throw new StatusError({ message: 'Session không tồn tại', status: 404 })
   }
   const { accessToken: newAccessToken, refreshToken: newRefreshToken } = createPairTokens({
-    userId: session.accountId
+    account: {
+      id: session.account.id,
+      email: session.account.email,
+      phoneNumber: session.account.phoneNumber,
+      fullname: session.account.fullname,
+      avatar: session.account.avatar
+    }
   })
   const newSession = await prisma.session.update({
     where: {

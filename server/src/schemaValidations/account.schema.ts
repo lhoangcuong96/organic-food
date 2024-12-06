@@ -8,7 +8,8 @@ export const AccountRes = z
       email: z.string(),
       phoneNumber: z.string(),
       gender: z.enum(['MALE', 'FEMALE', 'OTHER']).nullable().optional(),
-      dateOfBirth: z.date().nullable().optional()
+      dateOfBirth: z.date().nullable().optional(),
+      avatar: z.string().nullable().optional()
     }),
     message: z.string()
   })

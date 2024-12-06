@@ -1,5 +1,6 @@
 import envConfig from '@/config'
 import { TokenPayload } from '@/types/jwt.types'
+import { Account } from '@prisma/client'
 import { createSigner, createVerifier } from 'fast-jwt'
 import ms from 'ms'
 
@@ -19,7 +20,7 @@ const refreshTokenSigner = createSigner({
   expiresIn: ms(envConfig.REFRESH_TOKEN_EXPIRES_IN)
 })
 
-export const createPairTokens = (payload: Pick<TokenPayload, 'userId'>) => {
+export const createPairTokens = (payload: { account: Partial<Account> }) => {
   const accessToken = accessTokenSigner(payload)
   const refreshToken = refreshTokenSigner(payload)
   return { accessToken, refreshToken }

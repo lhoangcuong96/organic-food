@@ -65,9 +65,11 @@ This document outlines of the Nextjs.
 - Nếu 1 unexpected error xuất hiện(Error không được catched)
     - Client: sẽ bị redirect qua trang error.tsx
     - Server: sẽ bị redirect qua trang 500.tsx<br/>
-#### Lưu ý là nếu lỗi xảy ra trong layout thì 2 page này đều sẽ không catch được lỗi
-#### Để catch được error ở trong layout phải define ra global-error.tsx và sử dụng cấu trúc html khác
-##### error.tsx, global-error.tsx hay 500 chỉ được sử dụng trên production thôi 
+#### Lưu ý
+-Lưu ý là nếu lỗi xảy ra trong layout thì 2 page này đều sẽ không catch được lỗi
+- Để catch được error ở trong layout phải define ra global-error.tsx và sử dụng cấu trúc html khác
+- error.tsx, global-error.tsx hay 500 chỉ được sử dụng trên production thôi 
+- redirect không được gọi trong try catch block, vì nó sẽ throw error nếu catch thì nextjs không catch được và không redirect
 
 ## Flow Steps
 Detail each step of the flow in the application. Use subheadings for each major step.

@@ -13,6 +13,7 @@ export const uploadImage = async (data: MultipartFile) => {
   const id = uniqueId + ext
   const filepath = path.resolve(envConfig.UPLOAD_FOLDER, id)
   await pump(data.file, fs.createWriteStream(filepath))
+  // Kiểm tra xem file có bị cắt ngắn (truncated) hay không. Điều này thường xảy ra nếu file vượt quá kích thước tối đa cho phép (ví dụ: 10MB).
   if (data.file.truncated) {
     // Xóa file nếu file bị trucated
     await fs.unlinkSync(filepath)
