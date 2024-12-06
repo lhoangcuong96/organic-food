@@ -8,6 +8,7 @@ export const profileSchema = z.object({
   phoneNumber: z.string(),
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).nullable().optional(),
   dateOfBirth: z.string().nullable().optional(),
+  avatar: z.string().nullable().optional(),
 });
 
 export const profileResponseSchema = z.object({
@@ -21,6 +22,7 @@ export const updateProfileSchema = z.object({
     message: "Ngày sinh không hợp lệ",
   }),
   gender: z.enum(["MALE", "FEMALE", "OTHER"]),
+  avatar: z.string().nullable().optional(),
 });
 
 export type ProfileDataType = z.infer<typeof profileSchema>;

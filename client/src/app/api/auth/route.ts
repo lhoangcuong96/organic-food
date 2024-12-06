@@ -9,6 +9,7 @@ type PayloadJWT = {
   userId: string;
 };
 
+// set cookie trả về cho client
 export async function POST(request: Request) {
   const res: SetCookieRequestDataType = await request.json();
   const accessToken = res[TokenType.AccessToken];

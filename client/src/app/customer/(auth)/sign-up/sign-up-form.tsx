@@ -5,7 +5,7 @@ import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import { useAppContext } from "@/provider/app-provider";
+import sessionStore from "@/helper/session";
 import { useHandleMessage } from "@/utils/hooks";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +19,6 @@ import { Controller, useForm } from "react-hook-form";
 export function SignUpForm() {
   const [messageAPI, contextHolder] = useMessage();
   const { handleError } = useHandleMessage();
-  const { setAccessToken, setRefreshToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -44,8 +43,7 @@ export function SignUpForm() {
       await authApiRequest.setToken(accessToken, refreshToken);
 
       messageAPI.success("Đăng kí thành công");
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+      sessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
       console.error(error);

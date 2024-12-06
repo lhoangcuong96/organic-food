@@ -7,3 +7,10 @@ export const MessageResponse = z
   .strict();
 
 export type MessageResponseType = z.infer<typeof MessageResponse>;
+
+export const UploadResponse = z.object({
+  data: z.string(),
+  message: z.string(),
+});
+
+export type UploadResponseType = z.infer<typeof UploadResponse>;

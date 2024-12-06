@@ -11,16 +11,15 @@ import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import { useAppContext } from "@/provider/app-provider";
 import { useHandleMessage } from "@/utils/hooks";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
 import { useRouter } from "next/navigation";
+import sessionStore from "@/helper/session";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
   const { handleError } = useHandleMessage();
-  const { setAccessToken, setRefreshToken } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -42,8 +41,7 @@ export function SignInForm() {
       // Send token to client server to set cookie
       await authApiRequest.setToken(accessToken, refreshToken);
       messageAPI.success("Đăng nhập thành công");
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+      sessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
     } catch (error) {
       console.error(error);

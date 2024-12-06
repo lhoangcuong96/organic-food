@@ -1,5 +1,7 @@
 import { routePath } from "@/constants/routes";
+import { TokenType } from "@/constants/types";
 import envConfig from "@/envConfig";
+import sessionStore from "@/helper/session";
 import { redirect } from "next/navigation";
 
 export type HTTPPayload = {
@@ -41,22 +43,6 @@ type CustomOption = RequestInit & {
   baseUrl?: string;
 };
 
-const handleLogout = async () => {
-  if (typeof window === "undefined") {
-    await fetch("/api/auth/sign-out", {
-      method: "POST",
-      body: JSON.stringify({
-        forceLogout: true,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    location.href = routePath.customer.signIn;
-  } else {
-    redirect(routePath.customer.signOut);
-  }
-};
 export const request = async <T>(
   method: "GET" | "POST" | "PUT" | "DELETE",
   url: string,
@@ -71,9 +57,26 @@ export const request = async <T>(
   //   }
   // }
 
-  const body = option?.body ? JSON.stringify(option.body) : undefined;
+  const isFormData = option?.body instanceof FormData;
+  const body = option?.body
+    ? isFormData
+      ? option.body // nếu là form data thì không cần parse
+      : JSON.stringify(option.body)
+    : undefined;
+
+  let accessToken = null;
+
+  if (typeof window !== "undefined") {
+    accessToken = sessionStore.getAccessToken();
+    console.log(accessToken);
+  } else {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    accessToken = cookieStore.get(TokenType.AccessToken)?.value;
+  }
   const baseHeader = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    Authorization: accessToken ? `Bearer ${accessToken}` : "",
   };
   const baseUrl = option?.baseUrl ?? envConfig?.NEXT_PUBLIC_API_URL;
 
@@ -98,13 +101,32 @@ export const request = async <T>(
     if (res.status === 422) {
       throw new EntityError(data);
     } else if (res.status === 401) {
+      console.log(401);
       /*
         Nếu là lỗi không có quyền truy cập thì logout(trên client)
         Vì là session đã hết hạn(xoá trên server nodejs) => chỉ gọi lên trên nextjs server để xoá cookie thôi
       */
-      handleLogout();
+      if (typeof window !== "undefined") {
+        try {
+          await fetch("/api/auth/sign-out", {
+            method: "POST",
+            body: JSON.stringify({
+              forceLogout: true,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        } catch (error) {
+          throw error;
+        } finally {
+          // sessionStore.clearTokens();
+          // location.href = routePath.customer.signIn;
+        }
+      } else {
+        await redirect(routePath.customer.signOut);
+      }
     } else {
-      console.log("----------------------", res);
       throw new HttpError(
         data as {
           status: number;

@@ -1,17 +1,21 @@
 "use client";
+"use client";
 
+import { ProfileDataType } from "@/validation-schema/account";
 import { useState } from "react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import {
-  Home,
-  User,
-  ShoppingBag,
   Bell,
-  CreditCard,
   ChevronDown,
   ChevronUp,
+  CreditCard,
+  Home,
+  ShoppingBag,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ProfileDataType } from "@/validation-schema/account";
 
 type MenuItem = {
   icon: React.ElementType;
@@ -46,9 +50,12 @@ export function LeftSidebar({ profile }: { profile: ProfileDataType }) {
   return (
     <div className="w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">
       <div className="flex items-center space-x-3 mb-8">
-        <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center text-white text-xl font-bold">
-          C
-        </div>
+        <Avatar className="w-12 h-12 relative">
+          <AvatarImage src={profile.avatar || ""} className="object-cover" />
+          <AvatarFallback>
+            <User className="w-12 h-12" />
+          </AvatarFallback>
+        </Avatar>
         <div>
           <p className="font-semibold">{profile.fullname}</p>
           <p className="text-sm text-gray-500">Sửa hồ sơ</p>

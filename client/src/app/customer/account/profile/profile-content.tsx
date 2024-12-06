@@ -6,45 +6,42 @@ import {
   updateProfileSchema,
 } from "@/validation-schema/account";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatDate } from "date-fns";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { formatDate } from "date-fns";
 
+import { accountApiRequest } from "@/api-request/account";
+import { mediaRequestApi } from "@/api-request/media";
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import { LinkButton } from "@/components/customer/UI/button/link-button";
+import { FormError } from "@/components/customer/UI/input/form/form-error";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User } from "lucide-react";
-import { FormError } from "@/components/customer/UI/input/form/form-error";
-import { authApiRequest } from "@/api-request/auth";
-import { accountApiRequest } from "@/api-request/account";
-import { useAppContext } from "@/provider/app-provider";
 import { useHandleMessage } from "@/utils/hooks";
+import { User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProfileContent({
   profile,
 }: {
   profile: ProfileDataType;
 }) {
-  const [avatar, setAvatar] = useState<string | null>(null);
-  const { accessToken } = useAppContext();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { handleError, messageApi } = useHandleMessage();
+  const router = useRouter();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.size <= 1024 * 1024) {
-      // 1MB limit
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatar(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (file && file.size <= 10 * 1024 * 1024) {
+      // 10MB limit
+      setAvatarFile(file);
     } else {
-      alert("File size must be less than 1MB");
+      alert("File size must be less than 10MB");
     }
   };
   const { control, register, handleSubmit, setError } =
@@ -61,18 +58,33 @@ export default function ProfileContent({
 
   const onSubmit = async (data: UpdateProfileDataType) => {
     try {
+      setIsLoading(true);
+      let avatar = "";
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append("file", avatarFile);
+        formData.append("filename", avatarFile.name);
+        const resp = await mediaRequestApi.uploadImage(formData);
+        if (resp.payload.data) {
+          avatar = resp.payload.data;
+        }
+      }
       const dateOfBirth = new Date(data.dateOfBirth) as unknown as string;
-      const res = await accountApiRequest.updateProfile(accessToken, {
+      const res = await accountApiRequest.updateProfile({
         ...data,
         dateOfBirth,
+        avatar,
       });
       if (res.payload.data) {
         messageApi.success("Cập nhật thông tin thành công");
+        router.refresh();
       } else {
         messageApi.error("Cập nhật thông tin thất bại");
       }
     } catch (error) {
       handleError({ error, setError });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -208,33 +220,48 @@ export default function ProfileContent({
               </div>
             </div>
 
-            <DefaultButton className="mt-6">Lưu</DefaultButton>
+            <DefaultButton className="mt-6" disabled={isLoading}>
+              {isLoading ? (
+                <p className="loading-animation">Đang cập nhật</p>
+              ) : (
+                <p>Cập nhật thông tin</p>
+              )}
+            </DefaultButton>
           </div>
 
           <div className="w-full md:w-64 flex flex-col items-center gap-4">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src={avatar || ""} />
+            <Avatar className="w-24 h-24 relative">
+              <AvatarImage
+                src={
+                  avatarFile
+                    ? URL.createObjectURL(avatarFile)
+                    : profile.avatar || ""
+                }
+                className="object-cover"
+              />
               <AvatarFallback>
                 <User className="w-12 h-12" />
               </AvatarFallback>
             </Avatar>
             <div className="text-center">
               <Button
+                type="button"
                 variant="outline"
                 className="relative"
+                disabled={isLoading}
                 onClick={() =>
                   document.getElementById("avatar-upload")?.click()
                 }
               >
                 Chọn Ảnh
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  className="hidden"
-                  accept="image/jpeg,image/png"
-                  onChange={handleAvatarChange}
-                />
               </Button>
+              <input
+                type="file"
+                onChange={handleAvatarChange}
+                accept="image/*"
+                id="avatar-upload"
+                className="hidden"
+              />
               <p className="text-sm text-muted-foreground mt-2">
                 Dụng lượng file tối đa 1 MB
               </p>

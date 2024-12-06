@@ -14,8 +14,11 @@ import { Dropdown, MenuProps } from "antd";
 import Link from "next/link";
 import Menu from "./menu";
 import { ButtonLogout } from "../UI/button/button-logout";
+import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
+import { Account } from "@prisma/client";
 
-const profileItems: MenuProps["items"] = [
+const unLoggedProfileItems: MenuProps["items"] = [
   {
     label: <Link href={routePath.customer.signIn}>Đăng nhập</Link>,
     key: routePath.customer.signIn,
@@ -26,12 +29,28 @@ const profileItems: MenuProps["items"] = [
     key: routePath.customer.signUp,
     icon: <FaUserCircle className="!text-lg" />,
   },
+];
+const loggedProfileItems: MenuProps["items"] = [
   {
-    label: <ButtonLogout></ButtonLogout>,
-    key: "logout",
+    label: <Link href={routePath.customer.account.profile}>Tài khoản</Link>,
+    key: routePath.customer.signIn,
+    icon: <CgProfile className="!text-lg" />,
+  },
+  {
+    label: <Link href={routePath.customer.signOut}>Đăng xuất</Link>,
+    key: routePath.customer.signOut,
+    icon: <RiLoginBoxLine className="!text-lg" />,
   },
 ];
-export default function Header() {
+export default async function Header() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  let account = null;
+  if (accessToken) {
+    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
+    console.log(tokenPayload);
+    account = tokenPayload?.account;
+  }
   return (
     <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50">
       <div className="grid grid-cols-[max-content_auto_max-content] items-center gap-4">
@@ -39,7 +58,7 @@ export default function Header() {
           <Image
             src="/images/logo.webp"
             width="220"
-            height="27"
+            height="63"
             alt="logo"
             className="pointer"
           ></Image>
@@ -62,7 +81,9 @@ export default function Header() {
             0582134596
           </DefaultButton>
           <Dropdown
-            menu={{ items: profileItems }}
+            menu={{
+              items: account ? loggedProfileItems : unLoggedProfileItems,
+            }}
             placement="bottomCenter"
             arrow={true}
           >

@@ -20,13 +20,13 @@ export default async function Profile() {
   if (!accessToken) {
     return redirect(routePath.customer.home);
   }
-  const response = await accountApiRequest.getProfile(accessToken.value);
+  const response = await accountApiRequest.getProfile();
   if (!response.payload.data) {
     return (
       <p className="items-center justify-center">{response.payload.message}</p>
     );
   }
-
+  console.log(response.payload.data);
   return (
     <div className="mx-auto">
       <div className="flex min-h-screen bg-gray-100 font-medium">

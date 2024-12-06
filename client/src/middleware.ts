@@ -7,7 +7,7 @@ import { isTokenExpired } from "./utils/auth";
 import { authApiRequest } from "./api-request/auth";
 import { routePath } from "./constants/routes";
 
-const privatePaths = ["/customer/me"];
+const privatePaths = ["/customer/account/profile"];
 const publicPaths = ["/customer/sign-up", "/customer/sign-in"];
 
 export async function middleware(request: NextRequest) {
