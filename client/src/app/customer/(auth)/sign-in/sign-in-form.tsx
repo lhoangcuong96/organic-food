@@ -43,6 +43,7 @@ export function SignInForm() {
       messageAPI.success("Đăng nhập thành công");
       sessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
+      router.refresh();
     } catch (error) {
       console.error(error);
       handleError({

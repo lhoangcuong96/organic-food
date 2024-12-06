@@ -4,7 +4,6 @@ import { TokenType } from "@/constants/types";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { LeftSidebar } from "./left-sidebar";
 import ProfileContent from "./profile-content";
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -26,13 +25,5 @@ export default async function Profile() {
       <p className="items-center justify-center">{response.payload.message}</p>
     );
   }
-  console.log(response.payload.data);
-  return (
-    <div className="mx-auto">
-      <div className="flex min-h-screen bg-gray-100 font-medium">
-        <LeftSidebar profile={response.payload.data} />
-        <ProfileContent profile={response.payload.data} />
-      </div>
-    </div>
-  );
+  return <ProfileContent profile={response.payload.data} />;
 }

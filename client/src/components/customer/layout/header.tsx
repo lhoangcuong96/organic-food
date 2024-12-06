@@ -1,22 +1,25 @@
 import Image from "next/image";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { FaRegHeart } from "react-icons/fa";
-import { IoCartOutline, IoLocationOutline } from "react-icons/io5";
+import { FaRegHeart, FaUserCircle } from "react-icons/fa";
+import {
+  IoCartOutline,
+  IoLocationOutline,
+  IoSearchOutline,
+} from "react-icons/io5";
 import { RiLoginBoxLine } from "react-icons/ri";
 import DefaultButton from "../UI/button/default-button";
 import DefaultInput from "../UI/input/default-input";
-import { IoSearchOutline } from "react-icons/io5";
-import { FaUserCircle } from "react-icons/fa";
 
 import { routePath } from "@/constants/routes";
-import { Dropdown, MenuProps } from "antd";
-import Link from "next/link";
-import Menu from "./menu";
-import { ButtonLogout } from "../UI/button/button-logout";
-import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
 import { Account } from "@prisma/client";
+import { Dropdown, MenuProps } from "antd";
+import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { MdOutlinePassword } from "react-icons/md";
+
+import Menu from "./menu";
 
 const unLoggedProfileItems: MenuProps["items"] = [
   {
@@ -37,6 +40,13 @@ const loggedProfileItems: MenuProps["items"] = [
     icon: <CgProfile className="!text-lg" />,
   },
   {
+    label: (
+      <Link href={routePath.customer.account.profile}>Thay đổi mật khẩu</Link>
+    ),
+    key: routePath.customer.account.changePassword,
+    icon: <MdOutlinePassword className="!text-lg" />,
+  },
+  {
     label: <Link href={routePath.customer.signOut}>Đăng xuất</Link>,
     key: routePath.customer.signOut,
     icon: <RiLoginBoxLine className="!text-lg" />,
@@ -48,7 +58,6 @@ export default async function Header() {
   let account = null;
   if (accessToken) {
     const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
-    console.log(tokenPayload);
     account = tokenPayload?.account;
   }
   return (
@@ -66,9 +75,10 @@ export default async function Header() {
 
         <DefaultInput
           wrapperClassName="max-w-[400px] w-full"
+          className="!h-10"
           suffix={
             <DefaultButton
-              className="w-10 h-10"
+              className="!w-8 !h-8"
               suffix={<IoSearchOutline className="!w-5 !h-5"></IoSearchOutline>}
             ></DefaultButton>
           }

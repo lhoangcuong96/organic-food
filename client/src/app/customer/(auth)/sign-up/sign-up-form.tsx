@@ -45,6 +45,7 @@ export function SignUpForm() {
       messageAPI.success("Đăng kí thành công");
       sessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
+      router.refresh();
     } catch (error) {
       console.error(error);
       handleError({ error, setError });

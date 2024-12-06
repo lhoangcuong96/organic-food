@@ -24,6 +24,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useHandleMessage } from "@/utils/hooks";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Link } from "@/components/ui/link";
+import { routePath } from "@/constants/routes";
 
 export default function ProfileContent({
   profile,
@@ -129,14 +131,11 @@ export default function ProfileContent({
               <Label htmlFor="email" className="">
                 Email
               </Label>
-              <div className="flex items-center gap-2 !m-0 w-full">
+              <div className="flex items-center gap-4 !m-0 w-full">
                 <p>{profile.email}</p>
-                <LinkButton
-                  variant="link"
-                  className="text-primary whitespace-nowrap"
-                >
+                <Link href={routePath.customer.account.changePassword}>
                   Thay Đổi
-                </LinkButton>
+                </Link>
               </div>
             </div>
 
@@ -144,14 +143,22 @@ export default function ProfileContent({
               <Label htmlFor="phone" className="">
                 Số điện thoại
               </Label>
-              <div className="flex items-center gap-2 !m-0 w-full">
+              <div className="flex items-center gap-4 !m-0 w-full">
                 <p>{profile.phoneNumber}</p>
-                <LinkButton
-                  variant="link"
-                  className="text-primary whitespace-nowrap"
-                >
+                <Link href={routePath.customer.account.changePassword}>
                   Thay Đổi
-                </LinkButton>
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-[100px_auto] items-center gap-2">
+              <Label htmlFor="password" className="">
+                Mật khẩu
+              </Label>
+              <div className="flex items-center gap-4 !m-0 w-full">
+                <p>*******************</p>
+                <Link href={routePath.customer.account.changePassword}>
+                  Thay Đổi
+                </Link>
               </div>
             </div>
 
@@ -231,17 +238,20 @@ export default function ProfileContent({
 
           <div className="w-full md:w-64 flex flex-col items-center gap-4">
             <Avatar className="w-24 h-24 relative">
-              <AvatarImage
-                src={
-                  avatarFile
-                    ? URL.createObjectURL(avatarFile)
-                    : profile.avatar || ""
-                }
-                className="object-cover"
-              />
-              <AvatarFallback>
-                <User className="w-12 h-12" />
-              </AvatarFallback>
+              {avatarFile || profile.avatar ? (
+                <AvatarImage
+                  src={
+                    avatarFile
+                      ? URL.createObjectURL(avatarFile)
+                      : profile.avatar || ""
+                  }
+                  className="object-cover"
+                />
+              ) : (
+                <AvatarFallback>
+                  <User className="w-12 h-12" />
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="text-center">
               <Button

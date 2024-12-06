@@ -8,12 +8,24 @@ import type { MessageInstance } from "antd/es/message/interface";
 import useMessage from "antd/es/message/useMessage";
 import sessionStore from "@/helper/session";
 import ms from "ms";
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import {
+  createContext,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+  Dispatch,
+} from "react";
 
 const AppContext = createContext<{
   messageApi: MessageInstance;
+  account?: Partial<Account>;
+  setAccount: Dispatch<SetStateAction<Partial<Account> | undefined>>;
 }>({
   messageApi: {} as MessageInstance,
+  account: undefined,
+  setAccount: () => {},
 });
 
 export const useAppContext = () => {
@@ -26,13 +38,15 @@ export const useAppContext = () => {
 
 export default function AppProvider({
   children,
+  initialAccount,
 }: {
   children: ReactNode;
-  user?: Partial<Account>;
-  initialAccessToken?: string;
-  initialRefreshToken?: string;
+  initialAccount?: Partial<Account>;
 }) {
   const [messageApi, contextHolder] = useMessage();
+  const [account, setAccount] = useState<Partial<Account> | undefined>(
+    initialAccount
+  );
 
   // Kiểm tra ở client(server thì ở trong http.ts)
   const callApiRefreshToken = async () => {
@@ -61,6 +75,8 @@ export default function AppProvider({
     <AppContext.Provider
       value={{
         messageApi,
+        account,
+        setAccount,
       }}
     >
       {contextHolder}

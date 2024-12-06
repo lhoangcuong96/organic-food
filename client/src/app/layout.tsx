@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 
 import "swiper/css";
 import "./globals.css";
+import { jwtDecode } from "jwt-decode";
+import { Account } from "@prisma/client";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -28,6 +30,13 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
   const refreshToken = cookieStore.get("refreshToken");
+  let account;
+  if (accessToken) {
+    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(
+      accessToken.value
+    );
+    account = tokenPayload?.account;
+  }
   return (
     <html lang="en">
       <head>
@@ -36,10 +45,7 @@ export default async function RootLayout({
       <body
         className={`${quicksand.className} antialiased bg-white text-gray-700`}
       >
-        <AppProvider
-          initialAccessToken={accessToken?.value}
-          initialRefreshToken={refreshToken?.value}
-        >
+        <AppProvider initialAccount={account}>
           <AntdRegistry>{children}</AntdRegistry>
         </AppProvider>
       </body>

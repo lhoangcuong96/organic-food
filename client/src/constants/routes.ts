@@ -16,10 +16,14 @@ export const routePath = {
     // private routes
     account: {
       profile: "/customer/account/profile",
-      order: "/customer/account/order",
-      wishList: "/customer/account/wish-list",
+      orders: "/customer/account/orders",
       address: "/customer/account/address",
+      vouchers: "/customer/account/vouchers",
       changePassword: "/customer/account/change-password",
+      changePhoneNumber: "/customer/account/change-phone-number",
+      changeEmail: "/customer/account/change-email",
+      notifications: "/customer/account/notifications",
+      bank: "/customer/account/bank",
     },
   },
   error: "/error",
