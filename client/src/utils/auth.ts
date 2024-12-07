@@ -1,5 +1,3 @@
-"use sever";
-
 import envConfig from "@/envConfig";
 import { differenceInSeconds } from "date-fns";
 import { jwtDecode } from "jwt-decode";

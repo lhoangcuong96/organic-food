@@ -85,17 +85,17 @@ export function FeaturedCategories({
         </h3>
         <div className="flex flex-row items-center justify-center">
           <DefaultButton
-            className="!h-8 !min-w-8 "
-            icon={
-              <MdOutlineNavigateBefore className="text-xl"></MdOutlineNavigateBefore>
+            className="!h-8 !w-8 !p-0 !min-w-8"
+            suffix={
+              <MdOutlineNavigateBefore className="!h-5 !w-5"></MdOutlineNavigateBefore>
             }
             disabled={state.isDisabledPrev}
             onClick={() => swiperRef.current?.swiper.slidePrev()}
           ></DefaultButton>
           <DefaultButton
-            className="!h-8 !min-w-8 "
-            icon={
-              <MdOutlineNavigateNext className="text-xl"></MdOutlineNavigateNext>
+            className="!h-8 !w-8 !p-0 !min-w-8"
+            suffix={
+              <MdOutlineNavigateNext className="!h-5 !w-5"></MdOutlineNavigateNext>
             }
             disabled={state.isDisabledNext}
             onClick={() => swiperRef.current?.swiper.slideNext()}

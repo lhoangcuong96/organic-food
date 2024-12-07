@@ -1,12 +1,14 @@
 "use client";
 
-import { ProfileDataType } from "@/validation-schema/account";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 
+import { Link } from "@/components/ui/link";
+import { routePath } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { useAppContext } from "@/provider/app-provider";
 import {
   Bell,
   ChevronDown,
@@ -15,11 +17,8 @@ import {
   Home,
   ShoppingBag,
 } from "lucide-react";
-import { routePath } from "@/constants/routes";
-import { Link } from "@/components/ui/link";
 import { RiEdit2Line } from "react-icons/ri";
-import { Account } from "@prisma/client";
-import { useAppContext } from "@/provider/app-provider";
+import { useRouter } from "next/navigation";
 
 type MenuItem = {
   icon: React.ElementType;
@@ -87,10 +86,18 @@ const menuItems: MenuItem[] = [
 
 export function LeftSidebar() {
   const { account } = useAppContext();
+  const router = useRouter();
   const [expandedItem, setExpandedItem] = useState<string | null>(
-    menuItems.find((item) => window.location.pathname.includes(item.key))
-      ?.label || null
+    menuItems.find((item) => location.pathname.includes(item.key))?.label ||
+      null
   );
+
+  useEffect(() => {
+    setExpandedItem(
+      menuItems.find((item) => location.pathname.includes(item.key))?.label ||
+        null
+    );
+  }, [router]);
 
   return (
     <div className="w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">

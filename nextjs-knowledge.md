@@ -8,6 +8,7 @@ This document outlines of the Nextjs.
 1. [Rendering](#rendering)
     1. [Client Component](#client-component)
     2. [Server Component](#server-component)
+    3. [Hydration](#hydration)
 2. [Error handling](#error-handling)
 3. [Flow Steps](#flow-steps)
 4. [Conclusion](#conclusion)
@@ -40,11 +41,36 @@ This document outlines of the Nextjs.
 - Search engine optimization(SEO) and social network shareability
 - <u>**Streaming: (Cần xem)**</u>
 
+### Hydration
+- Hydration chính là quá trình làm cho client component có tể interactive
+    - Đầu tiên Nextjs sẽ renders Server Component vào trong kiểu dữ liệu đặc biệt gọi là RSC(React server component payload)
+    - Sau đó sử dụng RSC và phần "javascript hưỡng dẫn Client component" để render ra phần html trên server
+    - Sau đó dưới client sẽ render phần HTML preview cho trang này
+    - RSC(React server component payload) sẽ được sử dụng để điều hoà Server và Client component và cập nhật lại DOM 
+    - Sau đó phần "javascript hưỡng dẫn Client component" hydrate làm cho client component có thể tương tác
 
-
-
-
-
+### PPR(Partial prerendering)
+- Hay còn gọi là static side generator
+- PPR cho phép gửi prerender content(dữ liệu tĩnh k thay đổi theo thời gian) ngay lập tức(được build trong build time)
+- Ngay khi đang render nội dung tĩnh đó PPR sẽ streaming những phần content động(thay đổi tuỳ vào điều kiện) ngay lập tức đảm bảo nó chạy trước khi client js được loaded
+- Để sử dụng cần phải  pnpm install next@canary và update config trong next.config.ts
+    + ```
+        import type { NextConfig } from 'next'
+        
+        const nextConfig: NextConfig = {
+        experimental: {
+            ppr: 'incremental',
+        },
+        }
+        
+        export default nextConfig
+    ```
+- Những dymamic component sẽ được sử dụng trong suspense
+    - ```
+        <Suspense fallback={<Fallback />}>
+            <DynamicComponent />
+        </Suspense>
+    ```
 
 ## Error handling
 - Xử lý error trên server component

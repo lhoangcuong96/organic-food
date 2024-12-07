@@ -1,9 +1,6 @@
-import { accountApiRequest } from "@/api-request/account";
-import { routePath } from "@/constants/routes";
-import { TokenType } from "@/constants/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import ProfileContent from "./profile-content";
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -13,17 +10,21 @@ export const generateMetadata = async (): Promise<Metadata> => {
   };
 };
 
-export default async function Profile() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get(TokenType.AccessToken);
-  if (!accessToken) {
-    return redirect(routePath.customer.home);
-  }
-  const response = await accountApiRequest.getProfile();
-  if (!response.payload.data) {
-    return (
-      <p className="items-center justify-center">{response.payload.message}</p>
-    );
-  }
-  return <ProfileContent profile={response.payload.data} />;
+export default function Profile() {
+  return (
+    <Card className="w-full mx-auto py-2 px-8 h-fit rounded-sm">
+      <CardHeader>
+        <CardTitle className="text-2xl">Hồ Sơ Của Tôi</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Quản lý thông tin hồ sơ để bảo mật tài khoản
+        </p>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback="...Loading">
+          {/* @ts-expect-error Server Component */}
+          <ProfileContent></ProfileContent>
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
 }

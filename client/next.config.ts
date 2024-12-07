@@ -8,6 +8,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    ppr: "incremental",
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

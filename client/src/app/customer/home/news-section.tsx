@@ -87,7 +87,7 @@ export function NewsSection({
           <DefaultButton
             className="!h-8 !min-w-8 "
             icon={
-              <MdOutlineNavigateBefore className="text-xl"></MdOutlineNavigateBefore>
+              <MdOutlineNavigateBefore className="!h-5 !w-5"></MdOutlineNavigateBefore>
             }
             disabled={state.isDisabledPrev}
             onClick={() => swiperRef.current?.swiper.slidePrev()}
@@ -95,7 +95,7 @@ export function NewsSection({
           <DefaultButton
             className="!h-8 !min-w-8 "
             icon={
-              <MdOutlineNavigateNext className="text-xl"></MdOutlineNavigateNext>
+              <MdOutlineNavigateNext className="!h-5 !w-5"></MdOutlineNavigateNext>
             }
             disabled={state.isDisabledNext}
             onClick={() => swiperRef.current?.swiper.slideNext()}

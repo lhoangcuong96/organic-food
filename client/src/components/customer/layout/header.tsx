@@ -41,7 +41,9 @@ const loggedProfileItems: MenuProps["items"] = [
   },
   {
     label: (
-      <Link href={routePath.customer.account.profile}>Thay đổi mật khẩu</Link>
+      <Link href={routePath.customer.account.changePassword}>
+        Thay đổi mật khẩu
+      </Link>
     ),
     key: routePath.customer.account.changePassword,
     icon: <MdOutlinePassword className="!text-lg" />,

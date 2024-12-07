@@ -1,7 +1,6 @@
-import { ReactNode } from "react";
 import AppBreadcrumb from "@/components/customer/layout/breadcrumb";
+import { ReactNode } from "react";
 import { LeftSidebar } from "./left-sidebar";
-import { useAppContext } from "@/provider/app-provider";
 
 export default function layout({ children }: { children: ReactNode }) {
   return (

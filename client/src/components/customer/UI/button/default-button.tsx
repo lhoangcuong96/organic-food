@@ -1,10 +1,11 @@
 import { Button, ButtonProps } from "@/components/ui/button";
 import { ReactNode } from "react";
+import { IconType } from "react-icons/lib";
 
 export default function DefaultButton(
   props: ButtonProps & {
-    prefix?: ReactNode;
-    suffix?: ReactNode;
+    prefix?: ReactNode | Element | IconType;
+    suffix?: ReactNode | Element | IconType;
   }
 ) {
   const { className, prefix, suffix, children, ...rest } = props;
