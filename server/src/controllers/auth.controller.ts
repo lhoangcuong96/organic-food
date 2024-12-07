@@ -69,7 +69,6 @@ export const logoutController = async (accessToken: string) => {
       accessToken
     }
   })
-  console.log(session)
   if (session === null) {
     throw new StatusError({ message: 'Session không tồn tại', status: 404 })
   }

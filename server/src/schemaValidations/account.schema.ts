@@ -28,3 +28,10 @@ export const UpdateProfileBody = z.object({
 })
 
 export type UpdateProfileBodyType = z.TypeOf<typeof UpdateProfileBody>
+
+export const ChangePasswordBody = z.object({
+  oldPassword: z.string(),
+  newPassword: z.string().min(6, 'Mật khẩu mới ít nhất 6 kí tự')
+})
+
+export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>

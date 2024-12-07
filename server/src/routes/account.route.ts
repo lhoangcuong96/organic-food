@@ -1,6 +1,13 @@
-import { updateMeController } from '@/controllers/account.controller'
+import { changePasswordController, updateMeController } from '@/controllers/account.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
-import { AccountRes, AccountResType, UpdateProfileBodyType } from '@/schemaValidations/account.schema'
+import {
+  AccountRes,
+  AccountResType,
+  ChangePasswordBody,
+  ChangePasswordBodyType,
+  UpdateProfileBodyType
+} from '@/schemaValidations/account.schema'
+import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -39,6 +46,24 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       reply.send({
         data: result,
         message: 'Cập nhật thông tin thành công'
+      })
+    }
+  )
+
+  fastify.post<{ Rely: MessageResType; Body: ChangePasswordBodyType }>(
+    '/change-password',
+    {
+      schema: {
+        body: ChangePasswordBody,
+        response: {
+          200: MessageRes
+        }
+      }
+    },
+    async (request, reply) => {
+      await changePasswordController(request.account!.id, request.body.oldPassword, request.body.newPassword)
+      reply.send({
+        message: 'Đổi mật khẩu thành công'
       })
     }
   )
