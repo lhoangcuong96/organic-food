@@ -46,7 +46,7 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
     Params: ProductParamsType
     Reply: ProductResType
   }>(
-    '/:id',
+    '/:slug',
     {
       schema: {
         params: ProductParams,
@@ -56,7 +56,8 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
       }
     },
     async (request, reply) => {
-      const product = await getProductDetail(request.params.id)
+      const product = await getProductDetail(request.params.slug)
+      console.log(product)
       reply.send({
         data: product,
         message: 'Lấy thông tin sản phẩm thành công!'
@@ -81,7 +82,7 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
     async (request, reply) => {
       const product = await createProduct(request.body)
       reply.send({
-        data: product,
+        data: product as any,
         message: 'Tạo sản phẩm thành công!'
       })
     }

@@ -1,5 +1,6 @@
 import prisma from '@/database'
-import { CreateProductBodyType, UpdateProductBodyType } from '@/schemaValidations/product.schema'
+import { CreateProductBodyType, ProductSchema, UpdateProductBodyType } from '@/schemaValidations/product.schema'
+import { Product } from '@prisma/client'
 
 export const getProductList = () => {
   return prisma.product.findMany({
@@ -9,10 +10,21 @@ export const getProductList = () => {
   })
 }
 
-export const getProductDetail = (id: number) => {
+export const getProductDetail = (slug: string) => {
   return prisma.product.findUniqueOrThrow({
     where: {
-      id
+      slug
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      slug: true,
+      description: true,
+      stock: true,
+      image: true,
+      createdAt: true,
+      updatedAt: true
     }
   })
 }

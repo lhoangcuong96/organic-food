@@ -1,3 +1,4 @@
+import { Product } from '@prisma/client'
 import z from 'zod'
 
 export const CreateProductBody = z.object({
@@ -9,14 +10,20 @@ export const CreateProductBody = z.object({
 
 export type CreateProductBodyType = z.TypeOf<typeof CreateProductBody>
 
+export const ProductImageSchema = z.object({
+  thumbnail: z.string().nullable().optional(),
+  banner: z.string().nullable().optional(),
+  featured: z.string().nullable().optional(),
+  gallery: z.array(z.string()).nullable().optional()
+})
 export const ProductSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   price: z.number(),
+  slug: z.string(),
   description: z.string(),
-  image: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date()
+  stock: z.number(),
+  image: ProductImageSchema
 })
 
 export const ProductRes = z.object({
@@ -36,6 +43,6 @@ export type ProductListResType = z.TypeOf<typeof ProductListRes>
 export const UpdateProductBody = CreateProductBody
 export type UpdateProductBodyType = CreateProductBodyType
 export const ProductParams = z.object({
-  id: z.coerce.number()
+  slug: z.coerce.string()
 })
 export type ProductParamsType = z.TypeOf<typeof ProductParams>
