@@ -1,12 +1,21 @@
-async function ProfileContent() {
-  const response = await fetch("/api/profile");
-  const data = await response.json();
+import { accountApiRequest } from "@/api-request/account";
+import { routePath } from "@/constants/routes";
+import { TokenType } from "@/constants/types";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import UpdateProfileForm from "./update-profile-form";
 
-  return (
-    <div>
-      <h1>{data.name}</h1>
-    </div>
-  );
+export default async function ProfileContent() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(TokenType.AccessToken);
+  if (!accessToken) {
+    return redirect(routePath.customer.home);
+  }
+  const response = await accountApiRequest.getProfile();
+  if (!response.payload.data) {
+    return (
+      <p className="items-center justify-center">{response.payload.message}</p>
+    );
+  }
+  return <UpdateProfileForm profile={response.payload.data} />;
 }
-
-export default ProfileContent;

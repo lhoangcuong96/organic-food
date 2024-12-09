@@ -29,7 +29,6 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken");
-  const refreshToken = cookieStore.get("refreshToken");
   let account;
   if (accessToken) {
     const tokenPayload = jwtDecode<{ account: Partial<Account> }>(

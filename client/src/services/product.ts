@@ -8,6 +8,7 @@ export class ProductService {
         description: true,
         image: true,
         price: true,
+        slug: true,
       },
       where: {
         isActive: true,

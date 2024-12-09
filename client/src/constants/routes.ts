@@ -12,6 +12,7 @@ export const routePath = {
     introduce: "/customer/introduce",
     contact: "/customer/contact",
     membershipPolicy: "/customer/membership-policy",
+    productDetail: "/customer/product-detail/",
 
     // private routes
     account: {

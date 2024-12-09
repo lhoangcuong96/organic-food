@@ -17,7 +17,7 @@ export default function layout({ children }: { children: ReactNode }) {
           },
         ]}
       ></AppBreadcrumb>
-      <div className="bg-gray-100 w-screen p-8 flex items-center justify-center h-full">
+      <div className="w-screen p-8 flex items-center justify-center h-full">
         <div className="max-w-screen-xl w-full">
           <div className="mx-auto">
             <div className="flex min-h-[600px] h-full bg-gray-100 font-medium">

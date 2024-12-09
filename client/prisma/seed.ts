@@ -1,6 +1,6 @@
 // prisma/seed.js
 import { Prisma, PrismaClient } from "@prisma/client";
-import dayjs from "dayjs";
+import { addMonths, getMonth } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -16,6 +16,7 @@ const createSampleProducts = async () => {
   const sampleProducts: Prisma.ProductCreateInput[] = [
     {
       name: "Kim chi cải thảo cắt lát Bibigo Ông Kim's gói",
+      slug: "kim-chi-cai-thao-cat-lat-bibigo-ong-kims-goi",
       description: "Kim chi cải thảo cắt lát Bibigo Ông Kim's gói",
       price: 1000,
       stock: 200,
@@ -39,6 +40,7 @@ const createSampleProducts = async () => {
     },
     {
       name: "Xà lách búp mỡ",
+      slug: "xa-lach-bup-mo",
       description: "Xà lách búp mỡ",
       price: 1000,
       stock: 200,
@@ -62,6 +64,7 @@ const createSampleProducts = async () => {
     },
     {
       name: "Xà lách xoong Đà Lạt",
+      slug: "xa-lach-xoong-da-lat",
       description: "Xà lách xoong Đà Lạt",
       price: 1000,
       stock: 200,
@@ -84,8 +87,9 @@ const createSampleProducts = async () => {
       tags: [],
     },
     {
-      name: "Xà lách xoong Đà Lạt",
-      description: "Xà lách xoong Đà Lạt",
+      name: "Bột mì đa dụng Meizan gói 1kg",
+      slug: "bot-mi-da-dung-meizan-goi-1kg",
+      description: "Bột mì đa dụng Meizan gói 1kg",
       price: 1000,
       stock: 200,
       sold: 10,
@@ -108,6 +112,7 @@ const createSampleProducts = async () => {
     },
     {
       name: "Rong biển nấu canh Ottogi gói 20g",
+      slug: "rong-bien-nau-canh-ottogi-goi-20g",
       description: "Rong biển nấu canh Ottogi gói 20g",
       price: 1000,
       stock: 200,
@@ -131,6 +136,7 @@ const createSampleProducts = async () => {
     },
     {
       name: "Bưởi da xanh trái 1.7kg trở lên",
+      slug: "buoi-da-xanh-trai-17kg-tro-len",
       description: "Bưởi da xanh trái 1.7kg trở lên",
       price: 1000,
       stock: 200,
@@ -243,9 +249,9 @@ const createSamplePromotion = async () => {
   await prisma.promotion.create({
     data: {
       title: "Flash sale",
-      description: `Flash sale tháng ${dayjs().month()}`,
-      startDate: dayjs().toDate(),
-      endDate: dayjs().add(1, "year").toDate(),
+      description: `Flash sale tháng ${getMonth(new Date())}`,
+      startDate: new Date(),
+      endDate: addMonths(new Date(), 1),
       discountType: "PERCENTAGE",
       discountValue: 20,
     },

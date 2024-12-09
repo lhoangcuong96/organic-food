@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-
-import { Link } from "@/components/ui/link";
 import { routePath } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/provider/app-provider";
@@ -19,6 +17,7 @@ import {
 } from "lucide-react";
 import { RiEdit2Line } from "react-icons/ri";
 import { useRouter } from "next/navigation";
+import { Link } from "@/components/ui/link";
 
 type MenuItem = {
   icon: React.ElementType;
@@ -127,11 +126,11 @@ export function LeftSidebar() {
           const isParentActive = window.location.pathname.includes(item.key);
           return (
             <div key={index}>
-              <a
+              <Link
                 href={item.subItems ? "#" : item.url}
                 className={cn(
-                  "cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 text-gray-700 hover:text-lime-600",
-                  isParentActive && "text-lime-600"
+                  "!text-gray-700 no-underline cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 hover:text-lime-600",
+                  isParentActive && "!text-lime-600"
                 )}
                 onClick={() =>
                   setExpandedItem(
@@ -149,7 +148,7 @@ export function LeftSidebar() {
                   ) : (
                     <ChevronDown className="w-4 h-4" />
                   ))}
-              </a>
+              </Link>
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-out",

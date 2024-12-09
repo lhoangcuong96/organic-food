@@ -24,6 +24,8 @@ import { routePath } from "@/constants/routes";
 import { useHandleMessage } from "@/utils/hooks";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAppContext } from "@/provider/app-provider";
+import { Account } from "@prisma/client";
 
 export default function UpdateProfileForm({
   profile,
@@ -33,6 +35,7 @@ export default function UpdateProfileForm({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { handleError, messageApi } = useHandleMessage();
+  const { setAccount } = useAppContext();
   const router = useRouter();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +75,11 @@ export default function UpdateProfileForm({
       const dateOfBirth = new Date(data.dateOfBirth) as unknown as string;
       const res = await accountApiRequest.updateProfile({
         ...data,
+        avatar: avatar || profile.avatar,
         dateOfBirth,
-        avatar,
       });
       if (res.payload.data) {
+        setAccount(res.payload.data as Account);
         messageApi.success("Cập nhật thông tin thành công");
         router.refresh();
       } else {
