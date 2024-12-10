@@ -1,4 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
 
 export function SidebarFilter() {
   const categories = [
@@ -23,10 +24,16 @@ export function SidebarFilter() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-lg font-semibold mb-4 bg-green-50 p-2 rounded">
-          Danh mục sản phẩm 🍃
-        </h2>
+      <div className="bg-lime-100 px-3 py-2 rounded-md">
+        <div className="text-lg font-semibold mb-4 rounded flex flex-row gap-2 items-center justify-between">
+          <h2 className="text-lime-600">Danh mục sản phẩm</h2>
+          <Image
+            src="/images/icons/leaf.webp"
+            alt="icon"
+            width={25}
+            height={25}
+          ></Image>
+        </div>
         <ul className="space-y-2">
           {categories.map((category) => (
             <li
@@ -39,33 +46,34 @@ export function SidebarFilter() {
         </ul>
       </div>
 
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Bộ lọc sản phẩm</h2>
-        <div className="space-y-4">
-          <div>
-            <h3 className="font-medium mb-2">Chọn mức giá</h3>
-            {priceRanges.map((range) => (
-              <div key={range} className="flex items-center space-x-2 mb-2">
-                <Checkbox id={range} />
-                <label htmlFor={range} className="text-sm">
-                  {range}
-                </label>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <h3 className="font-medium mb-2">Trọng lượng</h3>
-            {weights.map((weight) => (
-              <div key={weight} className="flex items-center space-x-2 mb-2">
-                <Checkbox id={weight} />
-                <label htmlFor={weight} className="text-sm">
-                  {weight}
-                </label>
-              </div>
-            ))}
-          </div>
+      <h2 className="text-2xl font-semibold mb-4 text-lime-600 p-4 border-dashed border-2 border-lime-600">
+        Bộ lọc sản phẩm
+      </h2>
+      <div className="bg-lime-100 px-3 py-2 rounded-md">
+        <div className="text-lg font-semibold mb-4 rounded flex flex-row gap-2 items-center justify-between">
+          <h3 className="text-lime-600">Chọn mức giá</h3>
         </div>
+        {priceRanges.map((range) => (
+          <div key={range} className="flex items-center space-x-2 mb-2">
+            <Checkbox id={range} />
+            <label htmlFor={range} className="text-sm">
+              {range}
+            </label>
+          </div>
+        ))}
+      </div>
+      <div className="bg-lime-100 px-3 py-2 rounded-md">
+        <div className="text-lg font-semibold mb-4 rounded flex flex-row gap-2 items-center justify-between">
+          <h3 className="text-lime-600">Trọng lượng</h3>
+        </div>
+        {weights.map((weight) => (
+          <div key={weight} className="flex items-center space-x-2 mb-2">
+            <Checkbox id={weight} />
+            <label htmlFor={weight} className="text-sm">
+              {weight}
+            </label>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import OutlineButton from "@/components/customer/UI/button/outline-button";
-import { Button } from "@/components/ui/button";
 
 export function ProductSort() {
   const sortOptions = [

@@ -3,10 +3,33 @@ import { routePath } from "@/constants/routes";
 import { SidebarFilter } from "./sidebar-filter";
 import { ProductSort } from "./product-sort";
 import { Promotions } from "./promotions";
+import ProductGrid from "./product-grid";
+import productRequestApi from "@/api-request/product";
+import { ProductQueryType } from "@/validation-schema/product";
+import { HttpError } from "@/lib/http";
+import { ErrorMessage } from "@/components/customer/UI/error-massage";
 
-export default async function Products() {
+export default async function Products({
+  searchParams,
+}: {
+  searchParams: Promise<ProductQueryType>;
+}) {
+  const params = await searchParams;
+  const initialProducts = [];
+  let errorMessage = "";
+  try {
+    const res = await productRequestApi.getProducts(params);
+    if (res.payload.data) {
+      initialProducts.push(...res.payload.data);
+    } else {
+      errorMessage = "Không tim thấy sản phẩm nào";
+    }
+  } catch (error) {
+    errorMessage = (error as HttpError).message;
+  }
+  console.log(initialProducts);
   return (
-    <div className="flex flex-col w-full items-center justify-center h-full text-sm">
+    <div className="flex flex-col w-full items-center justify-center h-full text-sm font-medium">
       <AppBreadcrumb
         src="/images/breadcrumb.webp"
         pageTitle="Rau củ"
@@ -31,7 +54,13 @@ export default async function Products() {
                 </aside>
                 <main>
                   <ProductSort />
-                  {/* <ProductGrid /> */}
+                  {initialProducts.length === 0 ? (
+                    <ErrorMessage className="text-center">
+                      {errorMessage}
+                    </ErrorMessage>
+                  ) : (
+                    <ProductGrid initialProducts={initialProducts} />
+                  )}
                 </main>
               </div>
             </div>

@@ -9,6 +9,8 @@ import { useEffect, useReducer, useRef } from "react";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
 import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
+import Link from "next/link";
+import { routePath } from "@/constants/routes";
 
 interface ComponentState {
   isDisabledNext: boolean;
@@ -75,7 +77,7 @@ export function FeaturedCategories({
     <div className="max-w-screen-xl w-screen h-fit mt-5 relative z-50">
       <div className="flex flex-row justify-between mb-5 pb-4 border-b-[0.5px] border-b-lime-600">
         <h3 className=" text-lime-600 text-2xl font-bold flex flex-row items-center gap-2">
-          Danh mục nổi bật{" "}
+          Danh mục nổi bật
           <Image
             src="/images/icons/leaf.webp"
             alt="icon"
@@ -120,7 +122,11 @@ export function FeaturedCategories({
             {categories.map((category) => {
               return (
                 <SwiperSlide key={category.id} className="!w-fit !mr-2">
-                  <CategoryCard category={category} key={category.id} />
+                  <Link
+                    href={`${routePath.customer.products}/?category=${category.name}`}
+                  >
+                    <CategoryCard category={category} key={category.id} />
+                  </Link>
                 </SwiperSlide>
               );
             })}

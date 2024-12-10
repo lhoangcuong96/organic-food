@@ -1,5 +1,6 @@
 import { Product } from '@prisma/client'
 import z from 'zod'
+import { CommonQuery } from './common.schema'
 
 export const CreateProductBody = z.object({
   name: z.string().min(1).max(256),
@@ -16,6 +17,7 @@ export const ProductImageSchema = z.object({
   featured: z.string().nullable().optional(),
   gallery: z.array(z.string()).nullable().optional()
 })
+
 export const ProductSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -33,11 +35,17 @@ export const ProductRes = z.object({
 
 export type ProductResType = z.TypeOf<typeof ProductRes>
 
+export const ProductListQuery = z.object({
+  ...CommonQuery.shape,
+  category: z.string().optional()
+})
+
 export const ProductListRes = z.object({
   data: z.array(ProductSchema),
   message: z.string()
 })
 
+export type ProductListQueryType = z.TypeOf<typeof ProductListQuery>
 export type ProductListResType = z.TypeOf<typeof ProductListRes>
 
 export const UpdateProductBody = CreateProductBody

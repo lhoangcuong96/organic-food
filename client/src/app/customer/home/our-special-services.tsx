@@ -1,5 +1,5 @@
 import OutlineButton from "@/components/customer/UI/button/outline-button";
-import { Card } from "@/components/customer/UI/card";
+import { Card } from "@/components/ui/card";
 import { Divider } from "antd";
 import Image from "next/image";
 

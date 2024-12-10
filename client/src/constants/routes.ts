@@ -6,7 +6,7 @@ export const routePath = {
     signIn: "/customer/sign-in",
     signOut: "/customer/sign-out",
     signUp: "/customer/sign-up",
-    product: "/customer/collection",
+    products: "/customer/products",
     news: "/customer/news",
     promotionalProduct: "/customer/product",
     introduce: "/customer/introduce",

@@ -86,7 +86,7 @@ export function NewsSection({
         <div className="flex flex-row items-center justify-center">
           <DefaultButton
             className="!h-8 !min-w-8 "
-            icon={
+            suffix={
               <MdOutlineNavigateBefore className="!h-5 !w-5"></MdOutlineNavigateBefore>
             }
             disabled={state.isDisabledPrev}
@@ -94,7 +94,7 @@ export function NewsSection({
           ></DefaultButton>
           <DefaultButton
             className="!h-8 !min-w-8 "
-            icon={
+            suffix={
               <MdOutlineNavigateNext className="!h-5 !w-5"></MdOutlineNavigateNext>
             }
             disabled={state.isDisabledNext}

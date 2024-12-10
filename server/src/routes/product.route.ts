@@ -10,6 +10,8 @@ import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import {
   CreateProductBody,
   CreateProductBodyType,
+  ProductListQuery,
+  ProductListQueryType,
   ProductListRes,
   ProductListResType,
   ProductParams,
@@ -24,17 +26,25 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 export default async function productRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{
     Reply: ProductListResType
+    Request: {
+      Querystring: ProductListQueryType
+    }
   }>(
     '/',
     {
       schema: {
         response: {
           200: ProductListRes
-        }
+        },
+        querystring: ProductListQuery
       }
     },
     async (request, reply) => {
-      const products = await getProductList()
+      const queryParams = request.query as ProductListQueryType
+      const products = await getProductList({
+        ...queryParams
+      })
+      console.log(products)
       reply.send({
         data: products,
         message: 'Lấy danh sách sản phẩm thành công!'

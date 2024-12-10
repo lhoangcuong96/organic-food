@@ -15,12 +15,12 @@ export const menuItems = [
     label: "Trang chủ",
   },
   {
-    path: routePath.customer.product,
+    path: routePath.customer.products,
     label: "Sản phẩm",
     key: "product",
   },
   {
-    path: routePath.customer.product,
+    path: routePath.customer.products,
     label: "Sản phẩm khuyến mãi",
   },
   {

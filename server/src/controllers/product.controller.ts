@@ -1,12 +1,55 @@
 import prisma from '@/database'
-import { CreateProductBodyType, ProductSchema, UpdateProductBodyType } from '@/schemaValidations/product.schema'
-import { Product } from '@prisma/client'
+import { Order } from '@/schemaValidations/common.schema'
+import { CreateProductBodyType, ProductListQueryType, UpdateProductBodyType } from '@/schemaValidations/product.schema'
 
-export const getProductList = () => {
-  return prisma.product.findMany({
-    orderBy: {
-      createdAt: 'desc'
+export const getProductList = ({
+  page = 1,
+  limit = 20,
+  category,
+  sort = 'createdAt',
+  order = Order.Desc,
+  search
+}: ProductListQueryType) => {
+  const skip = (page - 1) * limit
+  const take = limit
+  const where = {
+    AND: [
+      category
+        ? {
+            categories: {
+              some: {
+                name: {
+                  equals: category
+                }
+              }
+            }
+          }
+        : {},
+      search ? { name: { contains: search } } : {}
+    ]
+  }
+  const select = {
+    id: true,
+    name: true,
+    price: true,
+    slug: true,
+    description: true,
+    stock: true,
+    image: {
+      select: {
+        thumbnail: true
+      }
     }
+  }
+  const orderBy = {
+    [sort]: order === Order.Asc ? 'asc' : 'desc'
+  }
+  return prisma.product.findMany({
+    where,
+    skip,
+    take,
+    orderBy,
+    select
   })
 }
 
