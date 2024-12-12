@@ -8,7 +8,12 @@ import productRequestApi from "@/api-request/product";
 import { ProductQueryType } from "@/validation-schema/product";
 import { HttpError } from "@/lib/http";
 import { ErrorMessage } from "@/components/customer/UI/error-massage";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Danh sách sản phẩm",
+  description: "Danh sách sản phẩm",
+};
 export default async function Products({
   searchParams,
 }: {

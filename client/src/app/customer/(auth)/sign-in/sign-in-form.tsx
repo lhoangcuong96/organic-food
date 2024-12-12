@@ -102,7 +102,7 @@ export function SignInForm() {
 
       <div className="self-center w-fit mb-4">
         <DefaultButton
-          htmlType="submit"
+          type="submit"
           disabled={isSubmitting}
           className="uppercase"
         >

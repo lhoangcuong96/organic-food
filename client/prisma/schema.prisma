@@ -110,6 +110,7 @@ type CategoryImage {
 model Category {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String        @unique
+  slug          String        @unique
   description   String? // Mô tả danh mục
   parentId      String?       @db.ObjectId // ID của danh mục cha (nếu có)
   parent        Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)

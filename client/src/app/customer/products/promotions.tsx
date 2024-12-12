@@ -1,7 +1,6 @@
-import { Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import DefaultButton from "@/components/customer/UI/button/default-button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Info } from "lucide-react";
 
 export function Promotions() {
   const promotions = [

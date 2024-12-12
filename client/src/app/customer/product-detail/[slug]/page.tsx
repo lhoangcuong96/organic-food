@@ -10,6 +10,50 @@ import { ProductTabs } from "./product-tabs";
 import { PromotionCodes } from "./promotion-codes";
 import { Recommendations } from "./recommendations";
 import { StorePolicies } from "./store-policies";
+import { cache } from "react";
+import envConfig from "@/envConfig";
+import { sharedMetadata, sharedOpenGraph } from "@/app/shared-metadata";
+
+// sử dụng cache để tránh bị double fetch khi cả metadata và component cùng fetch dữ liệu
+const getProductDetail = cache(productRequestApi.getProductDetail);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  try {
+    const { slug } = await params;
+    const res = await getProductDetail(slug);
+    const product = res.payload?.data;
+    const url = `${envConfig?.NEXT_PUBLIC_URL}/ ${routePath.customer}/${product.slug}`;
+    return {
+      ...sharedMetadata,
+      title: product?.name || "Không tìm thấy sản phẩm",
+      description: product?.description || "Không tìm thấy sản phẩm",
+      openGraph: {
+        ...sharedOpenGraph,
+        title: product?.name || "Không tìm thấy sản phẩm",
+        description: product?.description || "Không tìm thấy sản phẩm",
+        url: url,
+        images: [
+          {
+            url: product?.image.thumbnail,
+          },
+        ],
+      },
+      alternates: {
+        canonical: url,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      title: "Không tìm thấy sản phẩm",
+      description: "Không tìm thấy sản phẩm",
+    };
+  }
+}
 
 export default async function ProductDetail({
   params,
@@ -24,7 +68,7 @@ export default async function ProductDetail({
   }
 
   try {
-    const resp = await productRequestApi.getProductDetail(slug);
+    const resp = await getProductDetail(slug);
     console.log(resp.payload);
     if (resp.payload?.data) {
       productDetail = resp.payload.data;

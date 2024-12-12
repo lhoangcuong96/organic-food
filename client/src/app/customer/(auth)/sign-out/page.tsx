@@ -14,11 +14,11 @@ export default function Page() {
     try {
       await authApiRequest.logoutFromClientToNextServer({ forceLogout: true });
       sessionStorage.clear();
-      router.refresh();
     } catch (error) {
       handleError({ error });
     } finally {
       router.replace(`${routePath.customer.signIn}?redirect=${pathName}`);
+      router.refresh();
     }
   };
   useEffect(() => {

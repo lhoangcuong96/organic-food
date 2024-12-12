@@ -37,9 +37,9 @@ export default async function CustomerHomePage() {
     error = "Failed to load products. Please try again later.";
   }
 
-  let categories: Category[] = [];
+  let categories: Partial<Category>[] = [];
   try {
-    categories = await CategoryService.getCategories();
+    categories = (await CategoryService.getCategories()) as Partial<Category>[];
   } catch (err) {
     console.error("Error fetching products:", err);
     error = "Failed to load featured categories. Please try again later.";

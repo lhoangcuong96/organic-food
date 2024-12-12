@@ -31,12 +31,12 @@ const menuItems = [
     label: "Trang chủ",
   },
   {
-    path: routePath.customer.product,
+    path: routePath.customer.products,
     label: "Sản phẩm",
     key: "product",
   },
   {
-    path: routePath.customer.product,
+    path: routePath.customer.products,
     label: "Sản phẩm khuyến mãi",
   },
   {
@@ -79,33 +79,33 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
         <div className="flex flex-col gap-4 p-4">
           <DefaultButton
-            icon={<BiSolidPhoneCall className="text-2xl" />}
+            suffix={<BiSolidPhoneCall className="text-2xl" />}
             className="!font-semibold"
           >
             0582134596
           </DefaultButton>
           <Dropdown menu={{ items: profileItems }} trigger={["click"]}>
             <DefaultButton
-              icon={<CgProfile className="text-2xl" />}
+              suffix={<CgProfile className="text-2xl" />}
               className="!font-semibold"
             >
               Tài khoản
             </DefaultButton>
           </Dropdown>
           <DefaultButton
-            icon={<IoLocationOutline className="text-2xl" />}
+            suffix={<IoLocationOutline className="text-2xl" />}
             className="!font-semibold"
           >
             Địa chỉ
           </DefaultButton>
           <DefaultButton
-            icon={<FaRegHeart className="text-2xl" />}
+            suffix={<FaRegHeart className="text-2xl" />}
             className="!font-semibold"
           >
             Yêu thích
           </DefaultButton>
           <DefaultButton
-            icon={<IoCartOutline className="text-2xl" />}
+            suffix={<IoCartOutline className="text-2xl" />}
             className="!font-semibold"
           >
             Giỏ hàng

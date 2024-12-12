@@ -53,7 +53,7 @@ export function FeaturedCategories({
   categories,
   error,
 }: {
-  categories: Category[];
+  categories: Partial<Category>[];
   error?: string;
 }) {
   const swiperRef = useRef<SwiperRef | null>(null);
@@ -123,7 +123,7 @@ export function FeaturedCategories({
               return (
                 <SwiperSlide key={category.id} className="!w-fit !mr-2">
                   <Link
-                    href={`${routePath.customer.products}/?category=${category.name}`}
+                    href={`${routePath.customer.products}/?category=${category.slug}`}
                   >
                     <CategoryCard category={category} key={category.id} />
                   </Link>

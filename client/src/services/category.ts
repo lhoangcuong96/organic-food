@@ -7,7 +7,17 @@ export interface CategoriesWithProductsResponse extends Partial<Product> {
 
 export class CategoryService {
   static getCategories() {
-    return prisma.category.findMany();
+    return prisma.category.findMany({
+      select: {
+        name: true,
+        image: {
+          select: {
+            thumbnail: true,
+          },
+        },
+        slug: true,
+      },
+    });
   }
 
   static getCategoriesWithProducts(): Promise<
@@ -26,6 +36,7 @@ export class CategoryService {
             name: true,
             description: true,
             price: true,
+            slug: true,
           },
         },
       },

@@ -21,7 +21,6 @@ export default function Profile() {
       </CardHeader>
       <CardContent>
         <Suspense fallback="...Loading">
-          {/* @ts-expect-error Server Component */}
           <ProfileContent></ProfileContent>
         </Suspense>
       </CardContent>

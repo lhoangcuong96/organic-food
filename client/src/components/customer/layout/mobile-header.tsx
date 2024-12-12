@@ -33,7 +33,7 @@ export default function MobileHeader({ onMenuToggle }: MobileHeaderProps) {
       <DefaultInput
         className="w-full"
         placeholder="Tìm kiếm..."
-        suffix={<DefaultButton icon={<SearchOutlined />} />}
+        suffix={<DefaultButton suffix={<SearchOutlined />} />}
       />
     </div>
   );

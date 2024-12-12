@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   experimental: {
     ppr: "incremental",
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "localhost",
+      },
+    ],
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

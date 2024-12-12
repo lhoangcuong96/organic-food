@@ -171,6 +171,7 @@ const createSampleCategory = async () => {
     {
       name: "Rau củ",
       description: "Thực phẩm rau củ",
+      slug: "rau-cu",
       image: {
         thumbnail: "/images/category/danhmuc_1.webp",
         banner: "/images/category/category_1_banner.jpg",
@@ -181,6 +182,7 @@ const createSampleCategory = async () => {
     {
       name: "Trái Cây",
       description: "Thực phẩm trái cây",
+      slug: "trai-cay",
       image: {
         thumbnail: "/images/category/danhmuc_2.webp",
         banner: "/images/category/category_2_banner.jpg",
@@ -196,6 +198,7 @@ const createSampleCategory = async () => {
     {
       name: "Đồ Khô",
       description: "Thực phẩm đồ khô",
+      slug: "do-kho",
       image: {
         thumbnail: "/images/category/danhmuc_3.webp",
         banner: "/images/category/category_3_banner.png",
@@ -207,6 +210,7 @@ const createSampleCategory = async () => {
     {
       name: "Nước Ép",
       description: "Thực phẩm nước ép",
+      slug: "nuoc-ep",
       image: {
         thumbnail: "/images/category/danhmuc_4.webp",
         banner: "/images/category/category_4_banner.png",
@@ -218,6 +222,7 @@ const createSampleCategory = async () => {
     {
       name: "Salad",
       description: "Thực phẩm salad",
+      slug: "salad",
       image: {
         thumbnail: "/images/category/danhmuc_1.webp",
         banner: "/images/category/category_1_banner.jpg",
@@ -229,6 +234,7 @@ const createSampleCategory = async () => {
     {
       name: "Thực phẩm khác",
       description: "Thực phẩm khác",
+      slug: "thuc-pham-khac",
       image: {
         thumbnail: "/images/category/danhmuc_1.webp",
         banner: "/images/category/category_1_banner.jpg",
