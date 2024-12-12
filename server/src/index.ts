@@ -4,17 +4,19 @@ import { errorHandlerPlugin } from '@/plugins/errorHandler.plugins'
 import validatorCompilerPlugin from '@/plugins/validatorCompiler.plugins'
 import accountRoutes from '@/routes/account.route'
 import authRoutes from '@/routes/auth.route'
+import mediaRoutes from '@/routes/media.route'
+import productRoutes from '@/routes/product.route'
+import staticRoutes from '@/routes/static.route'
+import testRoutes from '@/routes/test.route'
+import { createFolder } from '@/utils/helpers'
 import fastifyAuth from '@fastify/auth'
 import fastifyCookie from '@fastify/cookie'
-import fastifyHelmet from '@fastify/helmet'
-import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import fastifyHelmet from '@fastify/helmet'
+import fastifyRedis from '@fastify/redis'
+import Fastify from 'fastify'
 import path from 'path'
-import { createFolder } from '@/utils/helpers'
-import mediaRoutes from '@/routes/media.route'
-import staticRoutes from '@/routes/static.route'
-import productRoutes from '@/routes/product.route'
-import testRoutes from '@/routes/test.route'
+import { BloomFilterService } from './lb/bloom-filter'
 
 const fastify = Fastify({
   logger: true
@@ -24,6 +26,17 @@ const fastify = Fastify({
 const start = async () => {
   try {
     createFolder(path.resolve(envConfig.UPLOAD_FOLDER))
+
+    // Register redis
+    await fastify.register(fastifyRedis, {
+      url: envConfig.REDIS_URL
+    })
+
+    // Sử dụng bloom filter để lưu trữ email và phoneNumber
+    const bloomFilter = new BloomFilterService(fastify)
+    bloomFilter.createBloomFilter({ filterName: 'email', expectedElements: 100000, falsePositiveRate: 0.001 })
+    bloomFilter.createBloomFilter({ filterName: 'phoneNumber', expectedElements: 100000, falsePositiveRate: 0.001 })
+
     const whitelist = ['*']
     fastify.register(cors, {
       origin: whitelist, // Cho phép tất cả các domain gọi API

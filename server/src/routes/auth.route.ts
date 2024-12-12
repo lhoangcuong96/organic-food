@@ -1,11 +1,6 @@
 import envConfig from '@/config'
 import { TokenType } from '@/constants/type'
-import {
-  loginController,
-  logoutController,
-  refreshTokenController,
-  registerController
-} from '@/controllers/auth.controller'
+import AuthController from '@/controllers/auth.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
 import {
   LoginBody,
@@ -25,6 +20,7 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import ms from 'ms'
 
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+  const authController = new AuthController(fastify)
   fastify.post<{
     Reply: RegisterResType
     Body: RegisterBodyType
@@ -40,7 +36,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     },
     async (request, reply) => {
       const { body } = request
-      const { session, account } = await registerController(body)
+      const { session, account } = await authController.registerController(body)
       if (envConfig.COOKIE_MODE) {
         reply
           .setCookie(TokenType.AccessToken, session.accessToken, {
@@ -93,7 +89,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       const accessToken = envConfig.COOKIE_MODE
         ? request.cookies.accessToken
         : request.headers.authorization?.split(' ')[1]
-      const message = await logoutController(accessToken as string)
+      const message = await authController.logoutController(accessToken as string)
       if (envConfig.COOKIE_MODE) {
         reply
           .clearCookie(TokenType.AccessToken, {
@@ -130,7 +126,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     },
     async (request, reply) => {
       const { body } = request
-      const { session, account } = await loginController(body)
+      const { session, account } = await authController.loginController(body)
       if (envConfig.COOKIE_MODE) {
         reply
           .setCookie('accessToken', session.accessToken, {
@@ -183,7 +179,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
     async (request, reply) => {
       const { refreshToken } = request.body as RefreshTokenBodyType
       const accessToken = request.headers.authorization!.split(' ')[1]
-      const { session } = await refreshTokenController(accessToken, refreshToken)
+      const { session } = await authController.refreshTokenController(accessToken, refreshToken)
       reply.send({
         message: 'Đăng nhập thành công',
         data: {
