@@ -28,12 +28,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken");
+  const accessToken = cookieStore.get("accessToken")?.value;
   let account;
   if (accessToken) {
-    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(
-      accessToken.value
-    );
+    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
     account = tokenPayload?.account;
   }
   return (

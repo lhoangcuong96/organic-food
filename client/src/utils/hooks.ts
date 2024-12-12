@@ -18,8 +18,6 @@ export const useHandleMessage = () => {
       setError?: UseFormSetError<any>;
       duration?: number;
     }) => {
-      console.log(typeof error);
-
       if (error instanceof EntityError && setError) {
         error.payload.errors.forEach((item) => {
           setError(item.field, {

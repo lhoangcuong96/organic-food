@@ -155,11 +155,11 @@ export function SignUpForm() {
 
       <div className="self-center w-fit mb-4">
         <DefaultButton
-          htmlType="submit"
+          type="submit"
           disabled={isSubmitting}
           className="uppercase"
         >
-          {isSubmitting ? "Đang xử lý..." : "Đăng Nhập"}
+          {isSubmitting ? "Đang xử lý..." : "Đăng kí"}
         </DefaultButton>
       </div>
 

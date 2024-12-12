@@ -13,6 +13,8 @@ export default function Page() {
   const signOut = async () => {
     try {
       await authApiRequest.logoutFromClientToNextServer({ forceLogout: true });
+      sessionStorage.clear();
+      router.refresh();
     } catch (error) {
       handleError({ error });
     } finally {
@@ -20,7 +22,7 @@ export default function Page() {
     }
   };
   useEffect(() => {
-    // signOut();
+    signOut();
   }, []);
   return (
     <div className="flex flex-col w-full items-center justify-center">

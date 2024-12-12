@@ -38,13 +38,16 @@ export async function POST(request: Request) {
     );
   }
   try {
-    const result = await authApiRequest.logoutFromNextServerToApiServer(
-      accessToken.value
+    authApiRequest.logoutFromNextServerToApiServer(accessToken.value);
+    return Response.json(
+      {
+        message: "Đăng xuất thành công",
+      },
+      {
+        status: 200,
+        headers,
+      }
     );
-    return Response.json(result, {
-      status: 200,
-      headers,
-    });
   } catch (error) {
     if (error instanceof HttpError) {
       return Response.json(error.payload, {
