@@ -22,7 +22,8 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/kim-chi-cai-thao-cat-lat-bibigo-ong-kims-goi-100g-202002031131554036.webp'
+        thumbnail:
+          'http://localhost:4000/static/kim-chi-cai-thao-cat-lat-bibigo-ong-kims-goi-100g-202002031131554036.webp'
       },
       categories: {
         connect: categories
@@ -45,7 +46,7 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/xa-lach-bup-mo-goi-500g-202205181604086388.webp'
+        thumbnail: 'http://localhost:4000/static/xa-lach-bup-mo-goi-500g-202205181604086388.webp'
       },
       categories: {
         connect: categories
@@ -68,7 +69,7 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/xa-lach-xoong-da-lat-300g-202304070914101670.webp'
+        thumbnail: 'http://localhost:4000/static/xa-lach-xoong-da-lat-300g-202304070914101670.webp'
       },
       categories: {
         connect: categories
@@ -91,7 +92,7 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/bot-mi-da-dung-meizan-goi-1kg-201903221403092427.webp'
+        thumbnail: 'http://localhost:4000/static/bot-mi-da-dung-meizan-goi-1kg-201903221403092427.webp'
       },
       categories: {
         connect: categories
@@ -114,7 +115,7 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/rong-bien-nau-canh-ottogi-goi-20g-202304140929362247.webp'
+        thumbnail: 'http://localhost:4000/static/rong-bien-nau-canh-ottogi-goi-20g-202304140929362247.webp'
       },
       categories: {
         connect: categories
@@ -137,7 +138,7 @@ const createSampleProducts = async () => {
       stock: 200,
       sold: 10,
       image: {
-        thumbnail: '/images/product/buoi-da-xanh-trai-tu-17kg-tro-len-202205111921599930.webp'
+        thumbnail: 'http://localhost:4000/static/buoi-da-xanh-trai-tu-17kg-tro-len-202205111921599930.webp'
       },
       categories: {
         connect: categories
@@ -165,69 +166,209 @@ const createSampleCategory = async () => {
     {
       name: 'Rau củ',
       description: 'Thực phẩm rau củ',
+      slug: 'rau-cu',
+      attribute: [
+        {
+          price: {
+            label: 'Chọn mức giá',
+            range: [
+              {
+                label: 'Dưới 10.000đ',
+                max: 10000
+              },
+              {
+                label: 'Từ 10.000đ - 50.000đ',
+                min: 10000,
+                max: 50000
+              },
+              {
+                label: 'Từ 50.000đ - 100.000đ',
+                min: 50000,
+                max: 100000
+              },
+              {
+                label: 'Từ 100.000đ - 200.000đ',
+                min: 100000,
+                max: 200000
+              },
+              {
+                label: 'Từ 200.000đ - 300.000đ',
+                min: 200000,
+                max: 300000
+              },
+              {
+                label: 'Từ 300.000đ - 500.000đ',
+                min: 300000,
+                max: 500000
+              },
+              {
+                label: 'Trên 500.000đ',
+                min: 500000
+              }
+            ]
+          },
+          weight: {
+            label: 'Trọng lượng',
+            range: [
+              {
+                label: '90g',
+                min: 90,
+                max: 90
+              },
+              {
+                label: '100g',
+                min: 100,
+                max: 100
+              },
+              {
+                label: '120g',
+                min: 120,
+                max: 120
+              },
+              {
+                label: '200g',
+                min: 200,
+                max: 200
+              }
+            ]
+          }
+        }
+      ],
       image: {
-        thumbnail: '/images/category/danhmuc_1.webp',
-        banner: '/images/category/category_1_banner.jpg',
-        featured: '/images/category/category_1_featured.webp',
-        icon: '/images/category/danhmuc_1.webp'
+        thumbnail: 'http://localhost:4000/static/danhmuc_1.webp',
+        banner: 'http://localhost:4000/static/category_1_banner.jpg',
+        featured: 'http://localhost:4000/static/category_1_featured.webp',
+        icon: 'http://localhost:4000/static/danhmuc_1.webp'
       }
     },
     {
       name: 'Trái Cây',
       description: 'Thực phẩm trái cây',
+      slug: 'trai-cay',
+      attribute: [
+        {
+          price: {
+            label: 'Chọn mức giá',
+            range: [
+              {
+                label: 'Dưới 10.000đ',
+                max: 10000
+              },
+              {
+                label: 'Từ 10.000đ - 50.000đ',
+                min: 10000,
+                max: 50000
+              },
+              {
+                label: 'Từ 50.000đ - 100.000đ',
+                min: 50000,
+                max: 100000
+              },
+              {
+                label: 'Từ 100.000đ - 200.000đ',
+                min: 100000,
+                max: 200000
+              },
+              {
+                label: 'Từ 200.000đ - 300.000đ',
+                min: 200000,
+                max: 300000
+              },
+              {
+                label: 'Từ 300.000đ - 500.000đ',
+                min: 300000,
+                max: 500000
+              },
+              {
+                label: 'Trên 500.000đ',
+                min: 500000
+              }
+            ]
+          },
+          weight: {
+            label: 'Trọng lượng',
+            range: [
+              {
+                label: '90g',
+                min: 90,
+                max: 90
+              },
+              {
+                label: '100g',
+                min: 100,
+                max: 100
+              },
+              {
+                label: '120g',
+                min: 120,
+                max: 120
+              },
+              {
+                label: '200g',
+                min: 200,
+                max: 200
+              }
+            ]
+          }
+        }
+      ],
       image: {
-        thumbnail: '/images/category/danhmuc_2.webp',
-        banner: '/images/category/category_2_banner.jpg',
-        featured: '/images/category/category_2_featured.jpg',
-        icon: '/images/category/danhmuc_2.webp',
+        thumbnail: 'http://localhost:4000/static/danhmuc_2.webp',
+        banner: 'http://localhost:4000/static/category_2_banner.jpg',
+        featured: 'http://localhost:4000/static/category_2_featured.jpg',
+        icon: 'http://localhost:4000/static/danhmuc_2.webp',
         gallery: [
-          '/images/category/category_2_gallery_1.webp',
-          '/images/category/category_2_gallery_2.webp',
-          '/images/category/category_2_gallery_3.webp'
+          'http://localhost:4000/static/category_2_gallery_1.webp',
+          'http://localhost:4000/static/category_2_gallery_2.webp',
+          'http://localhost:4000/static/category_2_gallery_3.webp'
         ]
       }
     },
     {
       name: 'Đồ Khô',
       description: 'Thực phẩm đồ khô',
+      slug: 'do-kho',
       image: {
-        thumbnail: '/images/category/danhmuc_3.webp',
-        banner: '/images/category/category_3_banner.png',
-        featured: '/images/category/category_3_featured.jpg',
-        icon: '/images/category/danhmuc_3.webp',
+        thumbnail: 'http://localhost:4000/static/danhmuc_3.webp',
+        banner: 'http://localhost:4000/static/category_3_banner.png',
+        featured: 'http://localhost:4000/static/category_3_featured.jpg',
+        icon: 'http://localhost:4000/static/danhmuc_3.webp',
         gallery: []
       }
     },
     {
       name: 'Nước Ép',
       description: 'Thực phẩm nước ép',
+      slug: 'nuoc-ep',
       image: {
-        thumbnail: '/images/category/danhmuc_4.webp',
-        banner: '/images/category/category_4_banner.png',
-        featured: '/images/category/category_4_featured.png',
-        icon: '/images/category/danhmuc_4.webp',
+        thumbnail: 'http://localhost:4000/static/danhmuc_4.webp',
+        banner: 'http://localhost:4000/static/category_4_banner.png',
+        featured: 'http://localhost:4000/static/category_4_featured.png',
+        icon: 'http://localhost:4000/static/danhmuc_4.webp',
         gallery: []
       }
     },
     {
       name: 'Salad',
       description: 'Thực phẩm salad',
+      slug: 'salad',
       image: {
-        thumbnail: '/images/category/danhmuc_1.webp',
-        banner: '/images/category/category_1_banner.jpg',
-        featured: '/images/category/category_1_featured.webp',
-        icon: '/images/category/danhmuc_1.webp',
+        thumbnail: 'http://localhost:4000/static/danhmuc_1.webp',
+        banner: 'http://localhost:4000/static/category_1_banner.jpg',
+        featured: 'http://localhost:4000/static/category_1_featured.webp',
+        icon: 'http://localhost:4000/static/danhmuc_1.webp',
         gallery: []
       }
     },
     {
       name: 'Thực phẩm khác',
       description: 'Thực phẩm khác',
+      slug: 'thuc-pham-khac',
       image: {
-        thumbnail: '/images/category/danhmuc_1.webp',
-        banner: '/images/category/category_1_banner.jpg',
-        featured: '/images/category/category_1_featured.webp',
-        icon: '/images/category/danhmuc_1.webp',
+        thumbnail: 'http://localhost:4000/static/danhmuc_1.webp',
+        banner: 'http://localhost:4000/static/category_1_banner.jpg',
+        featured: 'http://localhost:4000/static/category_1_featured.webp',
+        icon: 'http://localhost:4000/static/danhmuc_1.webp',
         gallery: []
       }
     }

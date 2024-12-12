@@ -54,7 +54,8 @@ type ProductImage {
 model Product {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  description String
+  title       String // Chứa nội dung mô tả ngắn gọn về sản phẩm để SEO
+  description String // Chứa nội dung mô tả chi tiết về sản phẩm để SEO
   slug        String       @unique
   price       Float
   stock       Int
@@ -110,6 +111,7 @@ type CategoryImage {
 model Category {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String        @unique
+  slug          String        @unique
   description   String? // Mô tả danh mục
   parentId      String?       @db.ObjectId // ID của danh mục cha (nếu có)
   parent        Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -117,6 +119,8 @@ model Category {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   image         CategoryImage
+
+  attribute Json[]
 
   // tạo quan hệ m-n(many to many) để tạo ra bảng trung gian
   productIDs String[]  @db.ObjectId
