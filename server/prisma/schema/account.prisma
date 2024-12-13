@@ -1,0 +1,20 @@
+enum GenderType {
+    MALE
+    FEMALE
+    OTHER
+}
+
+model Account {
+    id          String      @id @default(auto()) @map("_id") @db.ObjectId
+    email       String      @unique
+    fullname    String
+    phoneNumber String      @unique
+    password    String
+    address     String?
+    gender      GenderType? @default(OTHER)
+    dateOfBirth DateTime?
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    Session     Session[]
+    avatar      String?
+}
