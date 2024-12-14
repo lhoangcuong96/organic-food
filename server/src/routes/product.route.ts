@@ -20,7 +20,7 @@ import {
   ProductResType,
   UpdateProductBody,
   UpdateProductBodyType
-} from '@/schemaValidations/product.schema'
+} from '@/schemaValidations/product/product.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function productRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {

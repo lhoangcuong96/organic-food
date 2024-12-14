@@ -21,7 +21,6 @@ model Category {
 
     attribute Json[]
 
-    // tạo quan hệ m-n(many to many) để tạo ra bảng trung gian
-    productIDs String[]  @db.ObjectId
-    products   Product[] @relation(fields: [productIDs], references: [id])
+    // 1 category có nhiều product
+    products Product[]
 }
