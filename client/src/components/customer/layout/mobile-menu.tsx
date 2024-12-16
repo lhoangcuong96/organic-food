@@ -14,13 +14,13 @@ import { ProductMenu } from "./product-menu";
 
 const profileItems: MenuProps["items"] = [
   {
-    label: <Link href={routePath.customer.signIn}>Đăng nhập</Link>,
-    key: routePath.customer.signIn,
+    label: <Link href={routePath.signIn}>Đăng nhập</Link>,
+    key: routePath.signIn,
     icon: <RiLoginBoxLine className="!text-lg" />,
   },
   {
-    label: <Link href={routePath.customer.signUp}>Đăng ký</Link>,
-    key: routePath.customer.signUp,
+    label: <Link href={routePath.signUp}>Đăng ký</Link>,
+    key: routePath.signUp,
     icon: <UserOutlined className="!text-lg" />,
   },
 ];

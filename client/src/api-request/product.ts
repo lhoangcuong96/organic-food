@@ -6,6 +6,9 @@ import {
 } from "@/validation-schema/product";
 
 const productRequestApi = {
+  getProductMetrics: () => {
+    return http.get(`/products/metrics`);
+  },
   getProductDetail: (slug: string) => {
     return http.get<ProductDetailResponseType>(`/products/${slug}`);
   },

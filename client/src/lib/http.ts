@@ -1,7 +1,7 @@
 import { routePath } from "@/constants/routes";
 import { TokenType } from "@/constants/types";
 import envConfig from "@/envConfig";
-import sessionStore from "@/helper/session";
+import SessionStore from "@/helper/store/session-store";
 import { redirect } from "next/navigation";
 
 export type HTTPPayload = {
@@ -67,8 +67,7 @@ export const request = async <T>(
   let accessToken = null;
 
   if (typeof window !== "undefined") {
-    accessToken = sessionStore.getAccessToken();
-    console.log(accessToken);
+    accessToken = SessionStore.getAccessToken();
   } else {
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
@@ -120,11 +119,11 @@ export const request = async <T>(
         } catch (error) {
           throw error;
         } finally {
-          // sessionStore.clearTokens();
-          // location.href = routePath.customer.signIn;
+          // SessionStore.clearTokens();
+          // location.href = routePath.signIn;
         }
       } else {
-        await redirect(routePath.customer.signOut);
+        await redirect(routePath.signOut);
       }
     } else {
       throw new HttpError(

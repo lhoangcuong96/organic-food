@@ -1,4 +1,7 @@
-"use client"; // Đảm bảo đây là một client component
+"use client";
+import { STORE_KEYS } from "./local-store";
+
+// Đảm bảo đây là một client component
 
 class SessionStore {
   private static instance: SessionStore | null = null;
@@ -22,15 +25,15 @@ class SessionStore {
   }
 
   private loadTokens(): void {
-    this.accessToken = localStorage.getItem("accessToken");
-    this.refreshToken = localStorage.getItem("refreshToken");
+    this.accessToken = localStorage.getItem(STORE_KEYS.accessToken);
+    this.refreshToken = localStorage.getItem(STORE_KEYS.refreshToken);
   }
 
   public setTokens(accessToken: string, refreshToken: string): void {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem(STORE_KEYS.accessToken, accessToken);
+    localStorage.setItem(STORE_KEYS.refreshToken, refreshToken);
   }
 
   public getAccessToken(): string | null {
@@ -44,8 +47,8 @@ class SessionStore {
   public clearTokens(): void {
     this.accessToken = null;
     this.refreshToken = null;
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    localStorage.removeItem(STORE_KEYS.accessToken);
+    localStorage.removeItem(STORE_KEYS.refreshToken);
   }
 }
 

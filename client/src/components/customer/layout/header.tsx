@@ -23,20 +23,20 @@ import Menu from "./menu";
 
 const unLoggedProfileItems: MenuProps["items"] = [
   {
-    label: <Link href={routePath.customer.signIn}>Đăng nhập</Link>,
-    key: routePath.customer.signIn,
+    label: <Link href={routePath.signIn}>Đăng nhập</Link>,
+    key: routePath.signIn,
     icon: <RiLoginBoxLine className="!text-lg" />,
   },
   {
-    label: <Link href={routePath.customer.signUp}>Đăng ký</Link>,
-    key: routePath.customer.signUp,
+    label: <Link href={routePath.signUp}>Đăng ký</Link>,
+    key: routePath.signUp,
     icon: <FaUserCircle className="!text-lg" />,
   },
 ];
 const loggedProfileItems: MenuProps["items"] = [
   {
     label: <Link href={routePath.customer.account.profile}>Tài khoản</Link>,
-    key: routePath.customer.signIn,
+    key: routePath.signIn,
     icon: <CgProfile className="!text-lg" />,
   },
   {
@@ -49,8 +49,8 @@ const loggedProfileItems: MenuProps["items"] = [
     icon: <MdOutlinePassword className="!text-lg" />,
   },
   {
-    label: <Link href={routePath.customer.signOut}>Đăng xuất</Link>,
-    key: routePath.customer.signOut,
+    label: <Link href={routePath.signOut}>Đăng xuất</Link>,
+    key: routePath.signOut,
     icon: <RiLoginBoxLine className="!text-lg" />,
   },
 ];

@@ -5,7 +5,7 @@ import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import { routePath } from "@/constants/routes";
-import sessionStore from "@/helper/session";
+import SessionStore from "@/helper/store/session-store";
 import { useHandleMessage } from "@/utils/hooks";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,7 @@ export function SignUpForm() {
       await authApiRequest.setToken(accessToken, refreshToken);
 
       messageAPI.success("Đăng kí thành công");
-      sessionStore.setTokens(accessToken, refreshToken);
+      SessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
       router.refresh();
     } catch (error) {
@@ -164,7 +164,7 @@ export function SignUpForm() {
       </div>
 
       <Link
-        href={routePath.customer.signIn}
+        href={routePath.signIn}
         className="text-green-600 underline hover:text-green-600 hover:underline block m-auto font-semibold"
       >
         Đăng nhập

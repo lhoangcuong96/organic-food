@@ -4,6 +4,11 @@ enum GenderType {
     OTHER
 }
 
+enum RoleType {
+    ADMIN
+    USER
+}
+
 model Account {
     id          String      @id @default(auto()) @map("_id") @db.ObjectId
     email       String      @unique
@@ -17,4 +22,5 @@ model Account {
     updatedAt   DateTime    @updatedAt
     Session     Session[]
     avatar      String?
+    role        RoleType    @default(USER)
 }

@@ -17,7 +17,7 @@ export default function Page() {
     } catch (error) {
       handleError({ error });
     } finally {
-      router.replace(`${routePath.customer.signIn}?redirect=${pathName}`);
+      router.replace(`${routePath.signIn}?redirect=${pathName}`);
       router.refresh();
     }
   };

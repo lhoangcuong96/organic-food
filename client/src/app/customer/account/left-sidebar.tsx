@@ -32,7 +32,7 @@ const menuItems: MenuItem[] = [
   {
     icon: User,
     label: "Tài khoản của tôi",
-    url: routePath.customer.account.profile,
+    url: "",
     key: "account",
     subItems: [
       {
@@ -100,18 +100,20 @@ export function LeftSidebar() {
 
   return (
     <div className="w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">
-      <div className="flex items-center space-x-3 mb-8">
+      <div className="grid grid-cols-[max-content_auto] items-center space-x-3 mb-8">
         <Avatar className="w-12 h-12 relative ">
           {account?.avatar ? (
             <AvatarImage src={account.avatar} className="object-cover" />
           ) : (
-            <AvatarFallback className="bg-white">
+            <AvatarFallback className="bg-gray-100">
               <User className="w-6 h-6" />
             </AvatarFallback>
           )}
         </Avatar>
-        <div>
-          <p className="font-semibold">{account?.fullname}</p>
+        <div className="w-[calc(100%_-_3rem)]">
+          <p className="font-semibold text-ellipsis overflow-hidden">
+            {account?.fullname}
+          </p>
           <Link
             href={routePath.customer.account.profile}
             className="!text-gray-500 no-underline !hover:text-gray-500 flex flex-row items-center gap-1"
@@ -126,17 +128,20 @@ export function LeftSidebar() {
           const isParentActive = window.location.pathname.includes(item.key);
           return (
             <div key={index}>
-              <Link
-                href={item.subItems ? "#" : item.url}
+              <div
                 className={cn(
                   "!text-gray-700 no-underline cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 hover:text-lime-600",
                   isParentActive && "!text-lime-600"
                 )}
-                onClick={() =>
-                  setExpandedItem(
-                    expandedItem === item.label ? null : item.label
-                  )
-                }
+                onClick={() => {
+                  if (item.url) {
+                    router.push(item.url);
+                  } else {
+                    setExpandedItem(
+                      expandedItem === item.label ? null : item.label
+                    );
+                  }
+                }}
               >
                 <div className="flex items-center space-x-3">
                   <item.icon className="w-5 h-5" />
@@ -148,7 +153,7 @@ export function LeftSidebar() {
                   ) : (
                     <ChevronDown className="w-4 h-4" />
                   ))}
-              </Link>
+              </div>
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-out",

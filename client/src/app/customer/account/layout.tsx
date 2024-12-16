@@ -20,7 +20,7 @@ export default function layout({ children }: { children: ReactNode }) {
       <div className="w-screen p-8 flex items-center justify-center h-full">
         <div className="max-w-screen-xl w-full">
           <div className="mx-auto">
-            <div className="flex min-h-[600px] h-full bg-gray-100 font-medium">
+            <div className="flex min-h-[600px] h-full font-medium">
               <LeftSidebar />
               {children}
             </div>

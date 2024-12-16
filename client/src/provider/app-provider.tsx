@@ -6,7 +6,7 @@ import { isTokenExpired } from "@/utils/auth";
 import { Account } from "@prisma/client";
 import type { MessageInstance } from "antd/es/message/interface";
 import useMessage from "antd/es/message/useMessage";
-import sessionStore from "@/helper/session";
+import SessionStore from "@/helper/store/session-store";
 import ms from "ms";
 import {
   createContext,
@@ -54,14 +54,14 @@ export default function AppProvider({
       const res = await authApiRequest.refreshTokenFromClientToNextServer();
       const { accessToken, refreshToken } = res.payload.data;
       await authApiRequest.setToken(accessToken, refreshToken);
-      sessionStore.setTokens(accessToken, refreshToken);
+      SessionStore.setTokens(accessToken, refreshToken);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    const accessToken = sessionStore.getAccessToken();
+    const accessToken = SessionStore.getAccessToken();
     if (accessToken && isTokenExpired(accessToken)) {
       console.log(ms(envConfig?.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN || "1d"));
       const interval = setInterval(() => {

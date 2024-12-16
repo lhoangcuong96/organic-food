@@ -1,11 +1,11 @@
 // src/routes.ts
 
 export const routePath = {
+  signIn: "/sign-in",
+  signOut: "/sign-out",
+  signUp: "/sign-up",
   customer: {
     home: "/customer/home",
-    signIn: "/customer/sign-in",
-    signOut: "/customer/sign-out",
-    signUp: "/customer/sign-up",
     products: "/customer/products",
     news: "/customer/news",
     promotionalProduct: "/customer/product",
@@ -25,6 +25,13 @@ export const routePath = {
       changeEmail: "/customer/account/change-email",
       notifications: "/customer/account/notifications",
       bank: "/customer/account/bank",
+    },
+  },
+  admin: {
+    statistic: "/admin/statistic",
+    product: {
+      list: "/admin/product/list",
+      add: "/admin/product/add",
     },
   },
   error: "/error",

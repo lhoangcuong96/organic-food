@@ -15,7 +15,7 @@ import { useHandleMessage } from "@/utils/hooks";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
 import { useRouter } from "next/navigation";
-import sessionStore from "@/helper/session";
+import SessionStore from "@/helper/store/session-store";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
@@ -41,7 +41,7 @@ export function SignInForm() {
       // Send token to client server to set cookie
       await authApiRequest.setToken(accessToken, refreshToken);
       messageAPI.success("Đăng nhập thành công");
-      sessionStore.setTokens(accessToken, refreshToken);
+      SessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
       router.refresh();
     } catch (error) {
@@ -115,13 +115,13 @@ export function SignInForm() {
       </div>
 
       <Link
-        href={routePath.customer.signUp}
+        href={routePath.signUp}
         className="text-green-600 underline hover:text-green-600 hover:underline block m-auto font-semibold"
       >
         Quên mật khẩu
       </Link>
       <Link
-        href={routePath.customer.signUp}
+        href={routePath.signUp}
         className="text-green-600 underline hover:text-green-600 hover:underline block m-auto font-semibold"
       >
         Đăng kí
