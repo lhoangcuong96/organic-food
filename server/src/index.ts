@@ -13,6 +13,7 @@ import fastifyAuth from '@fastify/auth'
 import fastifyCookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import fastifyHelmet from '@fastify/helmet'
+import RateLimit from '@fastify/rate-limit'
 import fastifyRedis from '@fastify/redis'
 import Fastify from 'fastify'
 import path from 'path'
@@ -31,11 +32,31 @@ const start = async () => {
     await fastify.register(fastifyRedis, {
       url: envConfig.REDIS_URL
     })
+    // sử dụng lrucache để lưu trữ dữ liệu
+    // redis cloud không hỗ trợ những key này
+    // fastify.redis.config('SET', 'maxmemory', '20mb')
+    // fastify.redis.config('SET', 'maxmemory-policy', 'allkeys-lru')
 
     // Sử dụng bloom filter để lưu trữ email và phoneNumber
     const bloomFilter = new BloomFilterService(fastify)
     bloomFilter.createBloomFilter({ filterName: 'email', expectedElements: 100000, falsePositiveRate: 0.001 })
     bloomFilter.createBloomFilter({ filterName: 'phoneNumber', expectedElements: 100000, falsePositiveRate: 0.001 })
+
+    // Giới hạn số lượng requests của 1 IP
+    fastify.register(RateLimit, {
+      max: 100,
+      timeWindow: '1 minute',
+      allowList: ['127.0.0.1', 'localhost'],
+      errorResponseBuilder(req, context) {
+        return {
+          statusCode: 429,
+          error: 'Too Many Requests',
+          message: 'Quá nhiều requests từ IP này, vui lòng thử lại sau 1 phút',
+          date: new Date().toISOString(),
+          expires: context.ttl
+        }
+      }
+    })
 
     const whitelist = ['*']
     fastify.register(cors, {

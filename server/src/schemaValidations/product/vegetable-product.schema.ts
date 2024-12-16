@@ -1,9 +1,9 @@
 import z from 'zod'
-import { CreateProductBody, ProductDetailSchema, ProductListSchema } from './product.schema'
+import { CreateProductBodySchema, ProductDetailSchema, ProductListSchema } from './product.schema'
 
 /*---------------------Create-------------------------- */
 export const CreateVegetableProductBodySchema = z.object({
-  ...CreateProductBody.shape,
+  ...CreateProductBodySchema.shape,
   attributes: z.object({
     origin: z.string(),
     weight: z.number().positive(),

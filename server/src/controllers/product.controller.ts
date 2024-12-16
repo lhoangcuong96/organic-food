@@ -1,52 +1,32 @@
-import prisma from '@/database'
-import { Order } from '@/schemaValidations/common.schema'
 import {
   CreateProductBodyType,
   ProductListQueryType,
   UpdateProductBodyType
 } from '@/schemaValidations/product/product.schema'
-import { ProductService } from '@/services/product.service'
+import { ProductService } from '@/services/product/product-service'
 
-export const getProductList = (params: ProductListQueryType) => {
-  return ProductService.getProductList(params)
-}
+export default class ProductController {
+  service: ProductService
+  constructor() {
+    this.service = new ProductService()
+  }
 
-export const getProductDetail = (slug: string) => {
-  return prisma.product.findUniqueOrThrow({
-    where: {
-      slug
-    },
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      slug: true,
-      description: true,
-      stock: true,
-      image: true,
-      createdAt: true,
-      updatedAt: true
-    }
-  })
-}
+  getProductList = (params: ProductListQueryType) => {
+    return this.service.list(params)
+  }
 
-export const createProduct = (data: CreateProductBodyType) => {
-  return ProductService.createProduct(data)
-}
+  getProductDetail = (slug: string) => {
+    return this.service.getDetailBySlug(slug)
+  }
 
-export const updateProduct = (id: number, data: UpdateProductBodyType) => {
-  return prisma.product.update({
-    where: {
-      id
-    },
-    data
-  })
-}
+  createProduct = (data: CreateProductBodyType) => {
+    return this.service.create(data)
+  }
+  updateProduct = (id: string, data: UpdateProductBodyType) => {
+    return this.service.update(id, data)
+  }
 
-export const deleteProduct = (id: number) => {
-  return prisma.product.delete({
-    where: {
-      id
-    }
-  })
+  deleteProduct = (id: string) => {
+    return this.service.delete(id)
+  }
 }

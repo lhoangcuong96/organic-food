@@ -123,7 +123,8 @@ export default class AuthController {
         email: account.email,
         phoneNumber: account.phoneNumber,
         fullname: account.fullname,
-        avatar: account.avatar
+        avatar: account.avatar,
+        role: account.role
       }
     })
     const session = await prisma.session.create({

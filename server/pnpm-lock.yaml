@@ -23,6 +23,9 @@ importers:
       '@fastify/multipart':
         specifier: ^9.0.1
         version: 9.0.1
+      '@fastify/rate-limit':
+        specifier: ^10.2.1
+        version: 10.2.1
       '@fastify/redis':
         specifier: ^7.0.1
         version: 7.0.1
@@ -321,6 +324,9 @@ packages:
 
   '@fastify/multipart@9.0.1':
     resolution: {integrity: sha512-vt2gOCw/O4EwpN4KlLVJxth4iQlDf7T5ggw2Db2C+UbO2WJBG7y0jEBvu/HT6JIW/lBYaqrrUy9MmTpCKgXEpw==}
+
+  '@fastify/rate-limit@10.2.1':
+    resolution: {integrity: sha512-6rM4MXBtz9j6i9ChAVNz8ZA2yzSTGswIR3XvIbzHpe7JUWvbL7NJylFO12n7zKWfl3rEpOYiKogD98scl8SMGQ==}
 
   '@fastify/redis@7.0.1':
     resolution: {integrity: sha512-VXmaqfw7Ot53lS9mQIExE3rO5xfABUic/37vU46kTWINax/fDQiNb0ofpfVJqTJnjlToPCHmK47pRagA3xmH/Q==}
@@ -1790,6 +1796,12 @@ snapshots:
       '@fastify/error': 4.0.0
       fastify-plugin: 5.0.1
       secure-json-parse: 3.0.1
+
+  '@fastify/rate-limit@10.2.1':
+    dependencies:
+      '@lukeed/ms': 2.0.2
+      fastify-plugin: 5.0.1
+      toad-cache: 3.7.0
 
   '@fastify/redis@7.0.1':
     dependencies:

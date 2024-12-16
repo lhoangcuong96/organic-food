@@ -9,7 +9,7 @@ export const ProductImageSchema = z.object({
   gallery: z.array(z.string()).nullable().optional()
 })
 
-export const CreateProductBody = z.object({
+export const CreateProductBodySchema = z.object({
   name: z.string().min(1).max(256),
   title: z.string().min(1).max(256),
   price: z.number().positive(),
@@ -22,20 +22,26 @@ export const CreateProductBody = z.object({
     featured: z.string().nullable().optional(),
     gallery: z.array(z.string())
   }),
-  category: z.string(),
-  tags: z.array(z.string()).optional()
+  categoryId: z.string(),
+  tags: z.array(z.string()).optional(),
+  attributes: z.array(z.any())
 })
 
-export type CreateProductBodyType = z.TypeOf<typeof CreateProductBody>
+export type CreateProductBodyType = z.TypeOf<typeof CreateProductBodySchema>
 /*----------------End Create---------------------*/
 
 /*----------------Update---------------------*/
-export const UpdateProductBody = CreateProductBody
+export const UpdateProductParamsSchema = z.object({
+  id: z.string()
+})
+export const UpdateProductBodySchema = CreateProductBodySchema
+
+export type UpdateProductParamsType = z.TypeOf<typeof UpdateProductParamsSchema>
 export type UpdateProductBodyType = CreateProductBodyType
 /*----------------End Update---------------------*/
 
 /*----------------List---------------------*/
-export const ProductListQuery = z.object({
+export const ProductListQuerySchema = z.object({
   ...CommonQuery.shape,
   category: z.string().optional()
 })
@@ -51,18 +57,18 @@ export const ProductListSchema = z.object({
   image: ProductImageSchema
 })
 
-export const ProductListRes = z.object({
+export const ProductListResSchema = z.object({
   data: z.array(ProductListSchema),
   message: z.string()
 })
-export type ProductListQueryType = z.TypeOf<typeof ProductListQuery>
-export type ProductListResType = z.TypeOf<typeof ProductListRes>
+export type ProductListQueryType = z.TypeOf<typeof ProductListQuerySchema>
+export type ProductListResType = z.TypeOf<typeof ProductListResSchema>
 export type ProductListType = z.TypeOf<typeof ProductListSchema>[]
 
 /*----------------End List---------------------*/
 
 /*----------------Detail---------------------*/
-export const ProductDetailParams = z.object({
+export const ProductDetailParamsSchema = z.object({
   slug: z.coerce.string()
 })
 export const ProductDetailSchema = z.object({
@@ -75,6 +81,19 @@ export const ProductDetailSchema = z.object({
   stock: z.number(),
   image: ProductImageSchema
 })
+export const ProductDetailResponseSchema = z.object({
+  data: ProductDetailSchema,
+  message: z.string()
+})
 
-export type ProductDetailParamsType = z.TypeOf<typeof ProductDetailParams>
+export type ProductDetailParamsType = z.TypeOf<typeof ProductDetailParamsSchema>
+export type ProductDetailType = z.TypeOf<typeof ProductDetailSchema>
+export type ProductDetailResponseType = z.TypeOf<typeof ProductDetailResponseSchema>
 /*----------------End Detail---------------------*/
+
+/*----------------Delete---------------------*/
+export const DeleteProductParamsSchema = z.object({
+  id: z.string()
+})
+export type DeleteProductParamsType = z.TypeOf<typeof DeleteProductParamsSchema>
+/*----------------End Delete---------------------*/

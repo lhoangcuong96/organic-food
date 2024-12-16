@@ -1,16 +1,12 @@
 import prisma from '@/database'
+import { CategoryService } from '@/services/categorySerice'
 
-export const getCategoryBySlug = (slug: string) => {
-  return prisma.category.findUniqueOrThrow({
-    where: {
-      slug
-    },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      slug: true,
-      image: true
-    }
-  })
+export class CategoryController {
+  static async getCategoryBySlug(slug: string) {
+    return CategoryService.getCategoryBySlug({ slug })
+  }
+
+  static async getCategoryById(id: string) {
+    return CategoryService.getCategoryById({ id })
+  }
 }

@@ -11,16 +11,21 @@ This document outlines the flow of the Dolar application.
     3. [Sign Out](#sign-out)
     4. [Tự động đăng xuất khi hết hạn](#tự-động-đăng-xuất-khi-hết-hạn)
     5. [Tự động refresh token khi hết hạn](#tự-động-refresh-token-khi-hết-hạn)
+2. [Model](#Model)
 2. [SEO](#seo)
-3. [Xử lý lượng đồng thời cao](#xử-lý-lượng-đông-thời-cao)
-    1. [Kiểm tra email tồn tại hay chưa](#kiểm-tra-email-tồn-tại-hay-chưa)
-4. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
+4. [Caching](#caching)
+    1. [LRU caching](#lru-caching)
+    2. [Kiểm tra email tồn tại hay chưa](#kiểm-tra-email-tồn-tại-hay-chưa)
+5. [Giải pháp an toàn dữ liệu](#giải-pháp-an-toàn-dữ-liệu)
+    1. [Rate limits(giới hạn tần suất)](#rate-limits)
+6. [Các thuật toán sử dụng](#các-thuật-toán-sử-dụng)
+7. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
     1. [Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
 
 ## Authentication
 ### Sign In
 - Nextjs
-    - User sẽ gửi email kèm mật khẩu lên server Nodejs để lấy token trả về
+    - User sẽ gửi email kèm mật khẩu lên server Fastify để lấy token trả về
     - Sau khi nhận được token user sẽ gửi token lên trên Nextjs server để server set cookie trả về. 
     Nhu vậy dù gửi request từ Nextjs hay Nextjs server đều được
     - Set cookie
@@ -34,7 +39,7 @@ This document outlines the flow of the Dolar application.
         - Set Secure chỉ gửi cookie khi request từ https
         - Ví dụ: "Set-Cookie": `sessionToken=${sessionToken}; PATH=/; HttpOnly; Expires=${expiredTime}; SameSite=Strict; Secure`,
 
-- Nodejs
+- Fastify
     - Sau khi nhận được request thì kiểm tra user tồn tại hay không
     - Sau đó kiểm tra mật khẩu bằng hàm compare của bcrypt
         - ```export const comparePassword = async (password: string, hash: string) => bcrypt.compare(password, hash)```
@@ -54,7 +59,7 @@ This document outlines the flow of the Dolar application.
 ### Sign Up
 - Nextjs
     - Xử lý tương tự Sign in
-- Nodejs
+- Fastify
     - Sau khi nhận đươc request từ client sẽ kiểm tra email hoặc số điện thoại tồn tại hay chưa
     - Sau đó sẽ hash password(băm mật khẩu) dựa vào package bcrypt và saltRound
         - salt là giá trị thêm vào ngẫu nhiên trước password
@@ -75,14 +80,14 @@ This document outlines the flow of the Dolar application.
         - CreateSigner sẽ trả về 1 hàm để tạo chữ kí dựa theo payload
 ### Sign Out
 - Vì client không thể tự xoá được cookie nên sẽ gọi tới Nextjs server
-- Nextjs server sẽ gọi tới api của Nodejs server để xoá đi cookie
+- Nextjs server sẽ gọi tới api của Fastify server để xoá đi cookie
 - Sau khi xoá thành công và trả về response cho Nextjs server
 - Nextjs server sẽ set rỗng cho cookie và trả về cho client
 ### Tự động đăng xuất khi hết hạn
 - Sau khi nhận về status 401(Unauthorized)
-- Sẽ có 2 trường hợp là client gọi thẳng tới Nodejs server và gọi thông qua Server nextjs
+- Sẽ có 2 trường hợp là client gọi thẳng tới Fastify server và gọi thông qua Server nextjs
     - Client:
-        - Client sẽ gọi đến Nextjs server để force logout (set lại cookie) mà không cần phải gọi tới Nodejs vì sessionToken đã bị xoá r
+        - Client sẽ gọi đến Nextjs server để force logout (set lại cookie) mà không cần phải gọi tới Fastify vì sessionToken đã bị xoá r
     - Server nextjs:
         - Vì server không có cookie => redirect về 1 page logout để gửi request logout lên
 
@@ -95,6 +100,10 @@ This document outlines the flow of the Dolar application.
     - TH2: Hết hạn dưới client
         - setInterval kiểm trả tra token nếu hết sẽ call lên API server lấy lại token và tiếp tục call api set cookie lên Nextjs server như login flow
 
+
+## Model
+- Product:
+    - Product bao gồm 
 
 ## SEO
 - Các thuộc tính
@@ -139,7 +148,12 @@ This document outlines the flow of the Dolar application.
     - Cung cấp danh sách các urls mà muốn lập chỉ mục và độ ưu tiên của nó
     - Nó chứa các thông tin bổ sung của trang, ngày cập nhập, tần suất thay đổi
 
-## Xử lý lượng đồng thời cao
+## Caching
+### LRU caching
+- Khi bộ nhớ caching có 1 giới hạn nhất định thì việc cache sẽ phải ưu tiên những dữ liệu truy xuất nhiều nhất
+- LRU caching sẽ làm việc đó, những dữ liệu được put vào hay get ra thường xuyên sẽ luôn nằm trên đầu và đẩy những dữ liệu khác xuống=> khi tới mức giới hạn => data ít dc dùng sẽ bị xoá
+- Config cho redis:
+ 
 ### Kiểm tra email tồn tại hay chưa
 - Bài toán: nếu có 100tr users và khi register phải kiểm tra quét hết database => hiệu năng kém
 - Solution: sử dụng redis để lưu những user đã đăng kí
@@ -148,6 +162,16 @@ This document outlines the flow of the Dolar application.
     - Sử dụng hàm crypto.hash để biến email thánh chuỗi chữ số(1 ký tự = 8 bytes)
          nhưng lại ít kí tự để lưu hơn so với email, nhưng vẫn cao => sử dụng bloom filter
     - Sử dụng Bitmap(dãy nhị phân) để lưu, sử dụng thuật toán [Bloom Filter](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
+
+## Giải pháp an toàn dữ liệu
+### Rate limits
+- Giới hạn tuần suất truy cập trong 1 khoảng thời gian nhất định
+- Gồm nhiều cách nhưng hiện tại trang web sử dụng Fixed Window
+
+
+## Các thuật toán sử dụng
+- [LRU caching](#lru-caching)
+- [Bloom Filter](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
 
 ## Một số định nghĩa khác
 ### Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)
