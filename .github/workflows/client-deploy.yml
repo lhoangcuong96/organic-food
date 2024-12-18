@@ -36,10 +36,10 @@ jobs:
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
-        SSH_PRIVATE_KEY : ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
           cd /cuong/organic-food/client
           git pull origin main
           npm ci
