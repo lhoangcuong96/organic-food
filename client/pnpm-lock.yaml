@@ -77,6 +77,9 @@ importers:
       antd:
         specifier: ^5.21.5
         version: 5.21.6(date-fns@4.1.0)(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)
+      ci:
+        specifier: ^2.3.0
+        version: 2.3.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1608,6 +1611,10 @@ packages:
   chokidar@4.0.1:
     resolution: {integrity: sha512-n8enUVCED/KVRQlab1hr3MVpcVMvxtZjmEa956u+4YijlmQED223XMSYj2tLuKvr4jcCTzNNMpQDUer72MMmzA==}
     engines: {node: '>= 14.16.0'}
+
+  ci@2.3.0:
+    resolution: {integrity: sha512-0MGXkzJKkwV3enG7RUxjJKdiAkbaZ7visCjitfpCN2BQjv02KGRMxCHLv4RPokkjJ4xR33FLMAXweS+aQ0pFSQ==}
+    hasBin: true
 
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
@@ -4909,6 +4916,8 @@ snapshots:
   chokidar@4.0.1:
     dependencies:
       readdirp: 4.0.2
+
+  ci@2.3.0: {}
 
   class-variance-authority@0.7.1:
     dependencies:
