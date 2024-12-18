@@ -1,9 +1,11 @@
-name: Deploy to VPS
+name: Deploy client to VPS
 
 on:
   push:
     branches:
       - master  # hoặc tên nhánh bạn muốn trigger việc deploy
+    paths:
+      - 'client/**'  # Chỉ trigger khi có thay đổi trong thư mục client
 
 jobs:
   deploy:
@@ -19,7 +21,8 @@ jobs:
       with:
         version: 8 
     - name: Install dependencies
-      run: pnpm install
+      working-directory: ./client # vì src client nằm trong client nên phải chuyển đến thư mục client
+      run: pnpm install --frozen-lockfile
     # Nếu sử dụng npm thì sử dụng lệnh sau
     #- name: Install dependencies
     #  run: npm ci
