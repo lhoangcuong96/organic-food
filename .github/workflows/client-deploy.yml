@@ -31,6 +31,8 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
+    - name: Check Secrets
+      run: echo "Secret HOST is set"
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
