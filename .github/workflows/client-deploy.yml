@@ -23,7 +23,12 @@ jobs:
         version: 8 
     - name: Install dependencies
       working-directory: ./client # vì src client nằm trong client nên phải chuyển đến thư mục client
-      run: pnpm install --frozen-lockfile
+      run: |              # Nếu có file pnpm-lock.yaml thì sử dụng pnpm install --frozen-lockfile(không làm thay đổi lock file)
+        if [ -f pnpm-lock.yaml ]; then
+          pnpm install --frozen-lockfile
+        else
+          pnpm install
+        fi
     # Nếu sử dụng npm thì sử dụng lệnh sau
     #- name: Install dependencies
     #  run: npm ci
