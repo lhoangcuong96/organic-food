@@ -35,8 +35,8 @@ jobs:
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
-        host: "139.180.222.46"
-        username: "cuong"
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /cuong/organic-food/client
