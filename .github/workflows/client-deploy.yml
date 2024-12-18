@@ -32,7 +32,7 @@ jobs:
       working-directory: ./client
       run: npm run build
     - name: Check Secrets
-      run: echo "Secret HOST is set"
+      run: echo "Secret is set"
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
@@ -44,4 +44,4 @@ jobs:
           git pull origin main
           npm ci
           npm run build
-          pm2 restart orgnanic-food
+          pm2 restart organic-food
