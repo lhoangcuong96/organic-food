@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     ppr: "incremental",
+    esmExternals: false,
   },
   images: {
     remotePatterns: [
