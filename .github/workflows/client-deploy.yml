@@ -6,6 +6,7 @@ on:
       - master  # hoặc tên nhánh bạn muốn trigger việc deploy
     paths:
       - 'client/**'  # Chỉ trigger khi có thay đổi trong thư mục client
+      - ".github/workflows/client-deploy.yml"  # Trigger khi có thay đổi trong file workflow
 
 jobs:
   deploy:
