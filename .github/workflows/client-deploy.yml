@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '20.11.1'  # hoặc phiên bản Node.js bạn đang sử dụng
     - name: Install dependencies
-      run: npm ci
+      run: pnpm ci  # nếu sử dụng pnpm install các package thì phải thay chỗ này thành pnpm để nó lấy file pnpm-lock.json ra
     - name: Build
       run: npm run build
     - name: Deploy to VPS
