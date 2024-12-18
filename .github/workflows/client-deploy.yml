@@ -15,7 +15,9 @@ jobs:
       with:
         node-version: '20.11.1'  # hoặc phiên bản Node.js bạn đang sử dụng
     - name: Install pnpm  # nếu dự án xài pnpm thì phải install ở đây
-        run: npm install -g pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8 
     - name: Install dependencies
       run: pnpm ci
     - name: Build
