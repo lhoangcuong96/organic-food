@@ -31,13 +31,12 @@ jobs:
       working-directory: ./client
       run: npm run build
     - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
+      uses: fifsky/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
+        user: root
+        key: ${{ secrets.PRIVATE_KEY}}
+        command: |
           cd /cuong/organic-food/client
           git pull origin main
           npm ci
