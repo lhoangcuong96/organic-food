@@ -4,16 +4,16 @@ import {
   CreateProductBodyType,
   ProductListQueryType,
   ProductListType
-} from '@/schemaValidations/product/product.schema'
+} from '@/schemaValidations/admin/product/admin-product-schema'
 import { InventoryService } from '../inventory.service'
-import { CreateVegetableProductBodySchema } from '@/schemaValidations/product/vegetable-product.schema'
-import { CategoryService } from '../categorySerice'
+import { CreateVegetableProductBodySchema } from '@/schemaValidations/admin/product/vegetable-product.schema'
+import { CategoryService } from '../category-service'
 
 const ProductValidationSchema: { [key: string]: any } = {
   vegetable: CreateVegetableProductBodySchema
 }
 
-export class ProductService {
+export class AdminProductService {
   async validateProductData(product: CreateProductBodyType): Promise<CreateProductBodyType> {
     const { categoryId, ...data } = product
     const category = await CategoryService.getCategoryById({ id: categoryId, select: ['name'] })
@@ -76,19 +76,16 @@ export class ProductService {
       id: true,
       name: true,
       price: true,
-      slug: true,
-      description: true,
-      title: true,
       stock: true,
+      isDraft: true,
+      isPublished: true,
       image: {
         select: {
-          thumbnail: true,
-          banner: true,
-          featured: true,
-          gallery: true
+          thumbnail: true
         }
       }
     }
+
     let orderBy: { [x: string]: string } = {
       createdAt: 'desc'
     }

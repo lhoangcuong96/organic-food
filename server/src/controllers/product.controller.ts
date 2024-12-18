@@ -1,9 +1,5 @@
-import {
-  CreateProductBodyType,
-  ProductListQueryType,
-  UpdateProductBodyType
-} from '@/schemaValidations/product/product.schema'
-import { ProductService } from '@/services/product/product-service'
+import { ProductListQueryType } from '@/schemaValidations/product.schema'
+import { ProductService } from '@/services/product-service'
 
 export default class ProductController {
   service: ProductService
@@ -17,16 +13,5 @@ export default class ProductController {
 
   getProductDetail = (slug: string) => {
     return this.service.getDetailBySlug(slug)
-  }
-
-  createProduct = (data: CreateProductBodyType) => {
-    return this.service.create(data)
-  }
-  updateProduct = (id: string, data: UpdateProductBodyType) => {
-    return this.service.update(id, data)
-  }
-
-  deleteProduct = (id: string) => {
-    return this.service.delete(id)
   }
 }

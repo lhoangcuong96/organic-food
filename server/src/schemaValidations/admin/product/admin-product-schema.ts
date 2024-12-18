@@ -1,5 +1,5 @@
 import z from 'zod'
-import { CommonQuery } from '../common.schema'
+import { CommonQuery } from '../../common.schema'
 
 /*----------------Create---------------------*/
 export const ProductImageSchema = z.object({
@@ -50,9 +50,6 @@ export const ProductListSchema = z.object({
   id: z.string(),
   name: z.string(),
   price: z.number(),
-  slug: z.string(),
-  description: z.string().optional().nullable(),
-  title: z.string().optional().nullable(),
   stock: z.number(),
   image: ProductImageSchema
 })
@@ -79,7 +76,9 @@ export const ProductDetailSchema = z.object({
   description: z.string().optional().nullable(),
   title: z.string().optional().nullable(),
   stock: z.number(),
-  image: ProductImageSchema
+  image: ProductImageSchema,
+  isDraft: z.boolean(),
+  isPublished: z.boolean()
 })
 export const ProductDetailResponseSchema = z.object({
   data: ProductDetailSchema,

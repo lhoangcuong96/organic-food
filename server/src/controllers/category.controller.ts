@@ -1,5 +1,5 @@
 import prisma from '@/database'
-import { CategoryService } from '@/services/categorySerice'
+import { CategoryService } from '@/services/category-service'
 
 export class CategoryController {
   static async getCategoryBySlug(slug: string) {

@@ -1,8 +1,9 @@
 import envConfig from '@/config'
 import prisma from '@/database'
+import SessionService from '@/services/sesssion-service'
 import { AuthError } from '@/utils/errors'
 import { verifyToken } from '@/utils/jwt'
-import { FastifyRequest } from 'fastify'
+import { DoneFuncWithErrOrRes, FastifyReply, FastifyRequest } from 'fastify'
 
 export const requireLoggedHook = async (request: FastifyRequest) => {
   const accessToken = envConfig.COOKIE_MODE ? request.cookies.accessToken : request.headers.authorization
@@ -26,5 +27,11 @@ export const requireLoggedHook = async (request: FastifyRequest) => {
   } catch (error) {
     console.error(error)
     throw new AuthError('Lỗi xác thực người dùng')
+  }
+}
+
+export const requireAminHook = async (request: FastifyRequest, reply: FastifyReply) => {
+  if (request.account?.role !== 'ADMIN') {
+    throw new AuthError('Bạn không có quyền truy cập')
   }
 }

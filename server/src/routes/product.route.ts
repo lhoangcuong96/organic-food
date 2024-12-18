@@ -1,22 +1,13 @@
 import ProductController from '@/controllers/product.controller'
-import { requireLoggedHook } from '@/hooks/auth.hooks'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import {
-  CreateProductBodyType,
-  DeleteProductParamsSchema,
-  DeleteProductParamsType,
   ProductDetailParamsType,
   ProductDetailResponseType,
   ProductDetailSchema,
   ProductListQuerySchema,
   ProductListQueryType,
   ProductListResSchema,
-  ProductListResType,
-  UpdateProductBodySchema,
-  UpdateProductBodyType,
-  UpdateProductParamsSchema,
-  UpdateProductParamsType
-} from '@/schemaValidations/product/product.schema'
+  ProductListResType
+} from '@/schemaValidations/product.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function productRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -67,75 +58,6 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
       reply.send({
         data: product,
         message: 'Lấy thông tin sản phẩm thành công!'
-      })
-    }
-  )
-
-  fastify.post<{
-    Body: CreateProductBodyType
-    Reply: ProductDetailResponseType
-  }>(
-    '',
-    {
-      schema: {
-        body: UpdateProductBodySchema,
-        response: {
-          200: ProductDetailSchema
-        }
-      },
-      preValidation: fastify.auth([requireLoggedHook])
-    },
-    async (request, reply) => {
-      const product = await controller.createProduct(request.body)
-      reply.send({
-        data: product as any,
-        message: 'Tạo sản phẩm thành công!'
-      })
-    }
-  )
-
-  fastify.put<{
-    Params: UpdateProductParamsType
-    Body: UpdateProductBodyType
-    Reply: MessageResType
-  }>(
-    '/:id',
-    {
-      schema: {
-        params: UpdateProductParamsSchema,
-        body: UpdateProductBodySchema,
-        response: {
-          200: MessageRes
-        }
-      },
-      preValidation: fastify.auth([requireLoggedHook])
-    },
-    async (request, reply) => {
-      await controller.updateProduct(request.params.id, request.body)
-      reply.send({
-        message: 'Cập nhật sản phẩm thành công!'
-      })
-    }
-  )
-
-  fastify.delete<{
-    Params: DeleteProductParamsType
-    Reply: MessageResType
-  }>(
-    '/:id',
-    {
-      schema: {
-        params: DeleteProductParamsSchema,
-        response: {
-          200: MessageRes
-        }
-      },
-      preValidation: fastify.auth([requireLoggedHook])
-    },
-    async (request, reply) => {
-      await controller.deleteProduct(request.params.id)
-      reply.send({
-        message: 'Xóa sản phẩm thành công!'
       })
     }
   )

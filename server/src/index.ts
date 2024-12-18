@@ -18,6 +18,7 @@ import fastifyRedis from '@fastify/redis'
 import Fastify from 'fastify'
 import path from 'path'
 import { BloomFilterService } from './lb/bloom-filter'
+import adminRoutes from './routes/admin'
 
 const fastify = Fastify({
   logger: true
@@ -90,6 +91,10 @@ const start = async () => {
     fastify.register(productRoutes, {
       prefix: '/products'
     })
+    fastify.register(adminRoutes, {
+      prefix: '/admin'
+    })
+
     fastify.register(testRoutes, {
       prefix: '/test'
     })

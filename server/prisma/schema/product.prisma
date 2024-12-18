@@ -15,14 +15,13 @@ model Product {
     price       Float
     stock       Int          @default(0)
     sold        Int          @default(0)
-    sellerId    Int? // ID của người bán, có thể thêm mô hình User nếu cần
+    sellerId    Int? // ID của người bán, có thể thêm mô hình User @unique nếu cần
     seller      String? // Tên người bán
     image       ProductImage // Danh sách URL hình ảnh sản phẩm
     rating      Float? // Đánh giá trung bình
     reviewCount Int?         @default(0)
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @updatedAt
-    isActive    Boolean      @default(true) // Trạng thái sản phẩm
     tags        String[] // Danh sách tag cho sản phẩm
 
     productAttributes Json?
@@ -40,6 +39,6 @@ model Product {
     promotions   Promotion[] @relation(fields: [promotionIDs], references: [id])
 
     // 1 product chỉ có 1 inventory
-    inventoryId String?    @unique @db.ObjectId
-    inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+    inventory   Inventory @relation(fields: [inventoryId], references: [id])
+    inventoryId String    @unique @db.ObjectId
 }

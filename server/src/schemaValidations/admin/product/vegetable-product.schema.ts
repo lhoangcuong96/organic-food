@@ -1,5 +1,5 @@
 import z from 'zod'
-import { CreateProductBodySchema, ProductDetailSchema, ProductListSchema } from './product.schema'
+import { CreateProductBodySchema, ProductDetailSchema } from './admin-product-schema'
 
 /*---------------------Create-------------------------- */
 export const CreateVegetableProductBodySchema = z.object({
