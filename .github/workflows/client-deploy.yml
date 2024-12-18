@@ -35,8 +35,7 @@ jobs:
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
+        password: ${{ secrets.PASSWORD }}
         script: |
           cd /cuong/organic-food/client
           git pull origin main
