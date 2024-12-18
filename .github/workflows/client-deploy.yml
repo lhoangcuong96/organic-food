@@ -14,8 +14,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20.11.1'  # hoặc phiên bản Node.js bạn đang sử dụng
+    - name: Install pnpm  # nếu dự án xài pnpm thì phải install ở đây
+        run: npm install -g pnpm
     - name: Install dependencies
-      run: pnpm ci  # nếu sử dụng pnpm install các package thì phải thay chỗ này thành pnpm để nó lấy file pnpm-lock.json ra
+      run: pnpm ci
     - name: Build
       run: npm run build
     - name: Deploy to VPS
