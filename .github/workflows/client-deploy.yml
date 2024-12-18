@@ -30,8 +30,8 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
-    - name: Check Secrets
-      run: echo "Secret is set"
+    - name: Test SSH Connection
+      run: ssh -v -o StrictHostKeyChecking=no -p 22 ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'SSH connection successful'"
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
