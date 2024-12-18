@@ -17,7 +17,6 @@ const productRequestApi = {
     search=${params.search}&sort=${params.sort || "name"}&order=${
       params.order || "asc"
     }`;
-
     return http.get<ProductListResponseType>(url);
   },
 };

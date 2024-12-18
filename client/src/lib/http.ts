@@ -2,6 +2,8 @@ import { routePath } from "@/constants/routes";
 import { TokenType } from "@/constants/types";
 import envConfig from "@/envConfig";
 import SessionStore from "@/helper/store/session-store";
+import { Account } from "@prisma/client";
+import { jwtDecode } from "jwt-decode";
 import { redirect } from "next/navigation";
 
 export type HTTPPayload = {
@@ -39,8 +41,32 @@ export class EntityError extends HttpError {
   }
 }
 
+export class AuthError extends HttpError {
+  constructor(message: string) {
+    super({
+      status: 401,
+      payload: {
+        message,
+      },
+    });
+  }
+}
+
+export class ForbiddenError extends HttpError {
+  constructor(message: string) {
+    super({
+      status: 403,
+      payload: {
+        message,
+      },
+    });
+  }
+}
+
 type CustomOption = RequestInit & {
   baseUrl?: string;
+  isPrivate?: boolean;
+  isAdminRequest?: boolean;
 };
 
 export const request = async <T>(
@@ -65,14 +91,32 @@ export const request = async <T>(
     : undefined;
 
   let accessToken = null;
+  console.log(typeof window, typeof window === "undefined");
 
-  if (typeof window !== "undefined") {
-    accessToken = SessionStore.getAccessToken();
-  } else {
-    const { cookies } = await import("next/headers");
-    const cookieStore = await cookies();
-    accessToken = cookieStore.get(TokenType.AccessToken)?.value;
+  if (option?.isPrivate || option?.isAdminRequest) {
+    if (typeof window === "undefined") {
+      console.log("server side");
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      accessToken = cookieStore.get(TokenType.AccessToken)?.value;
+    } else {
+      accessToken = SessionStore.getAccessToken();
+    }
+    if (!accessToken) {
+      throw new AuthError("Bạn cần đăng nhập để thực hiện hành động này");
+    }
   }
+  if (option?.isAdminRequest) {
+    if (!accessToken) {
+      throw new AuthError("Bạn cần đăng nhập để thực hiện hành động này");
+    }
+    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
+    const account = tokenPayload?.account;
+    if (!account || account.role !== "ADMIN") {
+      throw new ForbiddenError("Bạn không có quyền truy cập");
+    }
+  }
+
   const baseHeader = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
     Authorization: accessToken ? `Bearer ${accessToken}` : "",

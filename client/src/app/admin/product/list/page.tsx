@@ -1,33 +1,29 @@
+import { adminProductApiRequest } from "@/api-request/admin/product";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Order } from "@/validation-schema/common";
 import { ChevronRight } from "lucide-react";
 import { ProductSearch } from "./product-search";
 import { ProductTable } from "./product-table";
-
-const demoProducts = [
-  {
-    id: "1",
-    name: "test22233333333333",
-    sku: "1623182162",
-    price: 111111,
-    stock: "Hết hàng",
-    status: "active",
-    image: "/placeholder.svg?height=40&width=40",
-  },
-  // Add more demo products as needed
-];
+import { ProductListType } from "@/validation-schema/admin/product";
 
 export default async function ProductList() {
-  // const [] = await Promise.all([
-  //   // productRequestApi.getProductMetrics(),
-  //   productRequestApi.getProducts({
-  //     page: 1,
-  //     limit: 20,
-  //     search: "",
-  //     sort: "name",
-  //     order: Order.Desc,
-  //   }),
-  // ]);
+  let products: ProductListType = [];
+  try {
+    const response = await adminProductApiRequest.getProducts({
+      page: 1,
+      limit: 20,
+      search: "",
+      sort: "name",
+      order: Order.Desc,
+    });
+    if (response.payload.data) {
+      products = response.payload.data as ProductListType;
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
   return (
     <div>
       <div className="flex items-center gap-1 text-sm text-gray-500 mb-4">
@@ -57,7 +53,7 @@ export default async function ProductList() {
           </div>
 
           <TabsContent value="all" className="mt-4">
-            <ProductTable products={demoProducts} />
+            <ProductTable products={products} />
           </TabsContent>
         </Tabs>
       </div>

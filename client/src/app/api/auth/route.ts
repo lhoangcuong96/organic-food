@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     `${TokenType.RefreshToken}=${refreshToken}; Path=/; HttpOnly; Expires=${refreshTokenExpiredTime}`
   );
   return Response.json(
-    { res },
+    { message: "Đăng nhập thành công" },
     {
       status: 200,
       // sử dụng PATH=/ để apply cookie cho toàn domain chứ k phải chỉ 1 path bất kì

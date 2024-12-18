@@ -9,18 +9,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { ProductListType } from "@/validation-schema/admin/product";
 
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  stock: string;
-  status: string;
-  image: string;
-}
-
-export function ProductTable({ products }: { products: Product[] }) {
+export function ProductTable({ products }: { products: ProductListType }) {
   return (
     <Table>
       <TableHeader>
@@ -45,29 +36,54 @@ export function ProductTable({ products }: { products: Product[] }) {
             <TableCell>
               <div className="flex items-center gap-2">
                 <Image
-                  src={product.image}
+                  src={product.image.thumbnail || ""}
                   alt={product.name}
                   width={40}
                   height={40}
                   className="rounded-md"
                 />
-                <div>
+                <p>{product.name}</p>
+                {/* <div>
                   <div>{product.name}</div>
                   <div className="text-sm text-muted-foreground">
                     SKU: {product.sku}
                   </div>
-                </div>
+                </div> */}
               </div>
             </TableCell>
+            <TableCell>10</TableCell>
             <TableCell>{product.price}</TableCell>
-            <TableCell>{product.stock}</TableCell>
             <TableCell>
-              <Button variant="link" className="text-blue-500">
-                Cập nhật
-              </Button>
+              {product.stock ? (
+                product.stock
+              ) : (
+                <Button variant="link" className="text-lime-600">
+                  Cập nhật
+                </Button>
+              )}
             </TableCell>
             <TableCell>
-              <Button variant="link">Xem thêm</Button>
+              <Button variant="link" className="text-lime-600">
+                Xem thêm
+              </Button>
+            </TableCell>
+            <TableCell className="flex flex-col gap-2">
+              <Button variant="link" className="text-lime-600">
+                Cập nhật
+              </Button>
+              {product.isDraft ? (
+                <Button variant="link" className="text-lime-600">
+                  Đẩy sản phẩm
+                </Button>
+              ) : (
+                <Button variant="link" className="text-lime-600">
+                  Ẩn sản phẩm
+                </Button>
+              )}
+
+              <Button variant="link" className="text-lime-600">
+                Xem trước
+              </Button>
             </TableCell>
           </TableRow>
         ))}
