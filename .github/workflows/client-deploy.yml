@@ -45,7 +45,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USEr }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "client/next.tar.gz"
+        source: "/client/next.tar.gz"
         target: "/home/projects/organic-food/"
         strip_components: 1 # loại bỏ folder client mà chỉ lấy next.tar.gz
     - name: Deploy to VPS
