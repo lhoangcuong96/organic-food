@@ -30,18 +30,21 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
-    - name: Compress files
+    - name: Compress .next folder
       run: |
-        zip -r client-next.zip ./client/.next
+        cd client
+        tar -czvf next.tar.gz .next
     - name: List files in the directory
       run: |
         ls -1
-    - name: Upload to VPS
-      run: |
-        scp -v -r client-next.zip ${{ secrets.USER }}@${{ secrets.HOST }}:/home/projects/organic-food
-      env:
-        VPS_USER: ${{ secrets.USER }}
-        VPS_SERVER: ${{ secrets.HOST }}
+    - name: Copy compressed folder to VPS
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USEr }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "client/next.tar.gz"
+        target: "/home/projects/organic-food/"
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
