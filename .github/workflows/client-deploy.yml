@@ -30,6 +30,13 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
+    - name: Copy files to VPS
+      run: |
+        scp -r ./build username@vps_ip:/home/projects/organic-food/client
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        VPS_IP: ${{ secrets.HOST }}
+        USERNAME: ${{ secrets.USER }}
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
@@ -37,7 +44,5 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/your/app
-          git pull
-          npm install
-          npm run build
+          cd /home/projects/organic-food/client
+          npm run start
