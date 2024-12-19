@@ -45,5 +45,8 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          export NVM_DIR=~/.nvm  
+          source ~/.nvm/nvm.sh   
+          npm --help           
           cd /home/projects/organic-food/client
           npm run start
