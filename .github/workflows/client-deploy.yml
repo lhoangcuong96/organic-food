@@ -45,9 +45,9 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USEr }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "/client/next.tar.gz"
+        source: "client/next.tar.gz"
         target: "/home/projects/organic-food/"
-        strip_components: 1 # loại bỏ folder client mà chỉ lấy next.tar.gz
+        # strip_components: 1 # loại bỏ folder client mà chỉ lấy next.tar.gz
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
@@ -58,7 +58,7 @@ jobs:
           export NVM_DIR=~/.nvm  
           source ~/.nvm/nvm.sh   
           npm --help           
-          cd /home/projects/organic-food/
+          cd /home/projects/organic-food/client/
           tar -xzvf next.tar.gz
           rm next.tar.gz
           ls -1
