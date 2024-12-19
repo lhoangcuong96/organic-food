@@ -31,12 +31,13 @@ jobs:
       working-directory: ./client
       run: npm run build
     - name: Copy files to VPS
-      run: |
-        scp -r ./client/.next ${{ secrets.USER }}/${{ secrets.HOST }}:/home/projects/organic-food/client
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        VPS_IP: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USER }}
+        uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./client/.next"  # Replace with your folder name
+        target: "/home/projects/organic-food/client" 
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
