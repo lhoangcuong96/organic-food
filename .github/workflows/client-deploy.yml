@@ -39,6 +39,10 @@ jobs:
         source: "./client/.next"  # Path of the folder you want to copy from your repository
         target: "/home/projects/organic-food/client"  # Target directory on your VPS
         strip_components: 1
+    - name: List files in .next directory
+      if: always()
+      run: |
+        find ./client/.next -type f -print
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
