@@ -33,8 +33,7 @@ jobs:
     - name: Compress files
       run: |
         zip -r client-next.zip ./client/.next
-    - name: List files in .next directory
-      if: always()
+    - name: List files in the directory
       run: |
         ls -1
     - name: Copy zip file to VPS
@@ -44,7 +43,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "client-next.zip"
-        target: "/home/projects/organic-food/client"
+        target: "/home/projects"
         strip_components: 1
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
