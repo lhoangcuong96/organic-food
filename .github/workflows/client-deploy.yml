@@ -36,7 +36,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./client/.next"  # Replace with your folder name
+        source: "./client/.next/*"  # Replace with your folder name
         target: "/home/projects/organic-food/client" 
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
