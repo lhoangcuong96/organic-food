@@ -36,11 +36,10 @@ jobs:
       uses: fifsky/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        user: root
-        key: ${{ secrets.PRIVATE_KEY}}
-        command: |
-          cd /cuong/organic-food/client
-          git pull origin main
-          npm ci
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /path/to/your/app
+          git pull
+          npm install
           npm run build
-          pm2 restart organic-food
