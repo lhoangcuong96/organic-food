@@ -58,8 +58,9 @@ jobs:
           export NVM_DIR=~/.nvm  
           source ~/.nvm/nvm.sh   
           npm --help           
-          cd /home/projects/organic-food/client/
+          cd /home/projects/organic-food/client
           tar -xzvf next.tar.gz
+          cd .next
+          ls -l
           rm next.tar.gz
-          ls -1
           npm run start
