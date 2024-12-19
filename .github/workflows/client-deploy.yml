@@ -34,8 +34,7 @@ jobs:
       run: npm run build
     - name: Compress .next folder
       run: |
-        cd client
-        tar -czvf next.tar.gz .next
+        tar -czvf client.tar.gz --exclude='node_modules' client
     - name: List files in the directory
       run: |
         ls -1
@@ -45,7 +44,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USEr }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "client/next.tar.gz"
+        source: "client.tar.gz"
         target: "/home/projects/organic-food/"
         # strip_components: 1 # loại bỏ folder client mà chỉ lấy next.tar.gz
     - name: Deploy to VPS
@@ -58,9 +57,9 @@ jobs:
           export NVM_DIR=~/.nvm  
           source ~/.nvm/nvm.sh   
           npm --help           
-          cd /home/projects/organic-food/client
-          tar -xzvf next.tar.gz
-          cd .next
+          cd /home/projects/organic-food/
+          tar -xzvf client.tar.gz
+          rm client.tar.gz
+          cd client
           ls -l
-          rm next.tar.gz
           npm run start
