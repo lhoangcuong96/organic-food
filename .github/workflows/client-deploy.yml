@@ -30,19 +30,19 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
-    - name: Copy folder to VPS
+    - name: Compress files
+      run: |
+        zip -r client-next.zip ./client/.next
+    - name: Copy zip file to VPS
       uses: appleboy/scp-action@master
+      working-directory: ./client
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./client/.next"  # Path of the folder you want to copy from your repository
-        target: "/home/projects/organic-food/client"  # Target directory on your VPS
+        source: "client-next.zip"
+        target: "/home/projects/organic-food/client"
         strip_components: 1
-    - name: List files in .next directory
-      if: always()
-      run: |
-        find ./client/.next -type f -print
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:
@@ -54,4 +54,5 @@ jobs:
           source ~/.nvm/nvm.sh   
           npm --help           
           cd /home/projects/organic-food/client
+          unzip -o client-next.zip
           npm run start
