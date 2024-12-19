@@ -62,4 +62,5 @@ jobs:
           rm client.tar.gz
           cd client
           ls -l
+          pnpm install
           npm run start
