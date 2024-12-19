@@ -30,6 +30,8 @@ jobs:
     - name: Build
       working-directory: ./client
       run: npm run build
+    - name: List files in build directory
+      run: ls -R ./
     - name: Copy files to VPS
       run: |
         scp -r ./build ${{ secrets.USER }}/${{ secrets.HOST }}:/home/projects/organic-food/client
