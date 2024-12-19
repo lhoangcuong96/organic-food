@@ -35,12 +35,11 @@ jobs:
         zip -r client-next.zip ./client/.next
     - name: Copy zip file to VPS
       uses: appleboy/scp-action@master
-      working-directory: ./client
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "client-next.zip"
+        source: "./client/client-next.zip"
         target: "/home/projects/organic-food/client"
         strip_components: 1
     - name: Deploy to VPS
