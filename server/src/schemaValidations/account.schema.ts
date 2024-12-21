@@ -6,7 +6,7 @@ export const AccountRes = z
       id: z.string(),
       fullname: z.string(),
       email: z.string(),
-      phoneNumber: z.string(),
+      phoneNumber: z.string().nullable().optional(),
       gender: z.enum(['MALE', 'FEMALE', 'OTHER']).nullable().optional(),
       dateOfBirth: z.date().nullable().optional(),
       avatar: z.string().nullable().optional()

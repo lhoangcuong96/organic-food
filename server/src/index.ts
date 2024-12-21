@@ -19,6 +19,7 @@ import Fastify from 'fastify'
 import path from 'path'
 import { BloomFilterService } from './lb/bloom-filter'
 import adminRoutes from './routes/admin'
+import { registerRedis } from './provider/redis'
 
 const fastify = Fastify({
   logger: true
@@ -30,18 +31,7 @@ const start = async () => {
     createFolder(path.resolve(envConfig.UPLOAD_FOLDER))
 
     // Register redis
-    await fastify.register(fastifyRedis, {
-      url: envConfig.REDIS_URL
-    })
-    // sử dụng lrucache để lưu trữ dữ liệu
-    // redis cloud không hỗ trợ những key này
-    // fastify.redis.config('SET', 'maxmemory', '20mb')
-    // fastify.redis.config('SET', 'maxmemory-policy', 'allkeys-lru')
-
-    // Sử dụng bloom filter để lưu trữ email và phoneNumber
-    const bloomFilter = new BloomFilterService(fastify)
-    bloomFilter.createBloomFilter({ filterName: 'email', expectedElements: 100000, falsePositiveRate: 0.001 })
-    bloomFilter.createBloomFilter({ filterName: 'phoneNumber', expectedElements: 100000, falsePositiveRate: 0.001 })
+    registerRedis(fastify)
 
     // Giới hạn số lượng requests của 1 IP
     fastify.register(RateLimit, {

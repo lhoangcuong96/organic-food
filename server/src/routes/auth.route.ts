@@ -1,6 +1,6 @@
 import envConfig from '@/config'
 import { TokenType } from '@/constants/type'
-import AuthController from '@/controllers/auth.controller'
+import AuthController, { SocialAuthController } from '@/controllers/auth.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
 import {
   LoginBody,
@@ -12,15 +12,20 @@ import {
   RegisterBody,
   RegisterBodyType,
   RegisterRes,
-  RegisterResType
+  RegisterResType,
+  SocialAuthBody,
+  SocialAuthBodyType,
+  SocialAuthRes,
+  SocialAuthResType
 } from '@/schemaValidations/auth.schema'
 import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
+import { SocialEnum } from '@prisma/client'
 import { addMilliseconds } from 'date-fns'
-import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify'
 import ms from 'ms'
 
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
-  const authController = new AuthController(fastify)
+  const authController = new AuthController()
   fastify.post<{
     Reply: RegisterResType
     Body: RegisterBodyType
@@ -185,6 +190,34 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
         data: {
           accessToken: session.accessToken,
           refreshToken: session.refreshToken
+        }
+      })
+    }
+  )
+
+  fastify.post<{
+    Reply: SocialAuthResType
+    Body: SocialAuthBodyType
+  }>(
+    '/google',
+    {
+      schema: {
+        response: {
+          200: SocialAuthRes
+        },
+        body: SocialAuthBody
+      }
+    },
+    async (request, reply) => {
+      const { body } = request
+      const controller = new SocialAuthController(SocialEnum.GOOGLE)
+      const { account, session } = await controller.authenticate(body.token)
+      reply.send({
+        message: 'Đăng nhập thành công',
+        data: {
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken,
+          account
         }
       })
     }

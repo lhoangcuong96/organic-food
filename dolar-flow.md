@@ -21,6 +21,24 @@ This document outlines the flow of the Dolar application.
 6. [Các thuật toán sử dụng](#các-thuật-toán-sử-dụng)
 7. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
     1. [Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
+8. [Triễn khai dự án](#triễn-khai-dự-án)
+    1. [Khởi tạo 1 instance VPS](#khởi-tạo-1-instance-vps)
+        1. [Cấu hình VPS](#cấu-hình-vps)
+    2. [Tạo user mới](#tạo-user-mới)
+    3. [Cài đặt VPS](#cài-đặt-vps)
+        1. [NVM](#nvm)
+        2. [PNPM](#pnpm)
+        3. [Cài đặt unzip file](#cài-đặt-unzip-file)
+        4. [Cài đặt pm2](#cài-đặt-pm2)
+    4. [Cấu hình và khởi động pm2](#cấu-hình-và-khởi-động-pm2)
+    5. [Cấu hình CI/CD](#cấu-hình-cicd)
+    6. [Trỏ tên miền con về VPS](#trỏ-tên-miền-con-về-vps)
+    7. [Cài đặt và cấu hình nginx](#cài-đặt-và-cấu-hình-nginx)
+        1. [Cài đặt](#cài-đặt)
+        2. [Thiết lập Reserve Proxy](#thiết-lập-reserve-proxy)
+    8. [Cấu hình mã hóa HTTPS/SSL](#cấu-hình-mã-hóa-httpsssl)
+    9. [Kích hoạt HTTP2 trong Nginx](#kích-hoạt-http2-trong-nginx)
+
 
 ## Authentication
 ### Sign In
@@ -187,3 +205,292 @@ This document outlines the flow of the Dolar application.
     - Nếu sử dụng cho 10000 users với tỷ lệ false positive là 0.01(1%)
     - m = - (10000 * ln(0.01)) / (ln(2))^2 = ~11.8KB
     - Trong khi đó lưu cả email vào trong redis thì tốn 2,540 KB=2.54MB
+
+
+## Triễn khai dự án
+### Khởi tạo 1 instance VPS
+
+- Truy cập đường [link](https://www.vultr.com/)
+- Tạo instance
+  - Chọn loại VPS là Cloud Compute cho rẻ
+  - Lựa chọn các option như server image, server size ...
+  - Bỏ tick chọn auto backups(cho rẻ)
+  - Add thêm ssh key vào:
+    - ssh-keygen -t rsa -b 4096 -C "lhoangcuong1996@gmail.com"
+    - sau đó lựa điền file name:
+      - Your identification has been saved in: C:\Users\P50\.ssh\id_rsa_vultr // đẩy đủ đường dẫn
+    - update lại file config:
+    ```
+          #vultr.com
+            Host vultr
+            HostName 139.180.222.46
+            User root
+            IdentityFile ~/.ssh/id_rsa_vultr
+    ```
+    - Với hostname là ip mà vultr cung cấp user là root
+
+### Cấu hình VPS
+
+- Kến nối đến server thông qua ssh
+  - ssh <username>@<ip_address> -i <path_to_private_key>
+    - ssh root@139.180.222.46 -i C:/Users/P50/.ssh/id_rsa_vultr // nếu k có -i C:/Users/P50/.ssh/id_rsa_vultr sẽ bắt nhập pass
+- Cách mỗi lần kết nối mà không cần tới mật khẩu(chỉ cần excute command 1 lần)
+  - ssh-copy-id -i /c/Users/P50/.ssh/id_rsa_vultr.pub <username>@<ip_address>
+  - Nó sẽ gửi thẳng public key lên cho server luôn nên không cần phải nhập password nữa
+
+#### Thay đổi ssh key cho VPS
+
+- Sau khi add public key cho VPS thì khi ssh thì nhận lỗi
+
+  ```
+          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+          IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+          Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+          It is also possible that a host key has just been changed.
+          The fingerprint for the ED25519 key sent by the remote host is
+  ```
+
+- ssh-keygen -R vps_ip_address
+- ssh-keyscan -H vps_ip_address >> ~/.ssh/known_hosts
+
+#### Tạo user mới
+
+- User root quyền rất lớn => không nên sử dụng do có thể thay đổi gây tổn hại server
+- Sẽ tạo ra các user với các quyền hạn nhất định, ví dụ như FE account chỉ có quyền trong thư mục source FE...
+- Syntax:
+  - adduser <user_name>
+- Thêm user mới vào trong 1 group gọi là sudo(quản trị) có thể thực hiện 1 số tác vụ yêu cầu quyền quản trị
+  - usermod -aG sudo <user_name>
+- Chuyển user
+  - su - <user_name>
+
+##### Chú ý
+
+- Khi cài đặt một số package thì nó sẽ cài trong folder của user đó
+- Khi chuyển user khác sẽ không có
+
+##### Chú ý
+
+- Mỗi user sẽ có 1 folder .ssh riêng để ssh
+- Nếu như bị lỗi "ssh: handshake failed: ssh: unable to authenticate, attempted methods [none ...], no supported methods remain"
+  - Đó là do user đó chưa có cài đặt ssh public key trên VPS
+  - ssh-copy-id username@your_vps_ip //copy public key lên trên VPS
+
+#### Cài đặt VPS
+
+##### NVM
+
+- sudo apt-get update // cập nhật lại các package mới
+- sudo apt-get upgrade // cập nhật lại các package đã cài
+- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash // cài đặt nvm
+- sau đó tắt terminal hoặc chuyển user để reset mới xài dc
+
+##### PNPM
+
+- npm install -g pnpm
+
+##### Cài đặt unzip file
+
+- apt install unzip
+
+##### Cài đặt pm2
+- Pm2 là trình quản lý process của nodejs
+  - Quản lý quy trình
+  - Tự động khởi động nếu ứng dụng gặp sự cố
+- npm install pm2 -g
+
+#### Cấu hình và khởi động pm2
+- cd <project_path>
+- pm2 start --name=<app_name> npm -- start //khởi động dự án nextjs
+- pm2 startup systemd   //tự động khởi động lại nếu app crashed
+- pm2 stop <app_id_or_name> //Tắt ứng dụng
+- pm2 stop all  // Tắt tất cả
+- pm2 kill // Tắt pm2 và tất cả ứng dụng
+
+##### Chạy lại pm2 mỗi khi VPS reboot
+- pm2 save
+- pm2 startup systemd
+- restart VPS: vào trong trang web VPS để restart
+- systemctl status pm2-<user_name> //Kiểm tra lại pm2
+  - Nếu status là active là được
+  - Thoát ra press Q
+- sau khi dự án build xong thì
+  - pm2 restart <app_name>
+
+#### Cấu hình CI/CD
+- Tạo file .github/workflows/<file_name>.yml
+- Cấu hình CI/CD
+
+```
+name: Deploy client to VPS
+
+on:
+  push:
+    branches:
+      - master  # hoặc tên nhánh bạn muốn trigger việc deploy
+    paths:
+      - 'client/**'  # Chỉ trigger khi có thay đổi trong thư mục client
+      - ".github/workflows/client-deploy.yml"  # Trigger khi có thay đổi trong file workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.11.1'  # hoặc phiên bản Node.js bạn đang sử dụng
+    - name: Install pnpm  # nếu dự án xài pnpm thì phải install ở đây
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+    - name: Install dependencies
+      working-directory: ./client # vì src client nằm trong client nên phải chuyển đến thư mục client
+      run: pnpm install
+    # Nếu sử dụng npm thì sử dụng lệnh sau
+    #- name: Install dependencies
+    #  run: npm ci
+    - name: Build
+      working-directory: ./client
+      run: npm run build
+    - name: Compress .next folder
+      run: |
+        tar -czvf client.tar.gz --exclude='node_modules' client
+    - name: List files in the directory
+      run: |
+        ls -1
+    - name: Copy compressed folder to VPS
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USEr }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "client.tar.gz"
+        target: "/home/projects/organic-food/"
+        # strip_components: 1 # loại bỏ folder client mà chỉ lấy next.tar.gz
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          npm --help
+          cd /home/projects/organic-food/
+          tar -xzvf client.tar.gz
+          rm client.tar.gz
+          cd client
+          ls -l
+          pm2 restart nextjs
+```
+
+- Các bước bao gồm
+  - Setup node cho github action
+  - Install các dependencies dự án cho github action
+  - Build dự án
+  - Compress toàn bộ trừ node_modules
+  - Đẩy file đã được compressed lên VPS
+  - Chạy script install dependencies trong VPS và start dự án
+  - restart lại pm2
+
+
+### Trỏ tên miền con(<sub_domain>.<domain_name>) về VPS
+-  Các loại records
+  - A type: Trỏ một tên miền đến một địa chỉ IPv4.
+    - Ví dụ: example.com → 192.0.2.1.
+  - CNAME: Ánh xạ một tên miền đến một tên miền khác (bí danh).
+  - AAAA Record (IPv6 Address Record): Tương tự như A Record, nhưng trỏ đến một địa chỉ IPv6.
+  - MX Record (Mail Exchange Record): Chỉ định máy chủ xử lý email cho tên miền.
+  - ...
+- Chủ yếu sử dụng A type record
+- Cài đặt lưu ý sử dụng  A type và destination trỏ về ip VPS
+
+### Cài đặt và cấu hình nginx
+- Khi user truy cập http/https thì sẽ trỏ tới port 80/443, nginx sẽ trở thành 1 Reserve proxy tiếp nhận request vào 2 ports này và chuyển tiếp tới 
+server xử lý(nextjs/nodejs)
+
+#### Cài đặt
+- sudo apt-get update && sudo apt-get install nginx
+- Cấu hình tường lửa
+  - sudo ufw app list // list các profiles
+  - sudo ufw allow 'Nginx Full' // sử dụng full
+    - bao gồm http, https, openssh(truy cập từ xa bằng ssh(secure shell))
+    - nếu lỡ chọn sai 
+      - sudo ufw delete allow 'Nginx HTTP'
+  - sudo ufw status // kiểm tra status
+- sau khi cài đặt vào địa chỉ IP VPS sẽ hiển thị Welcome to nginx
+
+#### Thiết lập Reserve Proxy
+- cd /etc/nginx/sites-available
+- sudo touch <server_name>
+  - sudo touch organic-food.chickenkiller.com
+- sudo nano <server_name>
+  - sudo nano organic-food.chickenkiller.com
+- Gắn đoạn code vào trong
+```
+server {
+        listen 80;
+        listen [::]:80;
+
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name <server_name>;
+
+        location / {
+                proxy_pass http://localhost:3000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+}
+```
+- Kích hoạt file vừa tạo
+  - sudo ln -s /etc/nginx/sites-available/<server_name> /etc/nginx/sites-enabled/
+    - sudo ln -s /etc/nginx/sites-available/organic-food.chickenkiller.com /etc/nginx/sites-enabled/
+- Để tránh vấn đề hash bucket memory trong tương lai khi chúng ta thêm app, chúng ta cần tinh chỉnh một dòng trong file /etc/nginx/nginx.conf
+  - sudo nano /etc/nginx/nginx.conf
+  - uncomment dòng: server_names_hash_bucket_size 64
+- Kiểm tra lại có lỗi cú pháp trong nginx không
+  - sudo nginx -t
+- Restart nginx
+- Sau đó vào bằng <server_name> là được
+  - http://organic-food.chickenkiller.com/customer/home
+
+### Cấu hình mã hóa HTTPS/SSL
+- Cài đặt Snapd
+  - sudo apt update
+  - sudo apt install snapd // cài snapd
+  - sudo apt-get remove certbot // gỡ bỏ cài đặt trc đó nếu có
+  - sudo snap install --classic certbot // cái certbot
+  - sudo ln -s /snap/bin/certbot /usr/bin/certbot // chuẩn bị cerbot command
+  - sudo certbot --nginx  // cài và lấy chứng chỉ
+    - trả lời các câu hỏi
+  - kiểm tra tiến trình làm mới tự động
+    - sudo certbot renew --dry-run
+
+#### Hiện tại đang xài free nên chỉ đăng kí dc subdomain trong domain được cung cấp, nó đã cấp phát hết cer nên không đăng kí được nữa
+
+### Kích hoạt HTTP2 trong Nginx
+- HTTP/2 là phiên bản kế thừa của HTTP/1.x và cung cấp nhiều ưu điểm như xử lý song song, full multiplex, nén header và thậm chí là cả server push. Điều quan trọng là thiết lập HTTP2 trong NGINX để cải thiện tốc độ và hiệu suất trang web.
+- Trước khi kích hoạt thì cần đảm bảo rằng
+  - Bạn đang sử dụng Nginx 1.9.5 hoặc hơn. Có thể kiểm tra version bằng câu lệnh nginx -v
+  - Bạn đã kích hoạt HTTPS/SSL.
+- Đầu tiên cần mở file cấu hình Nginx. Thay thế <server_name> thành tên file cấu hình của bạn
+  - sudo nano /etc/nginx/sites-enabled/<server_name>
+- Nếu đã kích hoạt SSL trong Nginx rồi thì sẽ có cái dòng này
+  - listen 443 ssl;
+  - Thêm cái http2 ở phía cuối trước cái dấu ; để thành như thế này
+    - listen 443 ssl http2;
+  - Kiểm tra lại file cấu hình đúng không 
+    - sudo nginx -t
+  - Restart lại nginx
+    - sudo systemctl restart nginx
+  

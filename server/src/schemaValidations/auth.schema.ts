@@ -64,3 +64,12 @@ export type LoginResType = z.TypeOf<typeof LoginRes>
 
 export type RefreshTokenBodyType = z.TypeOf<typeof RefreshTokenBody>
 export type RefreshTokenResType = z.TypeOf<typeof RefreshTokenRes>
+
+/*-------------------------------Social------------------------------*/
+export const SocialAuthBody = z.object({
+  token: z.string()
+})
+
+export const SocialAuthRes = RegisterRes
+export type SocialAuthBodyType = z.TypeOf<typeof SocialAuthBody>
+export type SocialAuthResType = z.TypeOf<typeof SocialAuthRes>
