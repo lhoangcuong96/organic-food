@@ -80,3 +80,11 @@ export type RefreshTokenRequestDataType = z.infer<typeof refreshTokenSchema>;
 export type RefreshTokenResponseDataType = z.infer<
   typeof refreshTokenResponseType
 >;
+
+/*--------------------------------Social auth-------------------------------------*/
+export const socialAuthSchema = z.object({
+  token: z.string(),
+});
+
+export type SocialAuthRequestDataType = z.infer<typeof socialAuthSchema>;
+export type SocialAuthResponseType = z.infer<typeof signInResponseSchema>;

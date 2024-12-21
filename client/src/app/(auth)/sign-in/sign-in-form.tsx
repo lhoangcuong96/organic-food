@@ -16,6 +16,9 @@ import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import useMessage from "antd/es/message/useMessage";
 import { useRouter } from "next/navigation";
 import SessionStore from "@/helper/store/session-store";
+import GoogleButton from "@/components/ui/google-button";
+import FacebookButton from "@/components/ui/facebook-button";
+import XButton from "@/components/ui/x-button";
 
 export function SignInForm() {
   const [messageAPI, contextHolder] = useMessage();
@@ -128,6 +131,11 @@ export function SignInForm() {
       </Link>
       <Divider />
       <p className="text-center">Hoặc đăng nhập bằng</p>
+      <div className="w-full flex justify-center space-x-4 my-4">
+        <GoogleButton></GoogleButton>
+        <FacebookButton></FacebookButton>
+        <XButton></XButton>
+      </div>
     </form>
   );
 }

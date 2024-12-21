@@ -5,6 +5,8 @@ import {
   SignInResponseType,
   SignUpRequestDataType,
   SignUpResponseDataType,
+  SocialAuthRequestDataType,
+  SocialAuthResponseType,
 } from "@/validation-schema/auth";
 import { MessageResponseType } from "@/validation-schema/common";
 
@@ -70,4 +72,8 @@ export const authApiRequest = {
         },
       }
     ),
+
+  authenticateWithGoogle: (token: string) => {
+    return http.post<SocialAuthResponseType>("/auth/google", { token });
+  },
 };
