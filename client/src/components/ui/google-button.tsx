@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { FaGoogle } from "react-icons/fa6";
-import envConfig from "@/envConfig";
 import { authApiRequest } from "@/api-request/auth";
-import { useHandleMessage } from "@/utils/hooks";
-import sessionStore from "@/helper/store/session-store";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { routePath } from "@/constants/routes";
+import envConfig from "@/envConfig";
+import sessionStore from "@/helper/store/session-store";
+import { useHandleMessage } from "@/utils/hooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { FaGoogle } from "react-icons/fa6";
 
 declare global {
   interface Window {
@@ -33,19 +33,28 @@ export default function GoogleLoginButton() {
   }, []);
 
   const handleGoogleLogin = () => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: envConfig?.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        ux_mode: "popup",
-      });
+    try {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: envConfig?.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+          ux_mode: "popup",
+        });
 
-      window.google.accounts.id.prompt((notification: any) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // The Google Sign-In popup was closed or skipped
-          console.log("Google Sign-In was closed or skipped");
-        }
-      });
+        window.google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            // The Google Sign-In popup was closed or skipped
+            if (notification.getSkippedReason() === "unknown_reason") {
+              messageApi.error(
+                "Google Sign-In đã bị chặn, hãy vui lòng click icon dấu chấm than bên cạnh thanh địa chỉ và nhấn reset permission để có thể đăng nhập",
+                10
+              );
+            }
+          }
+        });
+      }
+    } catch (error) {
+      messageApi.error((error as Error).message);
     }
   };
 
