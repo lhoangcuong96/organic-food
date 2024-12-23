@@ -13,8 +13,12 @@ COPY package*.json ./
 # Cài đặt dependencies
 RUN pnpm install
 
+
 # Sao chép toàn bộ mã nguồn
 COPY . .
+
+# Chạy lệnh generate cho prisma
+RUN npx prisma generate
 
 # Build ứng dụng Next.js
 RUN npm run build
