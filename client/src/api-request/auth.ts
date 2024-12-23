@@ -5,7 +5,6 @@ import {
   SignInResponseType,
   SignUpRequestDataType,
   SignUpResponseDataType,
-  SocialAuthRequestDataType,
   SocialAuthResponseType,
 } from "@/validation-schema/auth";
 import { MessageResponseType } from "@/validation-schema/common";
