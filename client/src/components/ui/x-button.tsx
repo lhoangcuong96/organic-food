@@ -1,15 +1,11 @@
 "use client";
 
-import { useGoogleLogin } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Button } from "./button";
-import { FaGoogle } from "react-icons/fa";
 import { useHandleMessage } from "@/utils/hooks";
+import { useGoogleLogin } from "@react-oauth/google";
 import { FaXTwitter } from "react-icons/fa6";
+import { Button } from "./button";
 
 const XButton = () => {
-  const router = useRouter();
   const { messageApi } = useHandleMessage();
 
   const login = useGoogleLogin({

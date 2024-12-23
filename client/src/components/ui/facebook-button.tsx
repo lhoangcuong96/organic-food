@@ -2,12 +2,10 @@
 
 import { useHandleMessage } from "@/utils/hooks";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
 import { FaFacebookF } from "react-icons/fa";
 import { Button } from "./button";
 
 const FacebookButton = () => {
-  const router = useRouter();
   const { messageApi } = useHandleMessage();
 
   const login = useGoogleLogin({
