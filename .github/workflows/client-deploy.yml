@@ -47,10 +47,10 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           docker stop organic-food-client
           docker rm organic-food-client
-          docker pull ${{ secrets.DOCKER_USERNAME }}/organic-food:latest
+          docker pull ${{ secrets.DOCKER_NAMESPACE }}/organic-food:latest
           docker run -d -p 3000:3000 --name organic-food-client ${{ secrets.DOCKER_USERNAME }}/organic-food:latest
