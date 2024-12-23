@@ -23,6 +23,11 @@ jobs:
     
     - name: Create .env file
       run: |
+        echo "My Database URL: ${{ secrets.DATABASE_URL }}"
+        echo "My Analyze: ${{ vars.ANALYZE }}"
+        echo "My Next Public Access Token Expires In: ${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }}"
+        echo "My Next Public API URL: ${{ vars.NEXT_PUBLIC_API_URL }}"
+        echo "My Next Public URL: ${{ vars.NEXT_PUBLIC_URL }}"
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
         echo ANALYZE=${{ vars.ANALYZE }} >> .env
         echo NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN=${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }} >> .env
