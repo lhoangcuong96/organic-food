@@ -27,7 +27,7 @@ jobs:
         context: client
         file: client/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/organic-food:latest
+        tags: ${{ secrets.DOCKER_NAMESPACE }}/organic-food:latest # Namespace: lhoangcuong1996
     
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
