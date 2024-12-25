@@ -32,6 +32,7 @@ export function SignInForm() {
       email: "",
       password: "",
     },
+    mode: "all",
   });
 
   const onSubmit = async (data: SignInRequestDataType) => {
@@ -72,6 +73,9 @@ export function SignInForm() {
             <>
               <FormInput
                 {...field}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                value={field.value}
                 placeholder="Email"
                 className="w-full"
                 type="email"

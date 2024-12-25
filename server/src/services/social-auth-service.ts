@@ -1,13 +1,7 @@
-import { PrismaErrorCode } from '@/constants/error-reference'
 import prisma from '@/database'
 import { BloomFilterService } from '@/lb/bloom-filter'
-import { redisInstance } from '@/provider/redis'
-import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema'
-import { comparePassword, hashPassword } from '@/utils/crypto'
-import { EntityError, isPrismaClientKnownRequestError, StatusError } from '@/utils/errors'
 import { createPairTokens } from '@/utils/jwt'
 import { Account, Session, SocialEnum } from '@prisma/client'
-import { th } from 'date-fns/locale'
 import { OAuth2Client } from 'google-auth-library'
 
 export class SocialAuthServiceFactory {

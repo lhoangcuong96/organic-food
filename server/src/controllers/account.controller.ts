@@ -23,7 +23,7 @@ export const changePasswordController = async (accountId: string, oldPassword: s
       status: 404
     })
   }
-  const isPasswordMatch = await comparePassword(oldPassword, account.password)
+  const isPasswordMatch = await comparePassword(oldPassword, account.password!)
   if (!isPasswordMatch) {
     throw new StatusError({
       message: 'Mật khẩu cũ không đúng',

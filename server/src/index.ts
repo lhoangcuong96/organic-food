@@ -14,12 +14,10 @@ import fastifyCookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import fastifyHelmet from '@fastify/helmet'
 import RateLimit from '@fastify/rate-limit'
-import fastifyRedis from '@fastify/redis'
 import Fastify from 'fastify'
 import path from 'path'
-import { BloomFilterService } from './lb/bloom-filter'
-import adminRoutes from './routes/admin'
 import { registerRedis } from './provider/redis'
+import adminRoutes from './routes/admin'
 
 const fastify = Fastify({
   logger: true

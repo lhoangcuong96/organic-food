@@ -1,6 +1,6 @@
 import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema'
 import AuthService from '@/services/auth-service'
-import { SocialAuthServiceFactory } from '@/services/socia-auth-service'
+import { SocialAuthServiceFactory } from '@/services/social-auth-service'
 import { Account, Session, SocialEnum } from '@prisma/client'
 
 export default class AuthController {

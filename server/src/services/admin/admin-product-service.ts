@@ -41,6 +41,11 @@ export class AdminProductService {
           connect: {
             id: categoryId
           }
+        },
+        inventory: {
+          create: {
+            stock: rest.stock
+          }
         }
       }
     })

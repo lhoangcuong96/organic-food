@@ -6,8 +6,7 @@ import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema
 import { comparePassword, hashPassword } from '@/utils/crypto'
 import { EntityError, isPrismaClientKnownRequestError, StatusError } from '@/utils/errors'
 import { createPairTokens } from '@/utils/jwt'
-import { Account, Session, SocialEnum } from '@prisma/client'
-import { OAuth2Client } from 'google-auth-library'
+import { Account } from '@prisma/client'
 
 export default class AuthService {
   async createSession(account: Account) {

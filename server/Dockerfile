@@ -5,7 +5,7 @@ FROM node:20-alpine
 RUN apk add --no-cache openssl libc6-compat
 
 # Tạo thư mục làm việc trong container
-WORKDIR /usr/src/app/client
+WORKDIR /usr/src/app/server
 
 # Sao chép package.json và package-lock.json (nếu có)
 # tách riêng lệnh này để cache layer khi không có thay đổi trong file package.json
@@ -16,8 +16,9 @@ COPY package*.json ./
 # Copy prisma schema
 COPY prisma ./prisma/
 
+RUN npm install -g pnpm
 
-RUN npm install --legacy-peer-deps
+RUN pnpm install
 
 # Sao chép toàn bộ mã nguồn
 COPY . .
@@ -37,5 +38,5 @@ RUN npm install -g pm2
 # Chạy ứng dụng bằng PM2
 CMD ["pm2-runtime", "start", "npm", "--", "start"]
 
-# docker build -t original-food-client .
-# docker run -p 3000:3000 original-food-client
+# docker build -t original-food-server .
+# docker run -p 4000:4000 original-food-server
