@@ -16,7 +16,7 @@ services:
       - docker-network
 
   nginx:
-    image: nginx:latest
+    image: nginx:1-alpine
     ports:
       - "80:80"
     volumes:
