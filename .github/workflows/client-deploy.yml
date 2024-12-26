@@ -51,7 +51,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         source: "config/docker-compose.yml,config/nginx.conf"
-        target: "/home/projects/organic-food/client/"
+        target: "/home/projects/organic-food/"
     
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
@@ -60,6 +60,6 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /home/projects/organic-food/client/
+          cd /home/projects/organic-food/config
           docker-compose down
           docker-compose up -d
