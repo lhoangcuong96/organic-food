@@ -50,9 +50,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
-        source: |
-          config/docker-compose.yml
-          config/nginx.conf
+        source: "config/docker-compose.yml,config/nginx.conf"
         target: "/home/projects/organic-food/client/"
     
     - name: Deploy to VPS
