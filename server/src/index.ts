@@ -18,6 +18,7 @@ import Fastify from 'fastify'
 import path from 'path'
 import { registerRedis } from './provider/redis'
 import adminRoutes from './routes/admin'
+import fastifyStatic from '@fastify/static'
 
 const fastify = Fastify({
   logger: true
@@ -85,6 +86,13 @@ const start = async () => {
 
     fastify.register(testRoutes, {
       prefix: '/test'
+    })
+
+    fastify.register(fastifyStatic, {
+      root: path.resolve('public')
+    })
+    fastify.get('/', (request, reply) => {
+      reply.sendFile('index.html') // Serve index.html from the public directory
     })
     await fastify.listen({
       port: envConfig.PORT,

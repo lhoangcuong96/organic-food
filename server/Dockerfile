@@ -26,11 +26,11 @@ COPY . .
 # Chạy lệnh generate cho prisma
 RUN npx prisma generate
 
-# Build ứng dụng Next.js
+# Build ứng dụng
 RUN npm run build
 
 # Expose cổng mà ứng dụng sẽ chạy
-EXPOSE 3000
+EXPOSE 4000
 
 # Cài đặt PM2 toàn cục
 RUN npm install -g pm2
