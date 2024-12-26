@@ -222,4 +222,32 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       })
     }
   )
+
+  fastify.post<{
+    Reply: SocialAuthResType
+    Body: SocialAuthBodyType
+  }>(
+    '/facebook',
+    {
+      schema: {
+        response: {
+          200: SocialAuthRes
+        },
+        body: SocialAuthBody
+      }
+    },
+    async (request, reply) => {
+      const { body } = request
+      const controller = new SocialAuthController(SocialEnum.FACEBOOK)
+      const { account, session } = await controller.authenticate(body.token)
+      reply.send({
+        message: 'Đăng nhập thành công',
+        data: {
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken,
+          account
+        }
+      })
+    }
+  )
 }

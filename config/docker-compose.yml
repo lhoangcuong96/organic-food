@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: lhoangcuong1996/original_food_client:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - docker-network
+
+  backend:
+    image: lhoangcuong1996/original_food_server:latest
+    ports:
+      - "4000:4000"
+    networks:
+      - docker-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    driver: bridge

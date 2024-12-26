@@ -75,4 +75,7 @@ export const authApiRequest = {
   authenticateWithGoogle: (token: string) => {
     return http.post<SocialAuthResponseType>("/auth/google", { token });
   },
+  authenticateWithFacebook: (token: string) => {
+    return http.post<SocialAuthResponseType>("/auth/facebook", { token });
+  },
 };

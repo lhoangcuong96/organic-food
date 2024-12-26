@@ -38,6 +38,7 @@ This document outlines the flow of the Dolar application.
         2. [Thiết lập Reserve Proxy](#thiết-lập-reserve-proxy)
     8. [Cấu hình mã hóa HTTPS/SSL](#cấu-hình-mã-hóa-httpsssl)
     9. [Kích hoạt HTTP2 trong Nginx](#kích-hoạt-http2-trong-nginx)
+9. [Sử dụng Docker để triễn khai dự án](#sử-dụng-docker-để-setup-dự-án)
 
 
 ## Authentication
@@ -494,3 +495,102 @@ server {
   - Restart lại nginx
     - sudo systemctl restart nginx
   
+
+## Sử dụng Docker để triễn khai dự án
+- Xem thêm trong docker-document.md
+### Install docker/docker-compose
+  - Update system
+    - sudo apt-get update
+    - sudo apt upgrade -y
+  - Install required packages
+    - sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+  - Add Docker's official GPG key
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  - Add the Docker repository
+    - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - Update the package database with Docker packages
+    - sudo apt update
+  - Install docker
+    - sudo apt install docker-ce docker-ce-cli containerd.io -y
+  - Start and enable Docker
+    - sudo systemctl start docker
+    - sudo systemctl enable docker
+  - Verify Docker installation
+    - sudo docker run hello-world
+  - Add your user to the Docker group to run Docker without sudo
+    - sudo usermod -aG docker ${USER}
+  - Install docker-compose
+    - sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - Apply executable permissions to the Docker Compose binary
+    - sudo chmod +x /usr/local/bin/docker-compose
+  - Verify Docker Compose installation
+    - docker-compose --version
+
+### Tạo nginx.conf
+- Source: "/docker-compose/docker-compose.yaml"
+```
+http {
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name localhost organic-food.chickenkiller.com;  
+
+        location / {
+            proxy_pass http://frontend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        location /api/ {
+            proxy_pass http://backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+}
+```
+
+### Tạo docker-compose.yaml
+- Source: "/docker-compose/docker-compose.yaml"
+```
+version: '3.8'
+
+services:
+  frontend:
+    image: lhoangcuong1996/original_food_client:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - docker-network
+
+  backend:
+    image: lhoangcuong1996/original_food_server:latest
+    ports:
+      - "4000:4000"
+    networks:
+      - docker-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    driver: bridge
+```
+
+### Update lại github action
+```
+
+```

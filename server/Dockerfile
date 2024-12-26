@@ -38,5 +38,5 @@ RUN npm install -g pm2
 # Chạy ứng dụng bằng PM2
 CMD ["pm2-runtime", "start", "npm", "--", "start"]
 
-# docker build -t original-food-server .
-# docker run -p 4000:4000 original-food-server
+# docker build -t original_food_server .
+# docker run -p 4000:4000 original_food_server

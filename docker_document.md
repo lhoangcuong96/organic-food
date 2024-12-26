@@ -15,6 +15,7 @@
 8. [Docker compose](#docker-compose)
     1. [docker-compose.yaml](#docker-composeyaml)
 9. [Network](#network)
+10. [Setup docker/docker-compose](#setup-dockerdocker-compose)
 
 ## Docker là gì
 - Docker là công nghệ cho phép đóng gói các phụ thuộc lại thành 1 package và thực thi nó trên mọi môi trường
@@ -175,7 +176,8 @@
 
 #### Docker push image
 - docker login 
-- docker push <docker_image>:<tag>
+- docker tag <your_image_name> <your_username>/<repository_name>:<your_tag>
+- docker push <your_username>/<repository_name>:<your_tag>
 
 ## Docker compose
 - Giúp định nghĩa và triển khai loạt các container
@@ -255,3 +257,31 @@ networks:
   my_network:
     driver: bridge
 ```
+
+## Setup docker/docker-compose
+- Update system
+- sudo apt-get update
+- sudo apt upgrade -y
+- Install required packages
+- sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+- Add Docker's official GPG key
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+- Add the Docker repository
+- echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+- Update the package database with Docker packages
+- sudo apt update
+- Install docker
+- sudo apt install docker-ce docker-ce-cli containerd.io -y
+- Start and enable Docker
+- sudo systemctl start docker
+- sudo systemctl enable docker
+- Verify Docker installation
+- sudo docker run hello-world
+- Add your user to the Docker group to run Docker without sudo
+- sudo usermod -aG docker ${USER}
+- Install docker-compose
+- sudo curl -L "https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+- Apply executable permissions to the Docker Compose binary
+- sudo chmod +x /usr/local/bin/docker-compose
+- Verify Docker Compose installation
+- docker-compose --version
