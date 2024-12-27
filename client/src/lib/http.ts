@@ -91,7 +91,6 @@ export const request = async <T>(
     : undefined;
 
   let accessToken = null;
-  console.log(typeof window, typeof window === "undefined");
 
   if (option?.isPrivate || option?.isAdminRequest) {
     if (typeof window === "undefined") {

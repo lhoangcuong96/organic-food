@@ -40,3 +40,6 @@ CMD ["pm2-runtime", "start", "npm", "--", "start"]
 
 # docker build -t original_food_server .
 # docker run -p 4000:4000 original_food_server
+
+# docker tag original_food_server lhoangcuong1996/original_food_server:latest 
+# docker push original_food_server:latest
