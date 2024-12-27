@@ -63,4 +63,4 @@ jobs:
         script: |
           cd /home/projects/organic-food/config
           docker-compose down
-          docker-compose up -d --pull
+          docker-compose pull & docker-compose up
