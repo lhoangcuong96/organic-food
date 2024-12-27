@@ -38,7 +38,7 @@ This document outlines the flow of the Dolar application.
         2. [Thiết lập Reserve Proxy](#thiết-lập-reserve-proxy)
     8. [Cấu hình mã hóa HTTPS/SSL](#cấu-hình-mã-hóa-httpsssl)
     9. [Kích hoạt HTTP2 trong Nginx](#kích-hoạt-http2-trong-nginx)
-9. [Sử dụng Docker để triễn khai dự án](#sử-dụng-docker-để-setup-dự-án)
+9. [Sử dụng Docker để triễn khai dự án](#sử-dụng-docker-để-triễn-khai-dự-án)
 
 
 ## Authentication
@@ -591,6 +591,72 @@ networks:
 ```
 
 ### Update lại github action
+- client:
 ```
+name: Deploy client to VPS
+
+on:
+  push:
+    branches:
+      - master  # hoặc tên nhánh bạn muốn trigger việc deploy
+    paths:
+      - 'client/**'  # Chỉ trigger khi có thay đổi trong thư mục client
+      - ".github/workflows/client-deploy.yml"  # Trigger khi có thay đổi trong file workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create .env file
+      run: |
+        echo "My Analyze: ${{ vars.ANALYZE }}"
+        echo "My Next Public Access Token Expires In: ${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }}"
+        echo "My Next Public API URL: ${{ vars.NEXT_PUBLIC_API_URL }}"
+        echo "My Next Public URL: ${{ vars.NEXT_PUBLIC_URL }}"
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> client/.env
+        echo ANALYZE=${{ vars.ANALYZE }} >> client/.env
+        echo NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN=${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }} >> client/.env
+        echo NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }} >> client/.env
+        echo NEXT_PUBLIC_URL=${{ vars.NEXT_PUBLIC_URL }} >> client/.env
+        echo NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }} >> client/.env
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: client
+        file: client/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_NAMESPACE }}/organic_food_client:latest # Namespace: lhoangcuong1996
+    
+    - name: SSH into VPS and deploy
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        source: "config/docker-compose.yml,config/nginx.conf"
+        target: "/home/projects/organic-food/"
+    
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/projects/organic-food/config
+          docker-compose down
+          docker-compose up -d
 
 ```

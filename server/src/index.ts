@@ -101,6 +101,8 @@ const start = async () => {
     console.log(`Server đang chạy dưới local tại: ${API_URL}`)
     if (envConfig.IS_PRODUCTION) {
       console.log(`Đang ở mode production với domain: ${envConfig.PRODUCTION_URL}`)
+    } else {
+      console.log(`Server đang chạy dưới local tại: ${API_URL}`)
     }
   } catch (err) {
     fastify.log.error(err)
