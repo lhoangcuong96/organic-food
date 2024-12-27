@@ -39,3 +39,6 @@ CMD ["pm2-runtime", "start", "npm", "--", "start"]
 
 # docker build -t original_food_client .
 # docker run -p 3000:3000 original_food_client
+
+# docker tag original_food_client lhoangcuong1996/original_food_client:latest 
+# docker push lhoangcuong1996/original_food_client:latest
