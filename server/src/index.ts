@@ -19,6 +19,7 @@ import path from 'path'
 import { registerRedis } from './provider/redis'
 import adminRoutes from './routes/admin'
 import fastifyStatic from '@fastify/static'
+import StorageRoutes from './routes/storage.route'
 
 const fastify = Fastify({
   logger: true
@@ -82,6 +83,10 @@ const start = async () => {
     })
     fastify.register(adminRoutes, {
       prefix: '/admin'
+    })
+
+    fastify.register(StorageRoutes, {
+      prefix: '/storage'
     })
 
     fastify.register(testRoutes, {

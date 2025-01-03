@@ -25,7 +25,7 @@ export async function generateMetadata({
   try {
     const { slug } = await params;
     const res = await getProductDetail(slug);
-    const product = res.payload?.data;
+    const product = res.payload??.data;
     const url = `${envConfig?.NEXT_PUBLIC_URL}/ ${routePath.customer}/${product.slug}`;
     return {
       ...sharedMetadata,

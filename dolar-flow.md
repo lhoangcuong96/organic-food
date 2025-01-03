@@ -19,9 +19,11 @@ This document outlines the flow of the Dolar application.
 5. [Giải pháp an toàn dữ liệu](#giải-pháp-an-toàn-dữ-liệu)
     1. [Rate limits(giới hạn tần suất)](#rate-limits)
 6. [Các thuật toán sử dụng](#các-thuật-toán-sử-dụng)
-7. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
+7. [Tích hợp dịch vụ khác](#tích-hợp-dịch-vụ-khác)
+    1. [AWS S3](#aws-s3)
+8. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
     1. [Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
-8. [Triễn khai dự án](#triễn-khai-dự-án)
+9. [Triễn khai dự án](#triễn-khai-dự-án)
     1. [Khởi tạo 1 instance VPS](#khởi-tạo-1-instance-vps)
         1. [Cấu hình VPS](#cấu-hình-vps)
     2. [Tạo user mới](#tạo-user-mới)
@@ -38,7 +40,12 @@ This document outlines the flow of the Dolar application.
         2. [Thiết lập Reserve Proxy](#thiết-lập-reserve-proxy)
     8. [Cấu hình mã hóa HTTPS/SSL](#cấu-hình-mã-hóa-httpsssl)
     9. [Kích hoạt HTTP2 trong Nginx](#kích-hoạt-http2-trong-nginx)
-9. [Sử dụng Docker để triễn khai dự án](#sử-dụng-docker-để-triễn-khai-dự-án)
+10. [Sử dụng Docker để triễn khai dự án](#sử-dụng-docker-để-triễn-khai-dự-án)
+    1. [Install docker/docker-compose](#install-dockerdocker-compose)
+    2. [Config docker compose](#config-docker-composeyaml)
+    3. [Config nginx](#config-nginxconf)
+    4. [Update github action](#update-lại-github-action)
+    5. [HTTPS/SSL](#httpsssl)
 
 
 ## Authentication
@@ -192,6 +199,100 @@ This document outlines the flow of the Dolar application.
 - [LRU caching](#lru-caching)
 - [Bloom Filter](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
 
+## Tích hợp dịch vụ khác
+### AWS S3
+- Cách tiếp cận
+  - 1 cách tiếp cận là upload file từ client đến server và server sẽ gửi file đến s3 bucket
+  - Tối ưu hơn là client sẽ gửi đến server để server lấy 1 secure url từ S3 để client có thể gửi thẳng trực tiếp lên s3 mà không cần phải thông qua server
+- Setup S3
+  - Sign up và vào aws service 
+    - => All services => S3
+  - Khởi tạo s3 bucket
+    - Điển các thông tin cần thiết
+    - Uncheck "BLOCK ALL PUBLIC ACCESS"
+    - Sau khi khởi tạo xong bucket click vào trong và vào tab permission và scroll tới bucket policy và nhấn vào edit
+      - Policy này sẽ cho phép "anyone" get data trong bucket này, tuy nhiên chỉ truy cập để read không phải là write
+      - Click vào add new statement
+        - Phần Add actions chọn s3 => và search get object sau đó tick vào
+        - Phần Add a resource chọn object => đổi {ObjectName} thành * và update {BucketName} thành tên của bucket
+        - Cập nhật lại  "Principal": "*",
+        - Bấm Save changes
+        - Sau khi hoàn tất thì Bucket policy sẽ có dạng 
+        ```
+        {
+           "Version": "2012-10-17",
+              "Statement": [
+                  {
+                      "Sid": "Statement1",
+                      "Effect": "Allow",
+                      "Principal": "*",
+                      "Action": "s3:GetObject",
+                      "Resource": "arn:aws:s3:::lhoangcuong1996-bucket/*"
+                  }
+              ]
+          }
+        ```
+    - Tiếp tục scroll xuống phần CORS, phần này cho phép hình ảnh hiển thị trong image tag
+      ```
+      [
+            {
+                "AllowedHeaders": [
+                    "*"
+                ],
+                "AllowedMethods": [
+                    "PUT",
+                    "HEAD",
+                    "GET"
+                ],
+                "AllowedOrigins": [
+                    "*"
+                ],
+                "ExposeHeaders": []
+            }
+        ]
+      ```
+
+    - Fetch image thì có thể public nhưng việc đưa các images/files vào trong bucket thì chỉ có những account được uỷ quyền mới có thể
+  - IAM User
+    - IAM user là 1 user được cấp 1 số quyền nhất định
+    - Tạo IAM user
+      - Vào search bar và gõ IAM 
+      - Click vào users => add user
+      - Điền thông tin 
+    - Sau khi tạo user xong và phần permission policy
+      - => add permissions 
+      - Chọn service S3
+      - Phần Actions allowed chọn PutObject
+      - Save change
+    - Vào create access key điền các thông tin và lấy ra access key id và secret
+- Tạo service để get presignedUrl
+  ```
+    const s3 = new aws.S3({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_KEY
+    })
+    export class S3StorageService implements StorageService {
+      async generatePresignedUrl(): Promise<string> {
+        const imageName = 'r'
+        const params = {
+          Bucket: process.env.AWS_BUCKET,
+          Key: imageName,
+          Expires: 60
+        }
+        console.log(params)
+        try {
+          const presignedUrl = await s3.getSignedUrlPromise('putObject', params)
+          return presignedUrl
+        } catch (error) {
+          console.error(error)
+          throw new Error('Error generating presigned URL')
+        }
+      }
+      delete() {}
+    }
+
+  ```
 ## Một số định nghĩa khác
 ### Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)
 - Bloom filter sẽ tạo ra mảng với kích thước "m" bit(0,1) với giá trị là 0 hết và "k" hàm băm(môĩ hàm băm trả về 1 chỉ số index)
@@ -477,8 +578,6 @@ server {
   - kiểm tra tiến trình làm mới tự động
     - sudo certbot renew --dry-run
 
-#### Hiện tại đang xài free nên chỉ đăng kí dc subdomain trong domain được cung cấp, nó đã cấp phát hết cer nên không đăng kí được nữa
-
 ### Kích hoạt HTTP2 trong Nginx
 - HTTP/2 là phiên bản kế thừa của HTTP/1.x và cung cấp nhiều ưu điểm như xử lý song song, full multiplex, nén header và thậm chí là cả server push. Điều quan trọng là thiết lập HTTP2 trong NGINX để cải thiện tốc độ và hiệu suất trang web.
 - Trước khi kích hoạt thì cần đảm bảo rằng
@@ -526,37 +625,8 @@ server {
   - Verify Docker Compose installation
     - docker-compose --version
 
-### Tạo nginx.conf
-- Source: "/docker-compose/docker-compose.yaml"
-```
-http {
-    server {
-        listen 80;
-        listen [::]:80;
-        server_name localhost organic-food.chickenkiller.com;  
 
-        location / {
-            proxy_pass http://frontend;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
-
-        location /api/ {
-            proxy_pass http://backend;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
-    }
-}
-```
-
-### Tạo docker-compose.yaml
+### Config docker-compose.yaml
 - Source: "/docker-compose/docker-compose.yaml"
 ```
 version: '3.8'
@@ -577,7 +647,7 @@ services:
       - docker-network
 
   nginx:
-    image: nginx:latest
+    image: nginx:1-alpine
     ports:
       - "80:80"
     volumes:
@@ -588,6 +658,50 @@ services:
 networks:
   docker-network:
     driver: bridge
+
+```
+
+### Config nginx.conf
+- Source: "/docker-compose/docker-compose.yaml"
+```
+worker_processes auto;
+
+events {
+    worker_connections 1024;  # Adjust as needed
+}
+
+
+http {
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name localhost original-food.shop;  
+
+        location / {
+            proxy_pass http://frontend:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name localhost api.original-food.shop;  
+
+        location / {
+            proxy_pass http://backend:4000/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+}
 ```
 
 ### Update lại github action
@@ -613,10 +727,6 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "My Analyze: ${{ vars.ANALYZE }}"
-        echo "My Next Public Access Token Expires In: ${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }}"
-        echo "My Next Public API URL: ${{ vars.NEXT_PUBLIC_API_URL }}"
-        echo "My Next Public URL: ${{ vars.NEXT_PUBLIC_URL }}"
         echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> client/.env
         echo ANALYZE=${{ vars.ANALYZE }} >> client/.env
         echo NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN=${{ vars.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN }} >> client/.env
@@ -660,3 +770,90 @@ jobs:
           docker-compose up -d
 
 ```
+
+- Server:
+```
+#
+name: Deploy server to VPS
+
+on:
+  push:
+    branches:
+      - master  # hoặc tên nhánh bạn muốn trigger việc deploy
+    paths:
+      - 'server/**'  # Chỉ trigger khi có thay đổi trong thư mục server
+      - ".github/workflows/server-deploy.yml"  # Trigger khi có thay đổi trong file workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create .env file
+      run: |
+        echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> server/.env
+        echo PORT=${{ vars.SERVER_PORT }} >> server/.env
+        echo DOMAIN=${{ vars.SERVER_DOMAIN }} >> server/.env
+        echo PROTOCOL=${{ vars.SERVER_PROTOCOL }} >> server/.env
+        echo TOKEN_SECRET=${{ secrets.TOKEN_SECRET }} >> server/.env
+        echo ACCESS_TOKEN_EXPIRES_IN=${{ vars.ACCESS_TOKEN_EXPIRES_IN }} >> server/.env
+        echo REFRESH_TOKEN_EXPIRES_IN=${{ vars.REFRESH_TOKEN_EXPIRES_IN }} >> server/.env
+        echo COOKIE_MODE=false >> server/.env
+        echo UPLOAD_FOLDER=${{ vars.UPLOAD_FOLDER }} >> server/.env
+        echo IS_PRODUCTION=true >> server/.env
+        echo PRODUCTION_URL=${{ vars.PRODUCTION_URL }} >> server/.env
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: server
+        file: server/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_NAMESPACE }}/organic_food_server:latest # Namespace: lhoangcuong1996
+    
+    - name: SSH into VPS and deploy
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        source: "config/docker-compose.yml,config/nginx.conf"
+        target: "/home/projects/organic-food/"
+    
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/projects/organic-food/config
+          docker-compose down
+          docker-compose pull & docker-compose up
+
+```
+
+### HTTPS/SSL 
+- Thêm cerbot service để tạo và renew certification(12h)
+```
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - app-network
+```
+- Cấu hình lại cho nginx

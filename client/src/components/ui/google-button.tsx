@@ -63,8 +63,8 @@ export default function GoogleLoginButton() {
 
     try {
       const res = await authApiRequest.authenticateWithGoogle(credential);
-      const accessToken = res.payload.data.accessToken;
-      const refreshToken = res.payload.data.refreshToken;
+      const accessToken = res.payload?.data.accessToken;
+      const refreshToken = res.payload?.data.refreshToken;
       await authApiRequest.setToken(accessToken, refreshToken);
       sessionStore.setTokens(accessToken, refreshToken);
       messageApi.success("Đăng nhập thành công");

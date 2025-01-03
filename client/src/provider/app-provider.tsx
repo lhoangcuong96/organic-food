@@ -52,7 +52,7 @@ export default function AppProvider({
   const callApiRefreshToken = async () => {
     try {
       const res = await authApiRequest.refreshTokenFromClientToNextServer();
-      const { accessToken, refreshToken } = res.payload.data;
+      const { accessToken, refreshToken } = res.payload?.data;
       await authApiRequest.setToken(accessToken, refreshToken);
       SessionStore.setTokens(accessToken, refreshToken);
     } catch (error) {

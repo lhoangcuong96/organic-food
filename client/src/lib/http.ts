@@ -67,6 +67,7 @@ type CustomOption = RequestInit & {
   baseUrl?: string;
   isPrivate?: boolean;
   isAdminRequest?: boolean;
+  isFullUrl?: boolean;
 };
 
 export const request = async <T>(
@@ -84,6 +85,7 @@ export const request = async <T>(
   // }
 
   const isFormData = option?.body instanceof FormData;
+
   const body = option?.body
     ? isFormData
       ? option.body // nếu là form data thì không cần parse
@@ -94,7 +96,6 @@ export const request = async <T>(
 
   if (option?.isPrivate || option?.isAdminRequest) {
     if (typeof window === "undefined") {
-      console.log("server side");
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
       accessToken = cookieStore.get(TokenType.AccessToken)?.value;
@@ -118,11 +119,13 @@ export const request = async <T>(
 
   const baseHeader = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
-    Authorization: accessToken ? `Bearer ${accessToken}` : "",
+    ...(!accessToken ? {} : { Authorization: `Bearer ${accessToken}` }),
   };
   const baseUrl = option?.baseUrl ?? envConfig?.NEXT_PUBLIC_API_URL;
 
-  const fullUrl = url.startsWith("/")
+  const fullUrl = option?.isFullUrl
+    ? url
+    : url.startsWith("/")
     ? `${baseUrl}${url}`
     : `${baseUrl}/${url}`;
 
@@ -133,7 +136,14 @@ export const request = async <T>(
     method,
   });
 
-  const payload: T = await res.json();
+  let payload: T | null = null;
+  if (res.status !== 204) {
+    // S3 trả về 200 nhưng không có body
+    const text = await res.text();
+    if (text) {
+      payload = JSON.parse(text);
+    }
+  }
   const data = {
     status: res.status,
     payload,
@@ -143,31 +153,7 @@ export const request = async <T>(
     if (res.status === 422) {
       throw new EntityError(data);
     } else if (res.status === 401) {
-      console.log(401);
-      /*
-        Nếu là lỗi không có quyền truy cập thì logout(trên client)
-        Vì là session đã hết hạn(xoá trên server nodejs) => chỉ gọi lên trên nextjs server để xoá cookie thôi
-      */
-      if (typeof window !== "undefined") {
-        try {
-          await fetch("/api/auth/sign-out", {
-            method: "POST",
-            body: JSON.stringify({
-              forceLogout: true,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        } catch (error) {
-          throw error;
-        } finally {
-          // SessionStore.clearTokens();
-          // location.href = routePath.signIn;
-        }
-      } else {
-        await redirect(routePath.signOut);
-      }
+      await redirect(routePath.signOut);
     } else {
       throw new HttpError(
         data as {

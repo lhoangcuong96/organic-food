@@ -76,8 +76,8 @@ const FacebookButton = () => {
   const verifyToken = async (token: string) => {
     try {
       const res = await authApiRequest.authenticateWithFacebook(token);
-      const accessToken = res.payload.data.accessToken;
-      const refreshToken = res.payload.data.refreshToken;
+      const accessToken = res.payload?.data.accessToken;
+      const refreshToken = res.payload?.data.refreshToken;
       await authApiRequest.setToken(accessToken, refreshToken);
       sessionStore.setTokens(accessToken, refreshToken);
       messageApi.success("Đăng nhập thành công");

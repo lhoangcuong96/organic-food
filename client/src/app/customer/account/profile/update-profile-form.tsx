@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { accountApiRequest } from "@/api-request/account";
-import { mediaRequestApi } from "@/api-request/media";
+import { storageRequestApis } from "@/api-request/storage";
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,11 +21,11 @@ import { Label } from "@/components/ui/label";
 import { Link } from "@/components/ui/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { routePath } from "@/constants/routes";
+import { useAppContext } from "@/provider/app-provider";
 import { useHandleMessage } from "@/utils/hooks";
+import { Account } from "@prisma/client";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppContext } from "@/provider/app-provider";
-import { Account } from "@prisma/client";
 
 export default function UpdateProfileForm({
   profile,
@@ -64,13 +64,17 @@ export default function UpdateProfileForm({
       setIsLoading(true);
       let avatar = "";
       if (avatarFile) {
-        const formData = new FormData();
-        formData.append("file", avatarFile);
-        formData.append("filename", avatarFile.name);
-        const resp = await mediaRequestApi.uploadImage(formData);
-        if (resp.payload.data) {
-          avatar = resp.payload.data;
+        const generatePresignedUrlRes =
+          await storageRequestApis.generatePresignedUrl(
+            avatarFile.name,
+            avatarFile.type
+          );
+        if (!generatePresignedUrlRes.payload?.data) {
+          throw new Error("Lỗi upload avatar");
         }
+        const { fileUrl, presignedUrl } = generatePresignedUrlRes.payload.data;
+        await storageRequestApis.upload(presignedUrl, avatarFile);
+        avatar = fileUrl;
       }
       const dateOfBirth = new Date(data.dateOfBirth) as unknown as string;
       const res = await accountApiRequest.updateProfile({
@@ -78,14 +82,15 @@ export default function UpdateProfileForm({
         avatar: avatar || profile.avatar,
         dateOfBirth,
       });
-      if (res.payload.data) {
-        setAccount(res.payload.data as Account);
+      if (res.payload?.data) {
+        setAccount(res.payload?.data as Account);
         messageApi.success("Cập nhật thông tin thành công");
         router.refresh();
       } else {
         messageApi.error("Cập nhật thông tin thất bại");
       }
     } catch (error) {
+      console.error(error);
       handleError({ error, setError });
     } finally {
       setIsLoading(false);

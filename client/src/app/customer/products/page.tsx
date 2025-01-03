@@ -24,8 +24,8 @@ export default async function Products({
   let errorMessage = "";
   try {
     const res = await productRequestApi.getProducts(params);
-    if (res.payload.data) {
-      initialProducts.push(...res.payload.data);
+    if (res.payload?.data) {
+      initialProducts.push(...res.payload?.data);
     } else {
       errorMessage = "Không tim thấy sản phẩm nào";
     }
