@@ -20,7 +20,7 @@ export class S3StorageService implements StorageService {
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET,
       Key: key,
-      ContentType: 'image/png'
+      ContentType: encodeURI(fileType)
     })
     try {
       const presignedUrl = await getSignedUrl(s3Client, command, {
