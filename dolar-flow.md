@@ -267,31 +267,36 @@ This document outlines the flow of the Dolar application.
     - Vào create access key điền các thông tin và lấy ra access key id và secret
 - Tạo service để get presignedUrl
   ```
-    const s3 = new aws.S3({
-      region: process.env.AWS_REGION,
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_KEY
+   async generatePresignedUrl(fileName: string, fileType: string): Promise<{ presignedUrl: string; fileUrl: string }> {
+    const key = fileName
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET,
+      Key: key,
+      ContentType: encodeURI(fileType)
     })
-    export class S3StorageService implements StorageService {
-      async generatePresignedUrl(): Promise<string> {
-        const imageName = 'r'
-        const params = {
-          Bucket: process.env.AWS_BUCKET,
-          Key: imageName,
-          Expires: 60
-        }
-        console.log(params)
-        try {
-          const presignedUrl = await s3.getSignedUrlPromise('putObject', params)
-          return presignedUrl
-        } catch (error) {
-          console.error(error)
-          throw new Error('Error generating presigned URL')
-        }
-      }
-      delete() {}
+    try {
+      const presignedUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600
+      })
+      // Encode key nếu như key có ký tự đặc biệt sẽ bị sai so với s3
+      const fileUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`
+      return { presignedUrl, fileUrl }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error generating presigned URL')
     }
+  }
 
+  ```
+  - Sử dụng presign url ở dưới client
+  ```
+  upload: async (url: string, file: File) => {
+      return fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+    },
   ```
 ## Một số định nghĩa khác
 ### Bloom filter(kiểm tra một phần tử có nằm trong tập hợp không)
