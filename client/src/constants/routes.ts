@@ -20,6 +20,7 @@ export const routePath = {
       orders: "/customer/account/orders",
       address: "/customer/account/address",
       vouchers: "/customer/account/vouchers",
+      shopVouchers: "/customer/account/shop-vouchers",
       changePassword: "/customer/account/change-password",
       changePhoneNumber: "/customer/account/change-phone-number",
       changeEmail: "/customer/account/change-email",

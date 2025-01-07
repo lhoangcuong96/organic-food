@@ -7,7 +7,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col font-medium">
+    <div className="flex min-h-screen flex-col font-semibold">
       <Header />
       <div className="flex flex-1">
         <Sidebar className="w-64 border-r" />

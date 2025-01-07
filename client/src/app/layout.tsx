@@ -8,6 +8,7 @@ import "swiper/css";
 import "./globals.css";
 import { jwtDecode } from "jwt-decode";
 import { Account } from "@prisma/client";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -45,7 +46,9 @@ export default async function RootLayout({
         className={`${quicksand.className} antialiased bg-white text-gray-700`}
       >
         <AppProvider initialAccount={account}>
-          <AntdRegistry>{children}</AntdRegistry>
+          <TooltipProvider>
+            <AntdRegistry>{children}</AntdRegistry>
+          </TooltipProvider>
         </AppProvider>
       </body>
     </html>

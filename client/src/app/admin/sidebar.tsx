@@ -75,7 +75,7 @@ const menuItems: MenuItem[] = [
       },
       {
         label: "Mã giảm giá của Shop",
-        url: routePath.customer.account.vouchers,
+        url: routePath.customer.account.shopVouchers,
         key: "shop-vouchers",
       },
     ],
@@ -208,12 +208,12 @@ const SidebarSubItem = ({ item }: { item: MenuSubItem }) => {
 
 export function Sidebar({ className }: SidebarProps) {
   const [expandedItem, setExpandedItem] = useState<string[]>(() => {
-    const expandList = LocalStore.getKey(STORE_KEYS.adminSidebarExpandList);
+    const expandList = LocalStore?.getKey(STORE_KEYS.adminSidebarExpandList);
     return expandList?.split(",") || [];
   });
 
   const handleExpand = (key: string) => {
-    LocalStore.setKey(STORE_KEYS.adminSidebarExpandList, key);
+    LocalStore?.setKey(STORE_KEYS.adminSidebarExpandList, key);
     setExpandedItem((prev) => {
       let newExpandList = [...prev];
       if (prev.includes(key)) {
@@ -222,7 +222,7 @@ export function Sidebar({ className }: SidebarProps) {
       } else {
         newExpandList = [...prev, key];
       }
-      LocalStore.setKey(
+      LocalStore?.setKey(
         STORE_KEYS.adminSidebarExpandList,
         newExpandList.join(",")
       );

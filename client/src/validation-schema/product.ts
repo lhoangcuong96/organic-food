@@ -53,7 +53,9 @@ export type ProductListResponseType = z.infer<typeof ProductListResponseSchema>;
 /*-----------------Product list----------------------*/
 
 /* -----------------Product create---------------------- */
-const MAX_FILE_SIZE = 300 * 1024 * 1024; // 300MB
+export const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+export const MAX_FILE_SIZE = 300 * 1024 * 1024; // 300MB
+export const MAX_PRODUCT_IMAGES = 9;
 const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
   "image/jpg",
@@ -63,23 +65,61 @@ const ACCEPTED_IMAGE_TYPES = [
 const ACCEPTED_VIDEO_TYPES = ["video/mp4"];
 export const productCreateFormSchema = z.object({
   productImages: z
-    .array(z.instanceof(File))
+    .array(
+      z.union([
+        z.instanceof(File, {
+          message: "Hình ảnh không hợp lệ",
+        }),
+        z
+          .string({
+            message: "URL không hợp lệ",
+          })
+          .url(),
+      ]),
+      {
+        required_error: "Phải có ít nhất 1 hình ảnh sản phẩm",
+      }
+    )
     .min(1, "Phải có ít nhất 1 hình ảnh sản phẩm")
-    .max(3, "Chỉ được tải lên tối đa 3 hình ảnh")
+    .max(MAX_PRODUCT_IMAGES, "Chỉ được tải lên tối đa 9 hình ảnh")
     .refine((files) => {
-      return files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type));
-    }, "Chỉ chấp nhận các định dạng ảnh: JPG, PNG, WEBP"),
+      return files.every((files) => {
+        return files instanceof File
+          ? ACCEPTED_IMAGE_TYPES.includes(files.type)
+          : true;
+      });
+    }, "Chỉ chấp nhận các định dạng ảnh: JPG, PNG, WEBP")
+    .refine((files) => {
+      return files.every((files) => {
+        return files instanceof File ? files.size <= MAX_IMAGE_SIZE : true;
+      });
+    }, `Hình ảnh không được vượt quá ${MAX_IMAGE_SIZE / 1024 / 1024}MB`),
   coverImage: z
-    .instanceof(File, { message: "Vui lòng chọn ảnh bìa" })
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Chỉ chấp nhận các định dạng ảnh: JPG, PNG, WEBP"
-    ),
+    .union([
+      z.instanceof(File, {
+        message: "Hình ảnh không hợp lệ",
+      }),
+      z
+        .string({
+          message: "URL không hợp lệ",
+        })
+        .url(),
+    ])
+    .refine((file) => {
+      return file instanceof File
+        ? ACCEPTED_IMAGE_TYPES.includes(file.type)
+        : true;
+    }, "Chỉ chấp nhận các định dạng ảnh: JPG, PNG, WEBP")
+    .refine((file) => {
+      return file instanceof File ? file.size <= MAX_IMAGE_SIZE : true;
+    }, `Hình ảnh không được vượt quá ${MAX_IMAGE_SIZE / 1024 / 1024}MB`),
   video: z
-    .instanceof(File)
+    .instanceof(File, {
+      message: "Chỉ chấp nhận định dạng MP4",
+    })
     .refine(
       (file) => file.size <= MAX_FILE_SIZE,
-      "Video không được vượt quá 300MB"
+      `Video không được vượt quá ${MAX_FILE_SIZE / 1024 / 1024}MB`
     )
     .refine(
       (file) => ACCEPTED_VIDEO_TYPES.includes(file.type),
@@ -90,10 +130,11 @@ export const productCreateFormSchema = z.object({
     .string()
     .min(25, "Tên sản phẩm phải có ít nhất 25 ký tự")
     .max(120, "Tên sản phẩm không được vượt quá 120 ký tự"),
-  category: z.string({
-    required_error: "Vui lòng chọn ngành hàng",
-  }),
-  description: z.string().min(1, "Vui lòng nhập mô tả sản phẩm"),
+  category: z.array(z.string()).min(1, "Vui lòng chọn ngành hàng"),
+  description: z
+    .string()
+    .min(1, "Vui lòng nhập mô tả sản phẩm")
+    .max(3000, "Mô tả sản phẩm không được vượt quá 3000 ký tự"),
   price: z.string().min(1, "Vui lòng nhập giá bán"),
   stock: z.string().min(1, "Vui lòng nhập số lượng"),
   sku: z.string().optional(),
