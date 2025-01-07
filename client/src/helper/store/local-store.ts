@@ -13,7 +13,10 @@ class LocalStore {
     // Private constructor to prevent direct instantiation
   }
 
-  public static getInstance(): LocalStore {
+  public static getInstance(): LocalStore | null {
+    if (typeof window === "undefined") {
+      return null;
+    }
     if (this.instance === null) {
       this.instance = new LocalStore();
     }

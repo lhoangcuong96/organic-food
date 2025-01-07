@@ -16,7 +16,8 @@ export default class AuthService {
         email: account.email,
         phoneNumber: account.phoneNumber,
         fullname: account.fullname,
-        avatar: account.avatar
+        avatar: account.avatar,
+        role: account.role
       }
     })
 

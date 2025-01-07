@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
+import { DependencyList, useCallback } from "react";
 import { EntityError } from "@/lib/http";
 import { UseFormSetError } from "react-hook-form";
 import { useAppContext } from "@/provider/app-provider";
+import { useState, useEffect } from "react";
 
 export const useHandleMessage = () => {
   const { messageApi } = useAppContext();
@@ -38,7 +39,21 @@ export const useHandleMessage = () => {
   return { handleError, messageApi };
 };
 
-import { useState, useEffect } from "react";
+export function useDebounceEffect(
+  fn: () => void,
+  waitTime: number,
+  deps?: DependencyList
+) {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fn();
+    }, waitTime);
+
+    return () => {
+      clearTimeout(t);
+    };
+  }, deps);
+}
 
 const useIsMobile = (breakpoint: number = 992) => {
   const [isMobile, setIsMobile] = useState(false);

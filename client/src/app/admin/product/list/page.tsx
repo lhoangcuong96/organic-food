@@ -17,7 +17,8 @@ export default async function ProductList() {
       sort: "name",
       order: Order.Desc,
     });
-    if (response.payload.data) {
+    console.log(response);
+    if (response.payload?.data) {
       products = response.payload.data as ProductListType;
     }
   } catch (e) {
@@ -25,7 +26,7 @@ export default async function ProductList() {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <div className="flex items-center gap-1 text-sm text-gray-500 mb-4">
         <span>Quản lý sản phẩm</span>
         <ChevronRight className="h-4 w-4" />

@@ -11,6 +11,7 @@ import FoodSection from "./food-section";
 import { OurSpecialServices } from "./our-special-services";
 import { PromotionalProducts } from "./promotional-products";
 import { Suspense } from "react";
+import envConfig from "@/envConfig";
 
 // type Props = {
 //   params: Promise<{ id: string }>;
@@ -31,6 +32,7 @@ export default async function CustomerHomePage() {
   let error;
 
   try {
+    console.log(envConfig?.NEXT_PUBLIC_API_URL);
     products = await ProductService.getProducts();
   } catch (err) {
     console.error("Error fetching products:", err);
