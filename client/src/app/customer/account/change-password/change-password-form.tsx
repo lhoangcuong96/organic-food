@@ -22,7 +22,7 @@ import {
 } from "@/validation-schema/account";
 
 export default function ChangePasswordForm() {
-  const { handleError, messageApi } = useHandleMessage();
+  const { messageApi } = useHandleMessage();
   const form = useForm<ChangePasswordDataType>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
@@ -35,9 +35,11 @@ export default function ChangePasswordForm() {
   async function onSubmit(values: ChangePasswordDataType) {
     try {
       await accountApiRequest.changePassword(values);
-      messageApi.success("Đổi mật khẩu thành công");
+      messageApi.success({
+        description: "Đổi mật khẩu thành công",
+      });
     } catch (error) {
-      handleError({ error, setError: form.setError });
+      messageApi.error({ error: error as Error, setError: form.setError });
     }
   }
 

@@ -1,7 +1,6 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 
 const suggestions = [
   {
@@ -38,22 +37,20 @@ export function SuggestionsSidebar() {
     console.log(form);
   });
   return (
-    <div className="w-64 bg-slate-50 p-4 sticky si h-full">
+    <div className="w-64 bg-slate-50 p-4 sticky top-16 h-fit">
       <h2 className="mb-4 text-lg font-semibold">Gợi ý điền Thông tin</h2>
-      <ScrollArea className="h-[calc(100vh-8rem)]">
-        <ul className="space-y-2">
-          {suggestions.map((suggestion, index) => {
-            const value = form.getValues(suggestion.field);
-            const isValid = suggestion.isValid(value);
-            return (
-              <li key={index} className="flex items-start gap-2">
-                <Checkbox checked={isValid} />
-                <span className="text-sm">{suggestion.label}</span>
-              </li>
-            );
-          })}
-        </ul>
-      </ScrollArea>
+      <ul className="space-y-2">
+        {suggestions.map((suggestion, index) => {
+          const value = form.getValues(suggestion.field);
+          const isValid = suggestion.isValid(value);
+          return (
+            <li key={index} className="flex items-start gap-2">
+              <Checkbox checked={isValid} />
+              <span className="text-sm">{suggestion.label}</span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

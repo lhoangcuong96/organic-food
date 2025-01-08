@@ -6,6 +6,8 @@ import { ChevronRight } from "lucide-react";
 import { ProductSearch } from "./product-search";
 import { ProductTable } from "./product-table";
 import { ProductListType } from "@/validation-schema/admin/product";
+import Link from "next/link";
+import { routePath } from "@/constants/routes";
 
 export default async function ProductList() {
   let products: ProductListType = [];
@@ -36,7 +38,9 @@ export default async function ProductList() {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Tất cả sản phẩm</h2>
           <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-            + Thêm 1 sản phẩm mới
+            <Link href={routePath.admin.product.add}>
+              + Thêm 1 sản phẩm mới
+            </Link>
           </Button>
         </div>
 

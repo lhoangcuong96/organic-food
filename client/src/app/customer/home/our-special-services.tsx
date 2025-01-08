@@ -1,6 +1,6 @@
 import OutlineButton from "@/components/customer/UI/button/outline-button";
 import { Card } from "@/components/ui/card";
-import { Divider } from "antd";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
 export function OurSpecialServices() {
@@ -34,7 +34,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Rau hữu cơ tươi
             </p>
-            <Divider className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
               Được trồng theo phương pháp hiện đại nhất, đạt tiêu chuẩn quốc tế,
@@ -54,7 +54,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Giao hàng nhanh chóng
             </p>
-            <Divider className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
               Giao hàng trong thời gian nhanh nhất để đảm bảo chất lượng tốt
@@ -74,7 +74,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Thanh toán dễ dàng
             </p>
-            <Divider className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
               Nhiều hình thức thanh toán làm cho việc đặt hàng của bạn và shop

@@ -57,7 +57,7 @@ const FacebookButton = () => {
 
   const handleLogin = () => {
     if (!isSdkLoaded) {
-      messageApi.error("Facebook SDK not loaded");
+      messageApi.error({ error: "Facebook SDK not loaded" });
       return;
     }
 
@@ -66,7 +66,7 @@ const FacebookButton = () => {
         if (response.authResponse) {
           verifyToken(response.authResponse.accessToken);
         } else {
-          messageApi.error("Facebook login failed");
+          messageApi.error({ error: "Facebook login failed" });
         }
       },
       { scope: "email" }
@@ -78,13 +78,16 @@ const FacebookButton = () => {
       const res = await authApiRequest.authenticateWithFacebook(token);
       const accessToken = res.payload?.data.accessToken;
       const refreshToken = res.payload?.data.refreshToken;
+      if (!accessToken || !refreshToken) {
+        throw new Error("Token không hợp lệ");
+      }
       await authApiRequest.setToken(accessToken, refreshToken);
       sessionStore.setTokens(accessToken, refreshToken);
-      messageApi.success("Đăng nhập thành công");
+      messageApi.success({ description: "Đăng nhập thành công" });
       router.push(routePath.customer.home);
     } catch (_error) {
       console.error(_error);
-      messageApi.error("Đăng nhập thất bại");
+      messageApi.error({ error: "Đăng nhập thất bại" });
     }
   };
 

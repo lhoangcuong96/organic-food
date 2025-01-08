@@ -5,11 +5,16 @@ import { routePath } from "@/constants/routes";
 import { Dropdown } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useReducer } from "react";
+import { JSX, useReducer } from "react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { ProductMenu } from "./product-menu";
 
-export const menuItems = [
+interface MenuProps {
+  label: string;
+  path: string;
+  key?: string;
+}
+export const menuItems: MenuProps[] = [
   {
     path: routePath.customer.home,
     label: "Trang chủ",

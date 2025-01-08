@@ -1,4 +1,4 @@
-import { Divider } from "antd";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import Link from "next/link";
 import { FaInstagram } from "react-icons/fa6";
@@ -237,7 +237,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <Divider className="!border-lime-700"></Divider>
+      <Separator className="!border-lime-700"></Separator>
       <p className="text-center font-semibold">
         Bản quyền thuộc về Hoàng Mạnh Cường.
       </p>

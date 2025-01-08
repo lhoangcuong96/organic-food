@@ -11,7 +11,7 @@ const XButton = () => {
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => console.log(codeResponse),
     onError: () => {
-      messageApi.error("Đăng nhập thất bại");
+      messageApi.error({ error: "Đăng nhập thất bại" });
     },
     flow: "auth-code",
   });

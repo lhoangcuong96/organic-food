@@ -12,14 +12,16 @@ export function ButtonLogout(
   }
 ) {
   const { className, ...rest } = props;
-  const { messageApi, handleError } = useHandleMessage();
+  const { messageApi } = useHandleMessage();
   const router = useRouter();
   const handleLogOut = async () => {
     try {
       await authApiRequest.logoutFromClientToNextServer({ forceLogout: false });
-      messageApi.success("Đăng xuất thành công");
+      messageApi.success({
+        description: "Đăng xuất thành công",
+      });
     } catch (error) {
-      handleError({ error });
+      messageApi.error({ error: error as Error });
     } finally {
       router.refresh();
     }

@@ -12,6 +12,7 @@ import { OurSpecialServices } from "./our-special-services";
 import { PromotionalProducts } from "./promotional-products";
 import { Suspense } from "react";
 import envConfig from "@/envConfig";
+import Spinner from "@/components/ui/spinner";
 
 // type Props = {
 //   params: Promise<{ id: string }>;
@@ -61,13 +62,13 @@ export default async function CustomerHomePage() {
     <div>
       <HeroImage src="/images/slider_1.webp"></HeroImage>
       <div className="flex flex-col items-center gap-8">
-        <Suspense fallback={<p>...Loading</p>}>
+        <Suspense fallback={<Spinner />}>
           <FeaturedCategories
             categories={categories}
             error={error}
           ></FeaturedCategories>
         </Suspense>
-        <Suspense fallback={<p>...Loading</p>}>
+        <Suspense fallback={<Spinner />}>
           <PromotionalProducts
             products={products}
             error={error}
@@ -75,7 +76,7 @@ export default async function CustomerHomePage() {
         </Suspense>
 
         <OurSpecialServices></OurSpecialServices>
-        <Suspense fallback={<p>...Loading</p>}>
+        <Suspense fallback={<Spinner />}>
           <FoodSection
             categories={categoriesWithProducts}
             error={getCategoriesWithProductsError}

@@ -45,16 +45,16 @@ export default function GoogleLoginButton() {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
             // The Google Sign-In popup was closed or skipped
             if (notification.getSkippedReason() === "unknown_reason") {
-              messageApi.error(
-                "Google Sign-In đã bị chặn, hãy vui lòng click icon dấu chấm than bên cạnh thanh địa chỉ và nhấn reset permission để có thể đăng nhập",
-                10
-              );
+              messageApi.error({
+                error:
+                  "Google Sign-In đã bị chặn, hãy vui lòng click icon dấu chấm than bên cạnh thanh địa chỉ và nhấn reset permission để có thể đăng nhập",
+              });
             }
           }
         });
       }
     } catch (error) {
-      messageApi.error((error as Error).message);
+      messageApi.error({ error: (error as Error).message });
     }
   };
 
@@ -65,13 +65,16 @@ export default function GoogleLoginButton() {
       const res = await authApiRequest.authenticateWithGoogle(credential);
       const accessToken = res.payload?.data.accessToken;
       const refreshToken = res.payload?.data.refreshToken;
+      if (!accessToken || !refreshToken) {
+        throw new Error("Token không hợp lệ");
+      }
       await authApiRequest.setToken(accessToken, refreshToken);
       sessionStore.setTokens(accessToken, refreshToken);
-      messageApi.success("Đăng nhập thành công");
+      messageApi.success({ description: "Đăng nhập thành công" });
       router.push(routePath.customer.home);
     } catch (_error) {
       console.error(_error);
-      messageApi.error("Đăng nhập thất bại");
+      messageApi.error({ error: "Đăng nhập thất bại" });
     }
   };
 

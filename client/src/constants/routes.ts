@@ -29,6 +29,7 @@ export const routePath = {
     },
   },
   admin: {
+    home: "/admin/home",
     statistic: "/admin/statistic",
     product: {
       list: "/admin/product/list",

@@ -1,7 +1,7 @@
 "use client";
 
+import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Divider } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,19 +10,18 @@ import { authApiRequest } from "@/api-request/auth";
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
+import FacebookButton from "@/components/ui/facebook-button";
+import GoogleButton from "@/components/ui/google-button";
+import XButton from "@/components/ui/x-button";
 import { routePath } from "@/constants/routes";
+import SessionStore from "@/helper/store/session-store";
 import { useHandleMessage } from "@/utils/hooks";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
-import useMessage from "antd/es/message/useMessage";
 import { useRouter } from "next/navigation";
-import SessionStore from "@/helper/store/session-store";
-import GoogleButton from "@/components/ui/google-button";
-import FacebookButton from "@/components/ui/facebook-button";
-import XButton from "@/components/ui/x-button";
+import Spinner from "@/components/ui/spinner";
 
 export function SignInForm() {
-  const [messageAPI, contextHolder] = useMessage();
-  const { handleError } = useHandleMessage();
+  const { messageApi } = useHandleMessage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -39,21 +38,20 @@ export function SignInForm() {
     setIsSubmitting(true);
     try {
       const response = await authApiRequest.login(data);
-      const accessToken = response.payload.data.accessToken;
-      const refreshToken = response.payload.data.refreshToken;
+      const accessToken = response.payload?.data.accessToken;
+      const refreshToken = response.payload?.data.refreshToken;
+
+      if (!accessToken || !refreshToken) {
+        throw new Error("Token không hợp lệ");
+      }
 
       // Send token to client server to set cookie
       await authApiRequest.setToken(accessToken, refreshToken);
-      messageAPI.success("Đăng nhập thành công");
       SessionStore.setTokens(accessToken, refreshToken);
       router.push(routePath.customer.home);
       router.refresh();
     } catch (error) {
-      console.error(error);
-      handleError({
-        error,
-        setError,
-      });
+      messageApi.error({ error: error as Error, setError });
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +62,6 @@ export function SignInForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col max-w-[500px] w-full"
     >
-      {contextHolder}
       <div className="mb-4">
         <Controller
           control={control}
@@ -113,11 +110,7 @@ export function SignInForm() {
           disabled={isSubmitting}
           className="uppercase"
         >
-          {isSubmitting ? (
-            <p className="loading-animation">Đang xử lý</p>
-          ) : (
-            "Đăng Nhập"
-          )}
+          {isSubmitting ? <Spinner /> : "Đăng nhập"}
         </DefaultButton>
       </div>
 
@@ -133,12 +126,12 @@ export function SignInForm() {
       >
         Đăng kí
       </Link>
-      <Divider />
+      <Separator className="my-4" />
       <p className="text-center">Hoặc đăng nhập bằng</p>
       <div className="w-full flex justify-center space-x-4 my-4">
-        <GoogleButton></GoogleButton>
-        <FacebookButton></FacebookButton>
-        <XButton></XButton>
+        <GoogleButton />
+        <FacebookButton />
+        <XButton />
       </div>
     </form>
   );

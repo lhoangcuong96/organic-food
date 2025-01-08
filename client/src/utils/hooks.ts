@@ -1,42 +1,95 @@
 "use client";
 
-import { DependencyList, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { EntityError } from "@/lib/http";
+import { DependencyList, useEffect, useState } from "react";
 import { UseFormSetError } from "react-hook-form";
-import { useAppContext } from "@/provider/app-provider";
-import { useState, useEffect } from "react";
 
 export const useHandleMessage = () => {
-  const { messageApi } = useAppContext();
+  const { toast } = useToast();
 
-  const handleError = useCallback(
-    ({
-      error,
-      setError,
-      duration,
-    }: {
-      error: any;
-      setError?: UseFormSetError<any>;
-      duration?: number;
-    }) => {
-      if (error instanceof EntityError && setError) {
-        error.payload.errors.forEach((item) => {
-          setError(item.field, {
-            type: "server",
-            message: item.message,
-          });
+  const handleError = ({
+    title,
+    error,
+    setError,
+    duration,
+  }: {
+    title?: string;
+    error: EntityError | Error | string;
+    setError?: UseFormSetError<any>;
+    duration?: number;
+  }) => {
+    console.error(error);
+    if (error instanceof EntityError && setError) {
+      error.payload.errors.forEach((item) => {
+        setError(item.field, {
+          type: "server",
+          message: item.message,
         });
-      } else {
-        messageApi.error(
-          error.payload?.message || "Lỗi không xác định",
-          duration || 3
-        );
-      }
-    },
-    [messageApi]
-  );
+      });
+    }
+    if (error instanceof Error) {
+      toast({
+        variant: "destructive",
+        title: title || "Uh oh! Something went wrong.",
+        type: "foreground",
+        description: error.message,
+        duration,
+      });
+    }
+    if (typeof error === "string") {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        type: "foreground",
+        description: error,
+        duration,
+      });
+    }
+  };
 
-  return { handleError, messageApi };
+  const handleSuccess = ({
+    title,
+    description,
+    duration,
+  }: {
+    title?: string;
+    description?: string;
+    duration?: number;
+  }) => {
+    toast({
+      title: title || "Success",
+      type: "foreground",
+      description: description || "Thành công",
+      duration: duration || 3000,
+    });
+  };
+
+  const handWarning = ({
+    title,
+    description,
+    duration,
+  }: {
+    title: string;
+    description: string;
+    duration?: number;
+  }) => {
+    toast({
+      variant: "destructive",
+      title: title || "Warning",
+      type: "foreground",
+      description: description,
+      duration: duration || 3000,
+    });
+  };
+
+  const messageApi = {
+    error: handleError,
+    success: handleSuccess,
+    warning: handWarning,
+  };
+
+  return { messageApi };
 };
 
 export function useDebounceEffect(
@@ -52,7 +105,7 @@ export function useDebounceEffect(
     return () => {
       clearTimeout(t);
     };
-  }, deps);
+  }, [deps]);
 }
 
 const useIsMobile = (breakpoint: number = 992) => {

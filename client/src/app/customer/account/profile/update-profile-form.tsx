@@ -34,7 +34,7 @@ export default function UpdateProfileForm({
 }) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { handleError, messageApi } = useHandleMessage();
+  const { messageApi } = useHandleMessage();
   const { setAccount } = useAppContext();
   const router = useRouter();
 
@@ -84,14 +84,15 @@ export default function UpdateProfileForm({
       });
       if (res.payload?.data) {
         setAccount(res.payload?.data as Account);
-        messageApi.success("Cập nhật thông tin thành công");
+        messageApi.success({ description: "Cập nhật thông tin thành công" });
         router.refresh();
       } else {
-        messageApi.error("Cập nhật thông tin thất bại");
+        messageApi.error({
+          error: "Cập nhật thông tin thất bại",
+        });
       }
     } catch (error) {
-      console.error(error);
-      handleError({ error, setError });
+      messageApi.error({ error: error as Error, setError });
     } finally {
       setIsLoading(false);
     }

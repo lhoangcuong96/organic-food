@@ -50,9 +50,11 @@ export default function BasicInfo() {
     const files = e.target.files;
     if (!files) return;
     if (files.length > MAX_PRODUCT_IMAGES) {
-      messageApi.error(
-        `Chỉ được tải lên tối đa ${MAX_PRODUCT_IMAGES} hình ảnh`
-      );
+      messageApi.error({
+        error: new Error(
+          `Chỉ được tải lên tối đa ${MAX_PRODUCT_IMAGES} hình ảnh`
+        ),
+      });
       return;
     }
     const prevImages = field.value || [];
@@ -489,7 +491,6 @@ export default function BasicInfo() {
         open={isOpenCategorySelector}
         onOpenChange={() => setIsOpenCategorySelector(false)}
         onSelect={(path) => form.setValue("category", path)}
-        selectedCategories={form.getValues("category")}
       ></CategorySelector>
       {editedImage && (
         <ImageEditor

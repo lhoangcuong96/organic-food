@@ -1,29 +1,28 @@
 "use client";
 
 import { authApiRequest } from "@/api-request/auth";
+import { Toaster } from "@/components/ui/toaster";
+import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
+import SessionStore from "@/helper/store/session-store";
 import { isTokenExpired } from "@/utils/auth";
 import { Account } from "@prisma/client";
-import type { MessageInstance } from "antd/es/message/interface";
-import useMessage from "antd/es/message/useMessage";
-import SessionStore from "@/helper/store/session-store";
 import ms from "ms";
+import { redirect } from "next/navigation";
 import {
   createContext,
+  Dispatch,
   ReactNode,
   SetStateAction,
   useContext,
   useEffect,
   useState,
-  Dispatch,
 } from "react";
 
 const AppContext = createContext<{
-  messageApi: MessageInstance;
   account?: Partial<Account>;
   setAccount: Dispatch<SetStateAction<Partial<Account> | undefined>>;
 }>({
-  messageApi: {} as MessageInstance,
   account: undefined,
   setAccount: () => {},
 });
@@ -43,7 +42,6 @@ export default function AppProvider({
   children: ReactNode;
   initialAccount?: Partial<Account>;
 }) {
-  const [messageApi, contextHolder] = useMessage();
   const [account, setAccount] = useState<Partial<Account> | undefined>(
     initialAccount
   );
@@ -52,11 +50,15 @@ export default function AppProvider({
   const callApiRefreshToken = async () => {
     try {
       const res = await authApiRequest.refreshTokenFromClientToNextServer();
-      const { accessToken, refreshToken } = res.payload?.data;
+      if (!res.payload?.data) {
+        throw new Error("Token không hợp lệ");
+      }
+      const { accessToken, refreshToken } = res.payload.data;
       await authApiRequest.setToken(accessToken, refreshToken);
       SessionStore.setTokens(accessToken, refreshToken);
     } catch (error) {
       console.error(error);
+      redirect(routePath.signOut);
     }
   };
 
@@ -74,13 +76,12 @@ export default function AppProvider({
   return (
     <AppContext.Provider
       value={{
-        messageApi,
         account,
         setAccount,
       }}
     >
-      {contextHolder}
       {children}
+      <Toaster />
     </AppContext.Provider>
   );
 }
