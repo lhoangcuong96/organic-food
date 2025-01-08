@@ -38,7 +38,7 @@ export function SuggestionsSidebar() {
     console.log(form);
   });
   return (
-    <div className="w-64 bg-slate-50 p-4">
+    <div className="w-64 bg-slate-50 p-4 sticky si h-full">
       <h2 className="mb-4 text-lg font-semibold">Gợi ý điền Thông tin</h2>
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <ul className="space-y-2">

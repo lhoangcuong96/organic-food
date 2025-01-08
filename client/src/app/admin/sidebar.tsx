@@ -49,13 +49,13 @@ const menuItems: MenuItem[] = [
     subItems: [
       {
         label: "Tất cả sản phẩm",
-        url: routePath.customer.account.orders,
+        url: routePath.admin.product.list,
         key: "products",
       },
       {
         label: "Thêm sản phẩm",
-        url: routePath.customer.account.orders,
-        key: "add-product",
+        url: routePath.admin.product.add,
+        key: "add-new",
       },
     ],
   },
@@ -232,7 +232,7 @@ export function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={cn("pb-12", className)}>
-      <div className="space-y-4 py-4">
+      <div className="space-y-4 py-4 sticky top-16">
         <div className="px-3 py-2">
           {menuItems.map((item) => {
             const isExpand = expandedItem?.includes(item.key) || false;

@@ -7,7 +7,7 @@ import { routePath } from "@/constants/routes";
 
 export function Header() {
   return (
-    <header className="border-b">
+    <header className="border-b sticky top-0 z-50 bg-white">
       <div className="flex h-16 items-center px-4">
         <Link href={routePath.admin.statistic}>
           <Image

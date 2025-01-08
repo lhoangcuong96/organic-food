@@ -53,7 +53,6 @@ export function CategorySelector({
   // Handle category selection
   const handleSelect = (category: Category, columnIndex: number) => {
     // Update selected path
-    console.log(selectedPath);
     const newPath = [
       ...selectedPath.slice(0, columnIndex),
       category.display_name,
@@ -71,15 +70,6 @@ export function CategorySelector({
     }
     setColumns(newColumns);
   };
-
-  // Reset state when dialog closes
-  React.useEffect(() => {
-    if (!open) {
-      setSearch("");
-      setSelectedPath([]);
-      setColumns([categories]);
-    }
-  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,6 +174,7 @@ export function CategorySelector({
             type="button"
             disabled={!enable}
             onClick={() => {
+              console.log(selectedPath);
               onSelect(selectedPath);
               onOpenChange(false);
             }}
