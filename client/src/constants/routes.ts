@@ -32,7 +32,7 @@ export const routePath = {
     statistic: "/admin/statistic",
     product: {
       list: "/admin/product/list",
-      add: "/admin/product/add",
+      add: "/admin/product/add-new",
     },
   },
   error: "/error",

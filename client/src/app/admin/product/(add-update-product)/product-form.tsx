@@ -27,6 +27,7 @@ export function ProductForm() {
       stock: "",
       sku: "",
     },
+    mode: "all",
   });
 
   const onSubmit = async (data: ProductCreateFormValues) => {
@@ -39,34 +40,19 @@ export function ProductForm() {
       <FormProvider {...form}>
         <SuggestionsSidebar />
         <div className="flex-1 p-6">
-          <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="basic">Thông tin cơ bản</TabsTrigger>
-              <TabsTrigger value="sales">Thông tin bán hàng</TabsTrigger>
-              {/* <TabsTrigger value="shipping">Vận chuyển</TabsTrigger>
-              <TabsTrigger value="other">Thông tin khác</TabsTrigger> */}
-            </TabsList>
-
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <TabsContent value="basic" className="space-y-6">
-                <BasicInfo />
-              </TabsContent>
-
-              <TabsContent value="sales" className="space-y-6">
-                <SaleInfo />
-              </TabsContent>
-
-              <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline">
-                  Hủy
-                </Button>
-                <Button type="submit" variant="secondary">
-                  Lưu & Ẩn
-                </Button>
-                <Button type="submit">Lưu & Hiển thị</Button>
-              </div>
-            </form>
-          </Tabs>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <BasicInfo />
+            <SaleInfo />
+            <div className="flex justify-end gap-4 py-7 px-3 sticky bottom-0 bg-white shadow-xl">
+              <Button type="button" variant="outline">
+                Hủy
+              </Button>
+              <Button type="submit" variant="secondary">
+                Lưu & Ẩn
+              </Button>
+              <Button type="submit">Lưu & Hiển thị</Button>
+            </div>
+          </form>
         </div>
       </FormProvider>
     </div>

@@ -411,7 +411,7 @@ export default function BasicInfo() {
             <FormLabel className="w-36">
               Tên sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
-            <div>
+            <div className="!m-0">
               <FormControl>
                 <div className="relative inline-flex items-center w-full gap-6">
                   <Input
@@ -437,7 +437,7 @@ export default function BasicInfo() {
             <FormLabel className="w-36">
               Ngành hàng <span className="text-destructive">*</span>
             </FormLabel>
-            <div>
+            <div className="!m-0">
               <FormControl>
                 <div className="relative inline-flex items-center w-full gap-6">
                   <Input
@@ -465,7 +465,7 @@ export default function BasicInfo() {
             <FormLabel className="w-36">
               Mô tả sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
-            <div>
+            <div className="!m-0">
               <FormControl>
                 <Textarea
                   {...field}
@@ -489,6 +489,7 @@ export default function BasicInfo() {
         open={isOpenCategorySelector}
         onOpenChange={() => setIsOpenCategorySelector(false)}
         onSelect={(path) => form.setValue("category", path)}
+        selectedCategories={form.getValues("category")}
       ></CategorySelector>
       {editedImage && (
         <ImageEditor
