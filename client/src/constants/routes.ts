@@ -10,7 +10,7 @@ export const routePath = {
     news: "/customer/news",
     promotionalProduct: "/customer/product",
     introduce: "/customer/introduce",
-    contact: "/customer/contact",
+    contact: "/customer/contact-us",
     membershipPolicy: "/customer/membership-policy",
     productDetail: "/customer/product-detail/",
 
@@ -34,6 +34,10 @@ export const routePath = {
     product: {
       list: "/admin/product/list",
       add: "/admin/product/add-new",
+    },
+    category: {
+      list: "/admin/category/list",
+      add: "/admin/category/add-new",
     },
   },
   error: "/error",

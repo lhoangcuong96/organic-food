@@ -2,7 +2,7 @@
 
 import { authApiRequest } from "@/api-request/auth";
 import { ButtonProps } from "@/components/ui/button";
-import { useHandleMessage } from "@/utils/hooks";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import { useRouter } from "next/navigation";
 import DefaultButton from "./default-button";
 

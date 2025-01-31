@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useHandleMessage } from "@/utils/hooks";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -24,7 +24,7 @@ import {
   FieldValues,
   useFormContext,
 } from "react-hook-form";
-import { CategorySelector } from "./category-selector";
+import { CategorySelector } from "@/components/share/category-selector";
 
 const MAX_PRODUCT_IMAGES = 9;
 
@@ -86,7 +86,6 @@ export default function BasicInfo() {
 
   const handleCoverUpload = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-      console.log(e.target.files?.[0]);
       const file = e.target.files?.[0];
       if (!file) return;
       field.onChange(file);
@@ -340,7 +339,7 @@ export default function BasicInfo() {
         control={form.control}
         name="video"
         render={({ field }) => (
-          <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
+          <FormItem className="grid grid-cols-[max-content_auto]">
             <FormLabel className="w-36">Video sản phẩm</FormLabel>
 
             <FormControl>
@@ -437,14 +436,14 @@ export default function BasicInfo() {
         render={({ field }) => (
           <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
             <FormLabel className="w-36">
-              Ngành hàng <span className="text-destructive">*</span>
+              loại sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
             <div className="!m-0">
               <FormControl>
                 <div className="relative inline-flex items-center w-full gap-6">
                   <Input
                     value={field.value.join(" > ") || ""}
-                    placeholder="Chọn ngành hàng"
+                    placeholder="Chọn loại sản phẩm"
                     readOnly
                     onClick={() => {
                       setIsOpenCategorySelector(true);

@@ -4,121 +4,79 @@ import Link from "next/link";
 
 const CATEGORIES = [
   {
-    label: "Rau quả",
+    label: "Thịt heo",
     url: "/",
     children: [
       {
-        label: "Rau Lá",
+        label: "Ba chỉ",
         url: "/",
       },
       {
-        label: "Củ Quả",
+        label: "Sườn",
         url: "/",
       },
       {
-        label: "Nấm Các Loại",
+        label: "Thịt xay",
+        url: "/",
+      },
+      {
+        label: "Thịt vai",
+        url: "/",
+      },
+      {
+        label: "Thịt nạc",
+        url: "/",
+      },
+      {
+        label: "Xương",
+        url: "/",
+      },
+      {
+        label: "Chân giò",
+        url: "/",
+      },
+      {
+        label: "Thịt heo khác",
         url: "/",
       },
     ],
   },
   {
-    label: "Trái Cây",
+    label: "Các loại thực phẩm chế biến từ thịt heo",
     url: "/",
     children: [
       {
-        label: "Cam, Bưởi",
+        label: "Chả lụa",
         url: "/",
       },
       {
-        label: "Xoài",
+        label: "Xúc xích",
         url: "/",
       },
       {
-        label: "Chuối",
+        label: "Mộc",
         url: "/",
       },
       {
-        label: "Nho",
+        label: "Chả chiên",
         url: "/",
       },
       {
-        label: "Dưa",
-        url: "/",
-      },
-      {
-        label: "Táo",
-        url: "/",
-      },
-      {
-        label: "Trái Cây Khác",
+        label: "Thịt xông khói",
         url: "/",
       },
     ],
   },
   {
-    label: "Đồ Khô",
+    label: "Các loại thịt khác",
     url: "/",
     children: [
       {
-        label: "Gạo Các Loại",
+        label: "Thịt gà",
         url: "/",
       },
       {
-        label: "Bột Các Loại",
-        url: "/",
-      },
-      {
-        label: "Đồ Chay Các Loại",
-        url: "/",
-      },
-      {
-        label: "Rong Biển, Bánh Tráng, Đậu",
-        url: "/",
-      },
-      {
-        label: "Các Loại Đồ Khô Khác",
-        url: "/",
-      },
-    ],
-  },
-  {
-    label: "Nước Ép",
-    url: "/",
-    children: [
-      {
-        label: "Nước Ép Đóng Chai",
-        url: "/",
-      },
-      {
-        label: "Nước Ép Có Đường",
-        url: "/",
-      },
-      {
-        label: "Nước Ép Không Đường",
-        url: "/",
-      },
-    ],
-  },
-  {
-    label: "Salad",
-    url: "/",
-    children: [
-      {
-        label: "Cải Xoăn",
-        url: "/",
-      },
-      {
-        label: "Rau Xà Lách",
-        url: "/",
-      },
-    ],
-  },
-  {
-    label: "Thực Phẩm Organic Khác",
-    url: "/",
-    children: [
-      {
-        label: "Đồ Chay Các Loại",
+        label: "Thịt bò",
         url: "/",
       },
     ],
@@ -126,9 +84,9 @@ const CATEGORIES = [
 ];
 export function ProductMenu() {
   return (
-    <Card className="rounded-sm">
+    <Card className="rounded-sm p-4">
       <div className="grid grid-cols-[auto_max-content] gap-2">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {CATEGORIES.map((parentCategory) => {
             return (
               <div key={parentCategory.label} className="flex flex-col">

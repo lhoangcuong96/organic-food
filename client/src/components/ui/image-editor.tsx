@@ -23,7 +23,7 @@ import * as React from "react";
 import ReactCrop, { PixelCrop, type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { canvasPreview } from "./canvas-preview";
-import { useDebounceEffect } from "@/utils/hooks";
+import { useDebounceEffect } from "@/hooks/use-debounced-effect";
 
 interface ImageEditorProps {
   open: boolean;
@@ -169,7 +169,6 @@ export function ImageEditor({
 
   React.useEffect(() => {
     if (open && imageRef.current) {
-      console.log(imageRef.current.width);
       const width = imageRef.current.width;
       const height = aspectRatio === "1:1" ? width : (width * 4) / 3;
       setCrop({

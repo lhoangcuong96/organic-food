@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export default function AppBreadcrumb({
-  src,
+  src = "/images/breadcrumb.jpg",
   breadcrumbItems,
   pageTitle,
 }: {
-  src: string;
+  src?: string;
   pageTitle: string;
   breadcrumbItems: { title: string; href?: string }[];
 }) {

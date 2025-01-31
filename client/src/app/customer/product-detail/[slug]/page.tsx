@@ -25,8 +25,8 @@ export async function generateMetadata({
   try {
     const { slug } = await params;
     const res = await getProductDetail(slug);
-    const product = res.payload??.data;
-    const url = `${envConfig?.NEXT_PUBLIC_URL}/ ${routePath.customer}/${product.slug}`;
+    const product = res.payload?.data;
+    const url = `${envConfig?.NEXT_PUBLIC_URL}/ ${routePath.customer}/${product?.slug}`;
     return {
       ...sharedMetadata,
       title: product?.name || "Không tìm thấy sản phẩm",
@@ -69,7 +69,6 @@ export default async function ProductDetail({
 
   try {
     const resp = await getProductDetail(slug);
-    console.log(resp.payload);
     if (resp.payload?.data) {
       productDetail = resp.payload.data;
     } else {
@@ -82,7 +81,6 @@ export default async function ProductDetail({
   return (
     <div className="flex flex-col w-full items-center justify-center h-full text-sm">
       <AppBreadcrumb
-        src="/images/breadcrumb.webp"
         pageTitle={productDetail?.name || errorMessage}
         breadcrumbItems={[
           {

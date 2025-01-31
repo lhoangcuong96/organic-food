@@ -1,5 +1,4 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 const suggestions = [
@@ -33,9 +32,7 @@ const suggestions = [
 
 export function SuggestionsSidebar() {
   const form = useFormContext();
-  useEffect(() => {
-    console.log(form);
-  });
+
   return (
     <div className="w-64 bg-slate-50 p-4 sticky top-16 h-fit">
       <h2 className="mb-4 text-lg font-semibold">Gợi ý điền Thông tin</h2>

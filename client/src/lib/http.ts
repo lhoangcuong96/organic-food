@@ -1,7 +1,7 @@
 import { routePath } from "@/constants/routes";
 import { TokenType } from "@/constants/types";
 import envConfig from "@/envConfig";
-import SessionStore from "@/helper/store/session-store";
+import SessionStore from "@/helper/local-store/session-store";
 import { Account } from "@prisma/client";
 import { jwtDecode } from "jwt-decode";
 import { redirect } from "next/navigation";
@@ -112,7 +112,6 @@ export const request = async <T>(
     }
     const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
     const account = tokenPayload?.account;
-    console.log(account);
     if (!account || account.role !== "ADMIN") {
       throw new ForbiddenError("Bạn không có quyền truy cập");
     }

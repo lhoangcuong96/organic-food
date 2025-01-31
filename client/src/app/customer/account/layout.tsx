@@ -6,7 +6,6 @@ export default function layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col w-full items-center justify-center h-full">
       <AppBreadcrumb
-        src="/images/breadcrumb.webp"
         pageTitle="Trang khách hàng"
         breadcrumbItems={[
           {

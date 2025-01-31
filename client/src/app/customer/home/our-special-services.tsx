@@ -32,13 +32,16 @@ export function OurSpecialServices() {
               height={178}
             ></Image>
             <p className="text-lime-600 text-xl font-bold text-center">
-              Rau hữu cơ tươi
+              Cung Cấp Thực Phẩm Sạch
             </p>
             <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
-              Được trồng theo phương pháp hiện đại nhất, đạt tiêu chuẩn quốc tế,
-              vô cùng an toàn khi sử dụng.
+              Chúng tôi cam kết cung cấp thịt heo hoàn toàn sạch, được nuôi
+              dưỡng trong môi trường tự nhiên và không sử dụng hóa chất độc hại.
+              Mỗi sản phẩm đều được kiểm tra chất lượng nghiêm ngặt trước khi
+              đến tay khách hàng, đảm bảo an toàn và dinh dưỡng cho bữa ăn của
+              gia đình bạn.
             </p>
             <OutlineButton className="mt-4">Tìm hiểu thêm</OutlineButton>
           </div>
@@ -57,8 +60,11 @@ export function OurSpecialServices() {
             <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
-              Giao hàng trong thời gian nhanh nhất để đảm bảo chất lượng tốt
-              nhất cho những sản phẩm bạn đã đặt.
+              Để mang đến sự tiện lợi cho khách hàng, chúng tôi cung cấp dịch vụ
+              giao hàng nhanh chóng và linh hoạt. Chỉ cần đặt hàng, đội ngũ giao
+              hàng của chúng tôi sẽ đảm bảo sản phẩm được vận chuyển đến bạn
+              trong thời gian sớm nhất, giữ cho thịt luôn tươi ngon và chất
+              lượng.
             </p>
             <OutlineButton className="mt-4">Tìm hiểu thêm</OutlineButton>
           </div>
@@ -77,8 +83,11 @@ export function OurSpecialServices() {
             <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
 
             <p className="text-lg text-center font-semibold">
-              Nhiều hình thức thanh toán làm cho việc đặt hàng của bạn và shop
-              trở nên dễ dàng và tiện lợi hơn rất nhiều.
+              Chúng tôi hiểu rằng việc thanh toán tiện lợi là rất quan trọng. Vì
+              vậy, chúng tôi cung cấp nhiều hình thức thanh toán linh hoạt, từ
+              chuyển khoản ngân hàng đến thanh toán khi nhận hàng. Khách hàng có
+              thể lựa chọn phương thức phù hợp nhất với mình, giúp quá trình mua
+              sắm trở nên đơn giản và nhanh chóng.
             </p>
             <OutlineButton className="mt-4">Tìm hiểu thêm</OutlineButton>
           </div>

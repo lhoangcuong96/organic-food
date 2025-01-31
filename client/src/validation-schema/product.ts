@@ -48,7 +48,7 @@ export const ProductListResponseSchema = z.object({
 });
 
 export type ProductQueryType = z.infer<typeof ProductListQuerySchema>;
-export type ProductListType = z.infer<typeof ProductListSchema>[];
+export type ProductListType = z.infer<typeof ProductListSchema>;
 export type ProductListResponseType = z.infer<typeof ProductListResponseSchema>;
 /*-----------------Product list----------------------*/
 
@@ -70,11 +70,9 @@ export const productCreateFormSchema = z.object({
         z.instanceof(File, {
           message: "Hình ảnh không hợp lệ",
         }),
-        z
-          .string({
-            message: "URL không hợp lệ",
-          })
-          .url(),
+        z.string().url({
+          message: "URL không hợp lệ",
+        }),
       ]),
       {
         required_error: "Phải có ít nhất 1 hình ảnh sản phẩm",
@@ -130,7 +128,7 @@ export const productCreateFormSchema = z.object({
     .string()
     .min(25, "Tên sản phẩm phải có ít nhất 25 ký tự")
     .max(120, "Tên sản phẩm không được vượt quá 120 ký tự"),
-  category: z.array(z.string()).min(1, "Vui lòng chọn ngành hàng"),
+  category: z.array(z.string()).min(1, "Vui lòng chọn loại sản phẩm"),
   description: z
     .string()
     .min(1, "Vui lòng nhập mô tả sản phẩm")

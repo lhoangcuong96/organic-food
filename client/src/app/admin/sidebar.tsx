@@ -1,7 +1,7 @@
 "use client";
 
 import { routePath } from "@/constants/routes";
-import LocalStore, { STORE_KEYS } from "@/helper/store/local-store";
+import LocalStore, { STORE_KEYS } from "@/helper/local-store";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +56,22 @@ const menuItems: MenuItem[] = [
         label: "Thêm sản phẩm",
         url: routePath.admin.product.add,
         key: "add-new",
+      },
+    ],
+  },
+  {
+    label: "Quản lý sản loại sản phẩm",
+    key: "products",
+    subItems: [
+      {
+        label: "Tất cả loại sản phẩm",
+        url: routePath.admin.category.list,
+        key: "category/list",
+      },
+      {
+        label: "Thêm loại sản phẩm",
+        url: routePath.admin.category.add,
+        key: "category/add-new",
       },
     ],
   },

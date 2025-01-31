@@ -3,7 +3,7 @@
 import { authApiRequest } from "@/api-request/auth";
 import Spinner from "@/components/ui/page-spinner";
 import { routePath } from "@/constants/routes";
-import { useHandleMessage } from "@/utils/hooks";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 export default function Page() {

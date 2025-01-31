@@ -2,7 +2,6 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { EntityError } from "@/lib/http";
-import { DependencyList, useEffect, useState } from "react";
 import { UseFormSetError } from "react-hook-form";
 
 export const useHandleMessage = () => {
@@ -34,7 +33,7 @@ export const useHandleMessage = () => {
         title: title || "Uh oh! Something went wrong.",
         type: "foreground",
         description: error.message,
-        duration,
+        duration: duration || 3000,
       });
     }
     if (typeof error === "string") {
@@ -43,7 +42,7 @@ export const useHandleMessage = () => {
         title: "Uh oh! Something went wrong.",
         type: "foreground",
         description: error,
-        duration,
+        duration: duration || 3000,
       });
     }
   };
@@ -59,6 +58,7 @@ export const useHandleMessage = () => {
   }) => {
     toast({
       title: title || "Success",
+      variant: "success",
       type: "foreground",
       description: description || "Thành công",
       duration: duration || 3000,
@@ -91,51 +91,3 @@ export const useHandleMessage = () => {
 
   return { messageApi };
 };
-
-export function useDebounceEffect(
-  fn: () => void,
-  waitTime: number,
-  deps?: DependencyList
-) {
-  useEffect(() => {
-    const t = setTimeout(() => {
-      fn();
-    }, waitTime);
-
-    return () => {
-      clearTimeout(t);
-    };
-  }, [deps]);
-}
-
-const useIsMobile = (breakpoint: number = 992) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < breakpoint);
-    };
-
-    // Check on mount
-    checkIsMobile();
-
-    // Set up event listener for window resize
-    let timeoutId: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(checkIsMobile, 150);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    // Clean up
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timeoutId);
-    };
-  }, [breakpoint]);
-
-  return isMobile;
-};
-
-export default useIsMobile;

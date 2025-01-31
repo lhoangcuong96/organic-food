@@ -32,9 +32,9 @@ export default async function Header() {
       <div className="grid grid-cols-[max-content_auto_max-content] items-center gap-4">
         <Link href={routePath.customer.home}>
           <Image
-            src="/images/logo.webp"
-            width="220"
-            height="63"
+            src="/images/logo-3.jpeg"
+            width="128"
+            height="128"
             alt="logo"
             className="pointer"
           ></Image>

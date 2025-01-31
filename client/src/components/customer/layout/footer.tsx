@@ -5,13 +5,13 @@ import { FaInstagram } from "react-icons/fa6";
 
 export function Footer() {
   return (
-    <div className="bg-lime-100 w-screen pt-12 pb-6 px-6 w-full">
+    <div className="bg-lime-100 w-screen pt-12 pb-6 px-6">
       <div className="max-w-7xl p-4 grid md:grid-cols-2 lg:grid-cols-[5fr_3fr_4fr_4fr] items-start m-auto gap-7">
         <div className="flex flex-col gap-5">
           <Image
-            src="/images/logo.webp"
-            width="220"
-            height="27"
+            src="/images/logo-3.jpeg"
+            width="128"
+            height="128"
             alt="logo"
           ></Image>
           <p className="text-sm font-semibold">

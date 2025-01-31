@@ -97,7 +97,7 @@ export function ProductPromotions() {
               width={15}
               height={15}
             />
-            Áp dụng Phiếu quà tặng/ Mã giảm giá theo ngành hàng
+            Áp dụng Phiếu quà tặng/ Mã giảm giá theo loại sản phẩm
           </li>
           <li className="flex items-center gap-2">
             <Image

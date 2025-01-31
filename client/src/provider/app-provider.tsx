@@ -4,7 +4,7 @@ import { authApiRequest } from "@/api-request/auth";
 import { Toaster } from "@/components/ui/toaster";
 import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
-import SessionStore from "@/helper/store/session-store";
+import SessionStore from "@/helper/local-store/session-store";
 import { isTokenExpired } from "@/utils/auth";
 import { Account } from "@prisma/client";
 import ms from "ms";
@@ -65,7 +65,6 @@ export default function AppProvider({
   useEffect(() => {
     const accessToken = SessionStore.getAccessToken();
     if (accessToken && isTokenExpired(accessToken)) {
-      console.log(ms(envConfig?.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN || "1d"));
       const interval = setInterval(() => {
         callApiRefreshToken();
       }, ms(envConfig?.NEXT_PUBLIC_ACCESS_TOKEN_EXPIRES_IN || "1d"));

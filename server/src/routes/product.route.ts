@@ -32,7 +32,6 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
       const products = await controller.getProductList({
         ...queryParams
       })
-      console.log(products)
       reply.send({
         data: products,
         message: 'Lấy danh sách sản phẩm thành công!'

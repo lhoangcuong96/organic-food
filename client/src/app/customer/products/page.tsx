@@ -32,11 +32,9 @@ export default async function Products({
   } catch (error) {
     errorMessage = (error as HttpError).message;
   }
-  console.log(initialProducts);
   return (
     <div className="flex flex-col w-full items-center justify-center h-full text-sm font-medium">
       <AppBreadcrumb
-        src="/images/breadcrumb.webp"
         pageTitle="Rau củ"
         breadcrumbItems={[
           {

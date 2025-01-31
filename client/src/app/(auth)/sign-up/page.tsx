@@ -14,7 +14,6 @@ export default function SignIn() {
   return (
     <div className="flex flex-col w-full items-center justify-center">
       <AppBreadcrumb
-        src="/images/breadcrumb.webp"
         pageTitle="Đăng ký tài khoản"
         breadcrumbItems={[
           {

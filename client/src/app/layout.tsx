@@ -9,6 +9,7 @@ import "./globals.css";
 import { jwtDecode } from "jwt-decode";
 import { Account } from "@prisma/client";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ReactQueryProvider from "@/provider/react-query-provider";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -20,8 +21,8 @@ const quicksand = Quicksand({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Dolar Organic", // luôn luôn thêm suffix " | Dolar Organic" vào title
-    default: "Dolar Organic", // Mặc định nếu trang không có title
+    template: "%s | Heo sạch nhà Thoa", // luôn luôn thêm suffix " | Dolar Organic" vào title
+    default: "Heo sạch nhà Thoa", // Mặc định nếu trang không có title
   },
 };
 
@@ -46,9 +47,11 @@ export default async function RootLayout({
         className={`${quicksand.className} antialiased bg-white text-gray-700`}
       >
         <AppProvider initialAccount={account}>
-          <TooltipProvider>
-            <AntdRegistry>{children}</AntdRegistry>
-          </TooltipProvider>
+          <ReactQueryProvider>
+            <TooltipProvider>
+              <AntdRegistry>{children}</AntdRegistry>
+            </TooltipProvider>
+          </ReactQueryProvider>
         </AppProvider>
       </body>
     </html>

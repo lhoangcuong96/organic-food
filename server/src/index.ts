@@ -110,6 +110,7 @@ const start = async () => {
       console.log(`Server đang chạy dưới local tại: ${API_URL}`)
     }
   } catch (err) {
+    console.log(err)
     fastify.log.error(err)
     process.exit(1)
   }

@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react";
 import * as React from "react";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
 
+import { categoryRequestApis } from "@/api-request/admin/category";
 import {
   Dialog,
   DialogContent,
@@ -13,36 +14,32 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { categories } from "@/constants/categories";
-
-interface Category {
-  id: number;
-  name: string;
-  display_name: string;
-  parent_id: number;
-  has_active_children: boolean;
-  has_children: boolean;
-  children: Category[];
-}
+import { CategoryInListType } from "@/validation-schema/category";
+import { useQuery } from "@tanstack/react-query";
 
 interface CategorySelectorProps {
+  title?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (categories: string[]) => void;
+  isAllowChooseParent?: boolean;
 }
 
 export function CategorySelector({
+  title = "Chỉnh sửa loại sản phẩm",
   open,
   onOpenChange,
   onSelect,
+  isAllowChooseParent = false,
 }: CategorySelectorProps) {
   const [search, setSearch] = React.useState("");
   const [selectedPath, setSelectedPath] = React.useState<string[]>([]);
-  const [columns, setColumns] = React.useState<Category[][]>([categories]);
-  const [enable, setEnable] = React.useState(false);
+  const [columns, setColumns] = React.useState<CategoryInListType[][]>();
+  const [enable, setEnable] = React.useState(isAllowChooseParent);
 
   // Filter categories based on search
   const filteredFirstColumn = React.useMemo(() => {
+    if (columns === undefined) return [];
     if (!search) return columns[0];
     const searchLower = search.toLowerCase();
     return columns[0].filter((category) =>
@@ -51,31 +48,55 @@ export function CategorySelector({
   }, [columns, search]);
 
   // Handle category selection
-  const handleSelect = (category: Category, columnIndex: number) => {
+  const handleSelect = (category: CategoryInListType, columnIndex: number) => {
+    // unselect category
+    if (selectedPath[columnIndex] === category.name) {
+      setSelectedPath((prev) => prev.slice(0, columnIndex));
+      if (!isAllowChooseParent) {
+        setEnable(false);
+      }
+      setColumns((prev) => prev?.slice(0, columnIndex + 1));
+      return;
+    }
+
     // Update selected path
-    const newPath = [
-      ...selectedPath.slice(0, columnIndex),
-      category.display_name,
-    ];
+    const newPath = [...selectedPath.slice(0, columnIndex), category.name];
     setSelectedPath(newPath);
 
-    if (!category.has_children) {
+    if (!category.subCategories || category.subCategories.length === 0) {
       setEnable(true);
     }
 
     // Update columns
+    if (columns === undefined) return;
     const newColumns = [...columns.slice(0, columnIndex + 1)];
-    if (category.children) {
-      newColumns.push(category.children);
+    if (category.subCategories && category.subCategories.length > 0) {
+      newColumns.push(category.subCategories);
     }
     setColumns(newColumns);
   };
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await categoryRequestApis.getCategoryList();
+      return response.payload?.data;
+    },
+  });
+
+  React.useEffect(() => {
+    if (categories) {
+      setColumns([categories]);
+    }
+  }, [categories]);
+
+  console.log(columns, selectedPath);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa ngành hàng</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -95,7 +116,7 @@ export function CategorySelector({
           )}
         </div>
         {selectedPath.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground font-semibold">
             <span>Đã chọn:</span>
             <span>{selectedPath.join(" > ")}</span>
           </div>
@@ -105,7 +126,7 @@ export function CategorySelector({
           <div className="border-r pr-4">
             <div className="space-y-1 w-full h-full overflow-y-auto">
               {filteredFirstColumn.map((category) => {
-                const isActive = selectedPath[0] === category.display_name;
+                const isActive = selectedPath[0] === category.name;
                 return (
                   <Button
                     key={category.id}
@@ -114,9 +135,12 @@ export function CategorySelector({
                       isActive ? "text-lime-600" : ""
                     }`}
                     onClick={() => handleSelect(category, 0)}
+                    title={category.name}
                   >
-                    <p className="truncate">{category.display_name}</p>
-                    <MdOutlineArrowForwardIos className="!w-3 !h-3"></MdOutlineArrowForwardIos>
+                    <p className="truncate">{category.name}</p>{" "}
+                    {category.subCategories.length > 0 && (
+                      <MdOutlineArrowForwardIos className="!w-3 !h-3"></MdOutlineArrowForwardIos>
+                    )}
                   </Button>
                 );
               })}
@@ -124,12 +148,11 @@ export function CategorySelector({
           </div>
 
           {/* Subsequent columns */}
-          {columns.slice(1).map((columnCategories, index) => (
+          {columns?.slice(1).map((columnCategories, index) => (
             <div key={index} className="border-r pr-4 last:border-r-0">
               <div className="space-y-1 w-full h-full max-h-[300px] overflow-y-auto">
                 {columnCategories.map((category) => {
-                  const isActive =
-                    selectedPath[index + 1] === category.display_name;
+                  const isActive = selectedPath[index + 1] === category.name;
                   return (
                     <Button
                       key={category.id}
@@ -138,9 +161,10 @@ export function CategorySelector({
                         isActive ? "text-lime-600" : ""
                       }`}
                       onClick={() => handleSelect(category, index + 1)}
+                      title={category.name}
                     >
-                      <p className="truncate">{category.display_name}</p>
-                      {category.children.length > 0 && (
+                      <p className="truncate">{category.name}</p>
+                      {category.subCategories.length > 0 && (
                         <MdOutlineArrowForwardIos className="!w-3 !h-3"></MdOutlineArrowForwardIos>
                       )}
                     </Button>
@@ -151,16 +175,17 @@ export function CategorySelector({
           ))}
 
           {/* Empty columns */}
-          {Array.from({ length: Math.max(0, 3 - columns.length) }).map(
-            (_, index) => (
-              <div
-                key={`empty-${index}`}
-                className="border-r pr-4 last:border-r-0"
-              >
-                <div className="h-[300px] w-full" />
-              </div>
-            )
-          )}
+          {columns?.length &&
+            Array.from({ length: Math.max(0, 3 - columns.length) }).map(
+              (_, index) => (
+                <div
+                  key={`empty-${index}`}
+                  className="border-r pr-4 last:border-r-0"
+                >
+                  <div className="h-[300px] w-full" />
+                </div>
+              )
+            )}
         </div>
         <DialogFooter className="sm:justify-between">
           <Button
@@ -174,7 +199,6 @@ export function CategorySelector({
             type="button"
             disabled={!enable}
             onClick={() => {
-              console.log(selectedPath);
               onSelect(selectedPath);
               onOpenChange(false);
             }}

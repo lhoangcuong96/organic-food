@@ -1,6 +1,5 @@
-import ProductController from '@/controllers/product.controller'
+import AdminProductController from '@/controllers/admin/admin-product-controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import {
   CreateProductBodyType,
   DeleteProductParamsSchema,
@@ -17,10 +16,10 @@ import {
   UpdateProductParamsSchema,
   UpdateProductParamsType
 } from '@/schemaValidations/admin/product/admin-product-schema'
+import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
-import AdminProductController from '@/controllers/admin/admin-product-controller'
 
-export default async function adminProductRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+export default async function AdminProductRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const controller = new AdminProductController()
   fastify.get<{
     Reply: ProductListResType

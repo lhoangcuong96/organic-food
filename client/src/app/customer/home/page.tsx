@@ -1,18 +1,15 @@
+import productRequestApi from "@/api-request/product";
 import { HeroImage } from "@/components/customer/layout/hero-image";
-import {
-  CategoriesWithProductsResponse,
-  CategoryService,
-} from "@/services/category";
-import { ProductService } from "@/services/product";
-import { Category, Product } from "@prisma/client";
+import Spinner from "@/components/ui/spinner";
+import { CategoriesWithProductsResponse } from "@/services/category";
+import { ProductListType } from "@/validation-schema/product";
+import { Category } from "@prisma/client";
 import { Metadata } from "next";
+import { Suspense } from "react";
 import { FeaturedCategories } from "./featured-categories";
 import FoodSection from "./food-section";
 import { OurSpecialServices } from "./our-special-services";
 import { PromotionalProducts } from "./promotional-products";
-import { Suspense } from "react";
-import envConfig from "@/envConfig";
-import Spinner from "@/components/ui/spinner";
 
 // type Props = {
 //   params: Promise<{ id: string }>;
@@ -22,19 +19,29 @@ import Spinner from "@/components/ui/spinner";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Discover Hot Products | Top Trending Items for Customers",
-    description:
-      "Explore our collection of hot products that are trending right now! Find the best deals on top-selling items tailored for customers. Shop now and discover what everyone is talking about!",
+    title: "Tìm kiếm những sản phẩm nổi bật tại Heo sạch nhà Thoa",
+    description: "",
   };
 }
 
 export default async function CustomerHomePage() {
-  let products: Partial<Product>[] = [];
+  let products: ProductListType[] = [];
   let error;
 
   try {
-    console.log(envConfig?.NEXT_PUBLIC_API_URL);
-    products = await ProductService.getProducts();
+    const response = await productRequestApi.getProducts({
+      page: 1,
+      limit: 10,
+      search: "",
+    });
+
+    console.log(response);
+
+    if (!response || !response.payload) {
+      throw new Error("Có lỗi xảy ra khi lấy dữ liệu sản phẩm!");
+    }
+    products = response.payload.data;
+    console.log("products", products);
   } catch (err) {
     console.error("Error fetching products:", err);
     error = "Failed to load products. Please try again later.";
@@ -42,7 +49,8 @@ export default async function CustomerHomePage() {
 
   let categories: Partial<Category>[] = [];
   try {
-    categories = (await CategoryService.getCategories()) as Partial<Category>[];
+    // categories = (await CategoryService.getCategories()) as Partial<Category>[];
+    categories = [];
   } catch (err) {
     console.error("Error fetching products:", err);
     error = "Failed to load featured categories. Please try again later.";
@@ -51,7 +59,8 @@ export default async function CustomerHomePage() {
   let categoriesWithProducts: CategoriesWithProductsResponse[] = [];
   let getCategoriesWithProductsError = "";
   try {
-    categoriesWithProducts = await CategoryService.getCategoriesWithProducts();
+    // categoriesWithProducts = await CategoryService.getCategoriesWithProducts();
+    categoriesWithProducts = [];
   } catch (error) {
     console.error("Error fetching products:", error);
     getCategoriesWithProductsError =
@@ -60,7 +69,7 @@ export default async function CustomerHomePage() {
 
   return (
     <div>
-      <HeroImage src="/images/slider_1.webp"></HeroImage>
+      <HeroImage src="/images/banner.webp"></HeroImage>
       <div className="flex flex-col items-center gap-8">
         <Suspense fallback={<Spinner />}>
           <FeaturedCategories

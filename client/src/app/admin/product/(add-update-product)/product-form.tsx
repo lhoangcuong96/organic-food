@@ -4,14 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ProductCreateFormValues,
   productCreateFormSchema,
 } from "@/validation-schema/product";
 import BasicInfo from "./basic-info";
-import { SuggestionsSidebar } from "./suggestions-sidebar";
 import SaleInfo from "./sale-info";
+import { SuggestionsSidebar } from "./suggestions-sidebar";
 
 export function ProductForm() {
   const form = useForm<ProductCreateFormValues>({

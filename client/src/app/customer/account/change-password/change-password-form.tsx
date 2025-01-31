@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useHandleMessage } from "@/utils/hooks";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import {
   ChangePasswordDataType,
   changePasswordSchema,

@@ -11,7 +11,7 @@ export function ProductSearch() {
           className="w-full"
         />
       </div>
-      <Input placeholder="Tìm kiếm theo ngành hàng" className="w-[300px]" />
+      <Input placeholder="Tìm kiếm theo loại sản phẩm" className="w-[300px]" />
       <Button variant="outline">
         <Search className="h-4 w-4" />
       </Button>
