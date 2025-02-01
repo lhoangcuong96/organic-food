@@ -9,7 +9,7 @@ import { routePath } from "./constants/routes";
 import { RoleType } from "@prisma/client";
 
 // const privatePaths = [Object.values(routePath.customer.account)].flat();
-const publicPaths = ["/customer/sign-up", "/customer/sign-in"];
+const publicPaths = ["/sign-in", "/sign-in"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -64,5 +64,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // bắt buộc phải rõ ra chứ không sử dụng spread operator được
   // matcher: [...privatePaths, ...publicPaths],
-  matcher: ["/customer/sign-up", "/customer/sign-in", "/customer/me"],
+  matcher: ["/sign-up", "/sign-in", "/me"],
 };
