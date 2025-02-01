@@ -22,7 +22,7 @@ export function OurSpecialServices() {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-3 items-center justify-center gap-10">
+      <div className="grid grid-cols-3 gap-10">
         <Card className="w-full p-5 rounded-lg relative m-1 group border-[2px]">
           <div className="flex flex-col items-center">
             <Image
@@ -34,7 +34,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Cung Cấp Thực Phẩm Sạch
             </p>
-            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all my-4" />
 
             <p className="text-lg text-center font-semibold">
               Chúng tôi cam kết cung cấp thịt heo hoàn toàn sạch, được nuôi
@@ -57,7 +57,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Giao hàng nhanh chóng
             </p>
-            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all my-4" />
 
             <p className="text-lg text-center font-semibold">
               Để mang đến sự tiện lợi cho khách hàng, chúng tôi cung cấp dịch vụ
@@ -80,7 +80,7 @@ export function OurSpecialServices() {
             <p className="text-lime-600 text-xl font-bold text-center">
               Thanh toán dễ dàng
             </p>
-            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all" />
+            <Separator className="!border-lime-700 border-2 !w-3 !min-w-3 group-hover:!w-8 transition-all my-4" />
 
             <p className="text-lg text-center font-semibold">
               Chúng tôi hiểu rằng việc thanh toán tiện lợi là rất quan trọng. Vì

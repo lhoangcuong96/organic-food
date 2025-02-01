@@ -82,7 +82,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             suffix={<BiSolidPhoneCall className="text-2xl" />}
             className="!font-semibold"
           >
-            0582134596
+            0975209429
           </DefaultButton>
           <Dropdown menu={{ items: profileItems }} trigger={["click"]}>
             <DefaultButton

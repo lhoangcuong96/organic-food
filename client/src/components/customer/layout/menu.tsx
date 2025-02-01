@@ -13,6 +13,7 @@ interface MenuProps {
   label: string;
   path: string;
   key?: string;
+  isHot?: boolean;
 }
 export const menuItems: MenuProps[] = [
   {
@@ -27,6 +28,7 @@ export const menuItems: MenuProps[] = [
   {
     path: routePath.customer.products,
     label: "Sản phẩm khuyến mãi",
+    isHot: true,
   },
   {
     path: routePath.customer.news,
@@ -97,11 +99,11 @@ export default function Menu() {
             </Dropdown>
           );
         }
+        const isHot = item.isHot ? "bg-red-500 hover:bg-red-500" : "";
+        const isActive = path?.includes(item.path) ? "bg-lime-600" : "";
         return (
           <Link
-            className={`flex ${
-              path?.includes(item.path) ? "bg-lime-600" : ""
-            } h-full rounded-sm hover:bg-lime-600`}
+            className={`flex h-full rounded-sm hover:bg-lime-600 ${isActive} ${isHot}`}
             href={item.path}
             key={item.label}
           >

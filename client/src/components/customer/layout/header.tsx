@@ -55,16 +55,19 @@ export default async function Header() {
             suffix={<BiSolidPhoneCall className="!w-6 !h-6"></BiSolidPhoneCall>}
             className="!font-semibold"
           >
-            0582134596
+            0975209429
           </DefaultButton>
           <ProfileDropdown account={account}></ProfileDropdown>
 
-          <DefaultButton
-            suffix={
-              <IoLocationOutline className="!w-6 !h-6"></IoLocationOutline>
-            }
-            className="!font-semibold"
-          ></DefaultButton>
+          <Link href={routePath.customer.storeLocations}>
+            <DefaultButton
+              suffix={
+                <IoLocationOutline className="!w-6 !h-6"></IoLocationOutline>
+              }
+              className="!font-semibold"
+            ></DefaultButton>
+          </Link>
+
           <DefaultButton
             suffix={<FaRegHeart className="!w-6 !h-6"></FaRegHeart>}
             className="!font-semibold"

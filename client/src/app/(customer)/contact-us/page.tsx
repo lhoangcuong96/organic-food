@@ -67,7 +67,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Hotline</h3>
-                    <p className="text-gray-600">0582134596</p>
+                    <p className="text-gray-600">0975209429</p>
                   </div>
                 </div>
 

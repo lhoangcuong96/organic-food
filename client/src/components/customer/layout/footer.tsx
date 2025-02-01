@@ -77,8 +77,8 @@ export function Footer() {
             <div className="font-semibold">
               <p className="inline-block">
                 <span className="text-lime-600 mr-2">Điện thoại</span>
-                <a href="tel:0582134596" className="underline">
-                  0582134596
+                <a href="tel:0975209429" className="underline">
+                  0975209429
                 </a>
               </p>
             </div>
@@ -239,7 +239,7 @@ export function Footer() {
       </div>
       <Separator className="!border-lime-700"></Separator>
       <p className="text-center font-semibold">
-        Bản quyền thuộc về Hoàng Mạnh Cường.
+        Bản quyền thuộc về Heo sạch nhà Thoa.
       </p>
     </div>
   );
