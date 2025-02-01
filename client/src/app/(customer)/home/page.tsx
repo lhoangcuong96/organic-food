@@ -68,9 +68,9 @@ export default async function CustomerHomePage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center w-full">
       <HeroImage src="/images/banner.webp"></HeroImage>
-      <div className="flex flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-8 px-5 w-full max-w-screen-xl">
         <Suspense fallback={<Spinner />}>
           <FeaturedCategories
             categories={categories}

@@ -7,28 +7,28 @@ import {
   IoSearchOutline,
 } from "react-icons/io5";
 
-import DefaultButton from "../UI/button/default-button";
-import DefaultInput from "../UI/input/default-input";
+import DefaultButton from "../../UI/button/default-button";
+import DefaultInput from "../../UI/input/default-input";
 
 import { routePath } from "@/constants/routes";
 import { Account } from "@prisma/client";
-import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
+import ProfileDropdown from "../profile-dropdown";
 import Menu from "./menu";
-import ProfileDropdown from "./profile-dropdown";
 
-export default async function Header() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  let account: Partial<Account> | undefined;
-  if (accessToken) {
-    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
-    account = tokenPayload?.account;
-  }
+export default async function DesktopHeader({
+  className,
+  account,
+}: {
+  className?: string;
+  account?: Partial<Account>;
+}) {
   return (
-    <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50">
+    <header
+      className={`max-w-screen-xl w-full h-fit mt-5 relative z-50 ${className}`}
+    >
       <div className="grid grid-cols-[max-content_auto_max-content] items-center gap-4">
         <Link href={routePath.customer.home}>
           <Image
@@ -62,7 +62,12 @@ export default async function Header() {
           <Link href={routePath.customer.storeLocations}>
             <DefaultButton
               suffix={
-                <IoLocationOutline className="!w-6 !h-6"></IoLocationOutline>
+                <div className="relative">
+                  <IoLocationOutline className="!w-6 !h-6"></IoLocationOutline>
+                  <Badge className="rounded-full bg-red-600 w-4 h-4 p-0 absolute -top-1/4 -right-1/4 hover:bg-red-500">
+                    <p className="w-full">1</p>
+                  </Badge>
+                </div>
               }
               className="!font-semibold"
             ></DefaultButton>

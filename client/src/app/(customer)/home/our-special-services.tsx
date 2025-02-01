@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export function OurSpecialServices() {
   return (
-    <div className="max-w-screen-xl w-screen h-fit mt-5 relative z-50">
+    <div className="max-w-full w-screen h-fit mt-5 relative z-50">
       <div className="flex flex-row justify-between mb-5 pb-4 border-b-[0.5px] border-b-lime-600">
         <div>
           <h3 className=" text-lime-600 text-2xl font-bold flex flex-row items-center gap-2">
@@ -22,7 +22,7 @@ export function OurSpecialServices() {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid md:grid-cols-3 gap-10">
         <Card className="w-full p-5 rounded-lg relative m-1 group border-[2px]">
           <div className="flex flex-col items-center">
             <Image

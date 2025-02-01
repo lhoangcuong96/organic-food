@@ -10,7 +10,7 @@ export default function FoodSection({
   error?: string;
 }) {
   return (
-    <div className="max-w-screen-xl w-screen h-fit mt-5 relative z-50">
+    <div className="max-w-full w-screen h-fit mt-5 relative z-50">
       {error ? (
         <ErrorMessage>{error}</ErrorMessage>
       ) : (

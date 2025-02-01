@@ -16,8 +16,8 @@ export function Footer() {
           ></Image>
           <p className="text-sm font-semibold">
             Chúng tôi hi vọng tất cả người tiêu dùng Việt nam sẽ được sử dụng
-            những thụ phẩm rau củ quả tươi ngon, bổ dưỡng và an toàn nhất tại
-            cửa hàng cung cấp thực phẩm rau củ sạch Dola Organic.
+            những thụ phẩm sạch tươi ngon, bổ dưỡng và an toàn nhất tại cửa hàng
+            cung cấp thực phẩm Heo sạch nhà THoa.
           </p>
           <h3 className="text-lime-600 font-semibold text-xl">
             Hình thức thanh toán
@@ -71,7 +71,8 @@ export function Footer() {
             <div className="font-semibold">
               <p className="inline-block">
                 <span className="text-lime-600 mr-2">Địa chỉ:</span>
-                48/2 Phạm Văn Xảo Phú Thọ Hoà Tân Phú Hồ Chí Minh
+                152 A7/1 Phạm Văn Khoai P.Tân Hiệp Biên Hoà Đồng Nai - Đối diện
+                chợ Tân Hiệp
               </p>
             </div>
             <div className="font-semibold">

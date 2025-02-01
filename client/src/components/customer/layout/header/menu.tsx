@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { JSX, useReducer } from "react";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
-import { ProductMenu } from "./product-menu";
+import { ProductMenu } from "../product-menu";
 
 interface MenuProps {
   label: string;

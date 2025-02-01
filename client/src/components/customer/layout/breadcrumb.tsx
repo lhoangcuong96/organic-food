@@ -26,11 +26,11 @@ export default function AppBreadcrumb({
         alt="Hero Image"
         width={1500}
         height={607}
-        className="!w-screen m-auto object-cover !h-52 -top-7 relative z-10 rounded-sm"
+        className="!w-screen m-auto object-cover !h-52 lg:-top-7 relative z-10 rounded-sm"
         layout="responsive"
       ></Image>
 
-      <div className="absolute w-full h-full z-20 -top-7 left-0 ">
+      <div className="absolute top-0 w-full h-full z-20  lg:-top-7 left-0 ">
         <div className="absolute w-full h-full z-20 top-0 left-0 bg-gradient-to-t from-[#000000cc] to-[#0000004d] "></div>
         <div className="z-30 relative flex flex-col items-center justify-center h-full">
           <h3 className="text-white text-2xl font-semibold">{pageTitle}</h3>

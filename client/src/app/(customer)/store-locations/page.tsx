@@ -112,7 +112,7 @@ export default function StoreLocations() {
                 {/* Right Column - Map */}
                 <div className="h-[600px] bg-gray-100 rounded-lg overflow-hidden">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d292.947431575845!2d106.8612929989538!3d10.962136151606753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3174dc2c4541d2f1%3A0x8d2105c782a998ce!2zMTUyIMSQLiBQaOG6oW0gVsSDbiBLaG9haSwgVMOibiBIaeG7h3AsIEJpw6puIEjDsmEsIMSQ4buTbmcgTmFpLCBWaWV0bmFt!5e1!3m2!1sen!2s!4v1738396613091!5m2!1sen!2s"
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d292.947431575845!2d106.8612929989538!3d10.962136151606753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2s!4v1738397499502!5m2!1sen!2s"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
