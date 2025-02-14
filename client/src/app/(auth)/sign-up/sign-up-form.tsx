@@ -6,7 +6,7 @@ import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import FacebookButton from "@/components/ui/facebook-button";
 import GoogleButton from "@/components/ui/google-button";
-import Spinner from "@/components/ui/page-spinner";
+import Spinner from "@/components/ui/spinner";
 import XButton from "@/components/ui/x-button";
 import { routePath } from "@/constants/routes";
 import SessionStore from "@/helper/local-store/session-store";
@@ -15,6 +15,9 @@ import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
+import { accountApiRequest } from "@/api-request/account";
+import { cartRequestApis } from "@/api-request/cart";
+import { useAppContext } from "@/provider/app-provider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,6 +27,8 @@ export function SignUpForm() {
   const { messageApi } = useHandleMessage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  const { setAccount, setCart } = useAppContext();
 
   const { control, handleSubmit, setError } = useForm<SignUpRequestDataType>({
     resolver: zodResolver(signUpSchema),
@@ -51,6 +56,18 @@ export function SignUpForm() {
         description: "Đăng kí thành công",
       });
       SessionStore.setTokens(accessToken, refreshToken);
+      const getMeResponse = await accountApiRequest.getMe();
+      const account = getMeResponse.payload?.data;
+      if (!account) {
+        throw new Error("Có lỗi xảy ra trong quá trình đăng kí");
+      }
+      setAccount(account);
+      const getUserCartResp = await cartRequestApis.getCart();
+      const cart = getUserCartResp.payload?.data;
+      if (!cart) {
+        throw new Error("Có lỗi xảy ra trong quá trình lấy giỏ hàng");
+      }
+      setCart(cart);
       router.push(routePath.customer.home);
       router.refresh();
     } catch (error) {

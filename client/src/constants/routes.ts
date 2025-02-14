@@ -14,6 +14,8 @@ export const routePath = {
     membershipPolicy: "/membership-policy",
     storeLocations: "/store-locations",
     productDetail: "/product-detail/",
+    cart: "/cart",
+    checkout: "/checkout",
 
     // private routes
     account: {

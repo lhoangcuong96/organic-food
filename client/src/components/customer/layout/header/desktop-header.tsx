@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa";
@@ -11,19 +13,22 @@ import DefaultButton from "../../UI/button/default-button";
 import DefaultInput from "../../UI/input/default-input";
 
 import { routePath } from "@/constants/routes";
-import { Account } from "@prisma/client";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { AccountType } from "@/validation-schema/account";
 import ProfileDropdown from "../profile-dropdown";
 import Menu from "./menu";
+import { CartType } from "@/validation-schema/cart";
 
-export default async function DesktopHeader({
+export default function DesktopHeader({
   className,
   account,
+  cart,
 }: {
   className?: string;
-  account?: Partial<Account>;
+  account?: AccountType;
+  cart?: CartType;
 }) {
   return (
     <header
@@ -77,10 +82,21 @@ export default async function DesktopHeader({
             suffix={<FaRegHeart className="!w-6 !h-6"></FaRegHeart>}
             className="!font-semibold"
           ></DefaultButton>
-          <DefaultButton
-            suffix={<IoCartOutline className="!w-6 !h-6"></IoCartOutline>}
-            className="!font-semibold"
-          ></DefaultButton>
+          <Link href={routePath.customer.cart}>
+            <DefaultButton
+              suffix={
+                <div className="relative">
+                  <IoCartOutline className="!w-6 !h-6"></IoCartOutline>
+                  {cart && (
+                    <Badge className="rounded-full bg-red-600 w-4 h-4 p-0 absolute -top-1/4 -right-1/4 hover:bg-red-500">
+                      <p className="w-full">{cart?.items.length}</p>
+                    </Badge>
+                  )}
+                </div>
+              }
+              className="!font-semibold"
+            ></DefaultButton>
+          </Link>
         </div>
       </div>
       <Menu></Menu>

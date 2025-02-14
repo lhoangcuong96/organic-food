@@ -1,9 +1,10 @@
+import { categoryApiRequests } from "@/api-request/category";
 import productRequestApi from "@/api-request/product";
 import { HeroImage } from "@/components/customer/layout/hero-image";
 import Spinner from "@/components/ui/spinner";
 import { CategoriesWithProductsResponse } from "@/services/category";
+import { CategoryInListType } from "@/validation-schema/category";
 import { ProductListType } from "@/validation-schema/product";
-import { Category } from "@prisma/client";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { FeaturedCategories } from "./featured-categories";
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CustomerHomePage() {
   let products: ProductListType[] = [];
-  let error;
+  let getProductError;
 
   try {
     const response = await productRequestApi.getProducts({
@@ -34,26 +35,29 @@ export default async function CustomerHomePage() {
       limit: 10,
       search: "",
     });
-
-    console.log(response);
-
     if (!response || !response.payload) {
       throw new Error("Có lỗi xảy ra khi lấy dữ liệu sản phẩm!");
     }
     products = response.payload.data;
-    console.log("products", products);
   } catch (err) {
     console.error("Error fetching products:", err);
-    error = "Failed to load products. Please try again later.";
+    getProductError = "Failed to load products. Please try again later.";
   }
 
-  let categories: Partial<Category>[] = [];
+  let categories: CategoryInListType[] = [];
+  let getCategoryError;
   try {
-    // categories = (await CategoryService.getCategories()) as Partial<Category>[];
-    categories = [];
+    const resp = await categoryApiRequests.getListCategory();
+    const payload = resp.payload as unknown as { data: CategoryInListType[] };
+    if (payload && payload.data.length > 0) {
+      categories = payload.data;
+    } else {
+      throw new Error("Có lỗi xảy ra khi lấy dữ liệu danh mục!");
+    }
   } catch (err) {
     console.error("Error fetching products:", err);
-    error = "Failed to load featured categories. Please try again later.";
+    getCategoryError =
+      "Failed to load featured categories. Please try again later.";
   }
 
   let categoriesWithProducts: CategoriesWithProductsResponse[] = [];
@@ -74,13 +78,13 @@ export default async function CustomerHomePage() {
         <Suspense fallback={<Spinner />}>
           <FeaturedCategories
             categories={categories}
-            error={error}
+            error={getCategoryError}
           ></FeaturedCategories>
         </Suspense>
         <Suspense fallback={<Spinner />}>
           <PromotionalProducts
             products={products}
-            error={error}
+            error={getProductError}
           ></PromotionalProducts>
         </Suspense>
 

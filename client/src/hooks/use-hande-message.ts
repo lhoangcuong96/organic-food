@@ -18,7 +18,6 @@ export const useHandleMessage = () => {
     setError?: UseFormSetError<any>;
     duration?: number;
   }) => {
-    console.error(error);
     if (error instanceof EntityError && setError) {
       error.payload.errors.forEach((item) => {
         setError(item.field, {
@@ -61,7 +60,7 @@ export const useHandleMessage = () => {
       variant: "success",
       type: "foreground",
       description: description || "Thành công",
-      duration: duration || 3000,
+      duration: duration || 1000,
     });
   };
 

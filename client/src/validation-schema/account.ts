@@ -1,22 +1,32 @@
 import { isValidDate } from "@/lib/utils";
 import { z } from "zod";
 
-export const profileSchema = z.object({
+export const accountSchema = z.object({
   id: z.string(),
   fullname: z.string(),
   email: z.string(),
-  phoneNumber: z.string(),
+  phoneNumber: z.string().nullable().optional(),
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).nullable().optional(),
-  dateOfBirth: z.string().nullable().optional(),
+  dateOfBirth: z.date().nullable().optional(),
   avatar: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  shippingAddress: z
+    .object({
+      address: z.string(),
+      district: z.string(),
+      commune: z.string(),
+      province: z.string(),
+    })
+    .optional(),
+  role: z.enum(["USER", "ADMIN"]),
 });
 
-export const profileResponseSchema = z.object({
-  data: profileSchema,
+export const accountResponseSchema = z.object({
+  data: accountSchema,
   message: z.string(),
 });
 
-export const updateProfileSchema = z.object({
+export const updateAccountSchema = z.object({
   fullname: z.string().min(1, "Họ và tên không hợp lệ"),
   dateOfBirth: z.string().refine((value) => isValidDate(value), {
     message: "Ngày sinh không hợp lệ",
@@ -36,9 +46,9 @@ export const changePasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export type ProfileDataType = z.infer<typeof profileSchema>;
-export type ProfileResponseDataType = z.infer<typeof profileResponseSchema>;
+export type AccountType = z.infer<typeof accountSchema>;
+export type AccountResponseDataType = z.infer<typeof accountResponseSchema>;
 
-export type UpdateProfileDataType = z.infer<typeof updateProfileSchema>;
+export type UpdateAccountDataType = z.infer<typeof updateAccountSchema>;
 
 export type ChangePasswordDataType = z.infer<typeof changePasswordSchema>;

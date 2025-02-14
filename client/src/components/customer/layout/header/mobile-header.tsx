@@ -3,22 +3,26 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Account } from "@prisma/client";
-import { Menu, Plus, Search, ShoppingBag } from "lucide-react";
+import { routePath } from "@/constants/routes";
+import { AccountType } from "@/validation-schema/account";
+import { CartType } from "@/validation-schema/cart";
+import { Menu, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { menuItems } from "./menu";
-import { routePath } from "@/constants/routes";
 
 export default function MobileHeader({
   className,
   account,
+  cart,
 }: {
   className?: string;
-  account?: Partial<Account>;
+  account?: AccountType;
+  cart?: CartType;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  console.log(cart);
 
   return (
     <header
@@ -127,7 +131,7 @@ export default function MobileHeader({
               >
                 <ShoppingBag className="!h-6 !w-6" />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  1
+                  {cart?.items.length}
                 </span>
               </Button>
             </div>

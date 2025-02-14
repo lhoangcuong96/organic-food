@@ -2,14 +2,18 @@ import AppProvider from "@/provider/app-provider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
-import { cookies } from "next/headers";
 
-import "swiper/css";
-import "./globals.css";
-import { jwtDecode } from "jwt-decode";
-import { Account } from "@prisma/client";
+import { accountApiRequest } from "@/api-request/account";
+import { cartRequestApis } from "@/api-request/cart";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ReactQueryProvider from "@/provider/react-query-provider";
+import { AccountType } from "@/validation-schema/account";
+import { CartType } from "@/validation-schema/cart";
+import { cookies } from "next/headers";
+import "swiper/css";
+import "./globals.css";
+import { routePath } from "@/constants/routes";
+import { redirect } from "next/navigation";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -31,13 +35,25 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let cart: CartType | undefined;
+  let account: AccountType | undefined;
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
-  let account;
-  if (accessToken) {
-    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
-    account = tokenPayload?.account;
+  try {
+    if (accessToken) {
+      const getMeResponse = await accountApiRequest.getMe();
+      account = getMeResponse.payload?.data;
+      if (account) {
+        const getUserCartResp = await cartRequestApis.getCart();
+        cart = getUserCartResp.payload?.data;
+      }
+    }
+  } catch (error) {
+    console.error("Something went wrong", error);
+    // redirect(routePath.signOut);
   }
+
   return (
     <html lang="vi">
       <head>
@@ -46,7 +62,7 @@ export default async function RootLayout({
       <body
         className={`${quicksand.className} antialiased bg-white text-gray-700`}
       >
-        <AppProvider initialAccount={account}>
+        <AppProvider initialAccount={account} initialCart={cart}>
           <ReactQueryProvider>
             <TooltipProvider>
               <AntdRegistry>{children}</AntdRegistry>

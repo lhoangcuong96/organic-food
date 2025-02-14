@@ -1,18 +1,18 @@
 import { http } from "@/lib/http";
 import {
   ChangePasswordDataType,
-  ProfileResponseDataType,
-  UpdateProfileDataType,
+  AccountResponseDataType,
+  UpdateAccountDataType,
 } from "@/validation-schema/account";
 import { MessageResponseType } from "@/validation-schema/common";
 
 export const accountApiRequest = {
-  getProfile: async () =>
-    http.get<ProfileResponseDataType>("/account/me", {
+  getMe: async () =>
+    http.get<AccountResponseDataType>("/account/me", {
       isPrivate: true,
     }),
-  updateProfile: async (data: UpdateProfileDataType) => {
-    return http.put<ProfileResponseDataType>("/account/me", data, {
+  updateProfile: async (data: UpdateAccountDataType) => {
+    return http.put<AccountResponseDataType>("/account/me", data, {
       isPrivate: true,
     });
   },

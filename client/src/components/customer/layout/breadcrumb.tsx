@@ -37,7 +37,7 @@ export default function AppBreadcrumb({
           <Breadcrumb>
             <BreadcrumbList>
               {breadcrumbItems.map((item, index) => (
-                <>
+                <div key={index} className="flex items-center">
                   <BreadcrumbItem className={`cursor-pointer text-white`}>
                     <BreadcrumbLink
                       href={item.href}
@@ -53,7 +53,7 @@ export default function AppBreadcrumb({
                   {index < breadcrumbItems.length - 1 && (
                     <BreadcrumbSeparator className="text-white" />
                   )}
-                </>
+                </div>
               ))}
             </BreadcrumbList>
           </Breadcrumb>

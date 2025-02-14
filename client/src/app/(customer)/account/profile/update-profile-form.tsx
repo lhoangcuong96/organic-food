@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  ProfileDataType,
-  UpdateProfileDataType,
-  updateProfileSchema,
+  AccountType,
+  UpdateAccountDataType,
+  updateAccountSchema,
 } from "@/validation-schema/account";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDate } from "date-fns";
@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation";
 export default function UpdateProfileForm({
   profile,
 }: {
-  profile: ProfileDataType;
+  profile: AccountType;
 }) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +48,8 @@ export default function UpdateProfileForm({
     }
   };
   const { control, register, handleSubmit, setError } =
-    useForm<UpdateProfileDataType>({
-      resolver: zodResolver(updateProfileSchema),
+    useForm<UpdateAccountDataType>({
+      resolver: zodResolver(updateAccountSchema),
       defaultValues: {
         ...profile,
         gender: profile.gender || "OTHER",
@@ -59,7 +59,7 @@ export default function UpdateProfileForm({
       },
     });
 
-  const onSubmit = async (data: UpdateProfileDataType) => {
+  const onSubmit = async (data: UpdateAccountDataType) => {
     try {
       setIsLoading(true);
       let avatar = "";

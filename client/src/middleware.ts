@@ -9,7 +9,7 @@ import { routePath } from "./constants/routes";
 import { RoleType } from "@prisma/client";
 
 // const privatePaths = [Object.values(routePath.customer.account)].flat();
-const publicPaths = ["/sign-in", "/sign-in"];
+const publicPaths = ["/sign-in", "/sign-up"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
   const refreshToken = cookieStore.get("refreshToken");
   const role = cookieStore.get("role");
 
+  console.log("accessToken", accessToken);
   if (publicPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
@@ -37,7 +38,7 @@ export async function middleware(request: NextRequest) {
       accessToken.value,
       refreshToken.value
     );
-    if (resp && resp.payload.data.accessToken) {
+    if (resp && resp.payload?.data.accessToken) {
       // set lại request header với accessToken mới
       const response = NextResponse.next();
       response.cookies.set("accessToken", resp.payload.data.accessToken, {

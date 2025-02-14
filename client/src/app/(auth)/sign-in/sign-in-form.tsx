@@ -6,24 +6,29 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { accountApiRequest } from "@/api-request/account";
 import { authApiRequest } from "@/api-request/auth";
+import { cartRequestApis } from "@/api-request/cart";
 import DefaultButton from "@/components/customer/UI/button/default-button";
 import { FormError } from "@/components/customer/UI/input/form/form-error";
 import FormInput from "@/components/customer/UI/input/form/input";
 import FacebookButton from "@/components/ui/facebook-button";
 import GoogleButton from "@/components/ui/google-button";
+import Spinner from "@/components/ui/spinner";
 import XButton from "@/components/ui/x-button";
 import { routePath } from "@/constants/routes";
 import SessionStore from "@/helper/local-store/session-store";
 import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useAppContext } from "@/provider/app-provider";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import { useRouter } from "next/navigation";
-import Spinner from "@/components/ui/spinner";
 
 export function SignInForm() {
   const { messageApi } = useHandleMessage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  const { setAccount, setCart } = useAppContext();
 
   const { control, handleSubmit, setError } = useForm<SignInRequestDataType>({
     resolver: zodResolver(signInSchema),
@@ -48,6 +53,28 @@ export function SignInForm() {
       // Send token to client server to set cookie
       await authApiRequest.setToken(accessToken, refreshToken);
       SessionStore.setTokens(accessToken, refreshToken);
+      const getMeResponse = await accountApiRequest.getMe();
+      const account = getMeResponse.payload?.data;
+      if (!account) {
+        throw new Error("Có lỗi xảy ra trong quá trình đăng kí");
+      }
+      setAccount(account);
+      const getUserCartResp = await cartRequestApis.getCart();
+      const cart = getUserCartResp.payload?.data;
+      if (!cart) {
+        throw new Error("Có lỗi xảy ra trong quá trình lấy giỏ hàng");
+      }
+      setCart(cart);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("redirect")) {
+        const redirectPath = urlParams.get("redirect");
+        if (redirectPath) {
+          router.push(redirectPath);
+          router.refresh();
+          return;
+        }
+      }
       router.push(routePath.customer.home);
       router.refresh();
     } catch (error) {

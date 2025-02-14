@@ -11,10 +11,10 @@ export default async function ProfileContent() {
   if (!accessToken) {
     return redirect(routePath.customer.home);
   }
-  const response = await accountApiRequest.getProfile();
-  if (!response.payload.data) {
+  const response = await accountApiRequest.getMe();
+  if (!response.payload?.data) {
     return (
-      <p className="items-center justify-center">{response.payload.message}</p>
+      <p className="items-center justify-center">{response.payload?.message}</p>
     );
   }
   return <UpdateProfileForm profile={response.payload.data} />;

@@ -8,14 +8,16 @@ export default function CategoryCard({
   category: Partial<Category>;
 }) {
   return (
-    <Card className="w-48 flex flex-col items-center m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline">
+    <Card className="w-24 flex flex-col items-center m-[4px] shadow-none border-none hover:outline-none hover:scale-110 rounded-sm overflow-hidden">
       <Image
         src={category.image?.thumbnail || ""}
         alt={category.description ? category.description : "Category image"}
         width={100}
         height={100}
       ></Image>
-      <p className="font-semibold">{category.name}</p>
+      <p className="font-semibold mt-2 text-lime-600 text-center">
+        {category.name}
+      </p>
     </Card>
   );
 }

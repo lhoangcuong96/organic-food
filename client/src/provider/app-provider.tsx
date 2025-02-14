@@ -6,7 +6,8 @@ import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
 import SessionStore from "@/helper/local-store/session-store";
 import { isTokenExpired } from "@/utils/auth";
-import { Account } from "@prisma/client";
+import { AccountType } from "@/validation-schema/account";
+import { CartType } from "@/validation-schema/cart";
 import ms from "ms";
 import { redirect } from "next/navigation";
 import {
@@ -20,11 +21,15 @@ import {
 } from "react";
 
 const AppContext = createContext<{
-  account?: Partial<Account>;
-  setAccount: Dispatch<SetStateAction<Partial<Account> | undefined>>;
+  account?: AccountType;
+  setAccount: Dispatch<SetStateAction<AccountType | undefined>>;
+  cart?: CartType;
+  setCart: Dispatch<SetStateAction<CartType | undefined>>;
 }>({
   account: undefined,
   setAccount: () => {},
+  cart: undefined,
+  setCart: () => {},
 });
 
 export const useAppContext = () => {
@@ -38,13 +43,17 @@ export const useAppContext = () => {
 export default function AppProvider({
   children,
   initialAccount,
+  initialCart,
 }: {
   children: ReactNode;
-  initialAccount?: Partial<Account>;
+  initialAccount?: AccountType;
+  initialCart?: CartType;
 }) {
-  const [account, setAccount] = useState<Partial<Account> | undefined>(
+  const [account, setAccount] = useState<AccountType | undefined>(
     initialAccount
   );
+
+  const [cart, setCart] = useState<CartType | undefined>(initialCart);
 
   // Kiểm tra ở client(server thì ở trong http.ts)
   const callApiRefreshToken = async () => {
@@ -72,11 +81,18 @@ export default function AppProvider({
     }
   }, []);
 
+  useEffect(() => {
+    console.log(initialAccount);
+    setAccount(initialAccount);
+  }, [initialAccount]);
+
   return (
     <AppContext.Provider
       value={{
         account,
         setAccount,
+        cart,
+        setCart,
       }}
     >
       {children}

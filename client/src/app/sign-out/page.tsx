@@ -2,23 +2,23 @@
 
 import { authApiRequest } from "@/api-request/auth";
 import { routePath } from "@/constants/routes";
+import SessionStore from "@/helper/local-store/session-store";
 import { useHandleMessage } from "@/hooks/use-hande-message";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 export default function Page() {
   const { messageApi } = useHandleMessage();
   const router = useRouter();
-  const pathName = usePathname();
   const signOut = async () => {
     try {
       await authApiRequest.logoutFromClientToNextServer({ forceLogout: true });
-      sessionStorage.clear();
+      SessionStore.clearTokens();
     } catch (error) {
       messageApi.error({ error: error as Error });
     } finally {
-      router.replace(`${routePath.signIn}?redirect=${pathName}`);
-      router.refresh();
+      router.replace(`${routePath.signIn}`);
+      // router.refresh();
     }
   };
   useEffect(() => {

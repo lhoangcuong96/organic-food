@@ -4,15 +4,49 @@ import { formatCurrency } from "@/helper";
 import { Product } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 
+import { cartRequestApis } from "@/api-request/cart";
+import { Card } from "@/components/ui/card";
+import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useAppContext } from "@/provider/app-provider";
 import { Heart, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { AppProgress } from "../progress";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { AppProgress } from "../progress";
 
 export function ProductCard({ product }: { product: Partial<Product> }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { messageApi } = useHandleMessage();
+
+  const router = useRouter();
+  const { account } = useAppContext();
+
+  const handleAddToCart = async () => {
+    if (!account) {
+      router.push(`${routePath.signIn}?redirect=${location.pathname}`);
+      return;
+    }
+    if (!product.id) {
+      messageApi.error({
+        error: "Không thể thêm sản phẩm vào giỏ hàng",
+      });
+    }
+    try {
+      await cartRequestApis.addProductToCart({
+        productId: product.id || "",
+        quantity: 1,
+      });
+      messageApi.success({
+        title: "Thêm vào giỏ hàng thành công",
+        description: "Sản phẩm đã được thêm vào giỏ hàng của bạn",
+      });
+    } catch (error) {
+      messageApi.error({
+        error: (error as Error).message,
+      });
+    }
+  };
   return (
     <Card
       className="w-56 p-3 rounded-lg relative gap-1 m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline"
@@ -70,6 +104,7 @@ export function ProductCard({ product }: { product: Partial<Product> }) {
               size="icon"
               variant="secondary"
               className="h-8 w-8 bg-lime-600 text-white hover:bg-lime-600"
+              onClick={() => handleAddToCart()}
             >
               <ShoppingCart className="h-4 w-4" />
             </Button>

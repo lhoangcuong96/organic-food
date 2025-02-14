@@ -1,28 +1,23 @@
-import { cookies } from "next/headers";
+"use client";
+
+import { useAppContext } from "@/provider/app-provider";
 import DesktopHeader from "./desktop-header";
 import MobileHeader from "./mobile-header";
-import { Account } from "@prisma/client";
-import { jwtDecode } from "jwt-decode";
 
-const Header = async () => {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("accessToken")?.value;
-  let account: Partial<Account> | undefined;
-  if (accessToken) {
-    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
-    account = tokenPayload?.account;
-  }
+const Header = () => {
+  const { account, cart } = useAppContext();
   return (
-    <>
+    <div className="print:hidden w-full flex justify-center">
       <DesktopHeader
         className="hidden lg:block"
         account={account}
+        cart={cart}
       ></DesktopHeader>
       <MobileHeader
         className="block lg:hidden"
         account={account}
       ></MobileHeader>
-    </>
+    </div>
   );
 };
 

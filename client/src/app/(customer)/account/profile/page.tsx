@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import ProfileContent from "./profile-content";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
@@ -10,7 +12,12 @@ export const generateMetadata = async (): Promise<Metadata> => {
   };
 };
 
-export default function Profile() {
+export default async function Profile() {
+  const cookie = await cookies();
+  const accessToken = cookie.get("accessToken")?.value;
+  if (!accessToken) {
+    return redirect("/sign-in");
+  }
   return (
     <Card className="w-full mx-auto py-2 px-8 h-fit rounded-sm">
       <CardHeader>

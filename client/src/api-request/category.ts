@@ -1,7 +1,8 @@
 import { http } from "@/lib/http";
+import { CategoryInListType } from "@/validation-schema/category";
 
-const categoryApiRequests = {
+export const categoryApiRequests = {
   getListCategory: () => {
-    return http.get();
+    return http.get<CategoryInListType[]>("/category");
   },
 };
