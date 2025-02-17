@@ -3,7 +3,7 @@ import {
   ProductListQueryType,
   UpdateProductBodyType
 } from '@/schemaValidations/admin/product/admin-product-schema'
-import { AdminProductService } from '@/services/admin/admin-product-service'
+import { AdminProductService } from '@/services/admin/admin-product.service'
 
 export default class AdminProductController {
   service: AdminProductService

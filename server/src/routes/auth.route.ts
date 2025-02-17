@@ -18,10 +18,10 @@ import {
   SocialAuthRes,
   SocialAuthResType
 } from '@/schemaValidations/auth.schema'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
 import { SocialEnum } from '@prisma/client'
 import { addMilliseconds } from 'date-fns'
-import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify'
+import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import ms from 'ms'
 
 export default async function authRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -80,12 +80,12 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       }
     }
   )
-  fastify.post<{ Reply: MessageResType }>(
+  fastify.post<{ Reply: MessageResponseSchemaType }>(
     '/logout',
     {
       schema: {
         response: {
-          200: MessageRes
+          200: MessageResponseSchema
         }
       },
       preValidation: fastify.auth([requireLoggedHook])

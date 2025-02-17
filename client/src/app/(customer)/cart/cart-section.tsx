@@ -1,9 +1,7 @@
 "use client";
 
-import { Calendar, Minus, Plus } from "lucide-react";
+import { Calendar } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState, useTransition, useOptimistic } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,131 +33,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { cartRequestApis } from "@/api-request/cart";
-import { useHandleMessage } from "@/hooks/use-hande-message";
-import type { CartType } from "@/validation-schema/cart";
+import QuantitySelector from "@/components/ui/quantity-selector";
 import { routePath } from "@/constants/routes";
+import useCart from "@/hooks/modules/use-cart";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function CartSection() {
-  const [cart, setCart] = useState<CartType | null>(null);
-  const [optimisticCart, addOptimisticCart] = useOptimistic(cart);
-  const [isPending, startTransition] = useTransition();
-
-  const { messageApi } = useHandleMessage();
-
-  const { data: cartData, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: async () => {
-      const resp = await cartRequestApis.getCart();
-      if (resp.payload?.data) {
-        return resp.payload.data;
-      } else {
-        throw new Error("Lỗi lấy thông tin giỏ hàng");
-      }
-    },
-    retry: 1,
-    meta: {
-      errorMessage: "Lỗi lấy thông tin giỏ hàng",
-    },
-  });
-
-  const updateCartItemQuantity = async ({
-    productId,
-    quantity,
-  }: {
-    productId: string;
-    quantity: number;
-  }) => {
-    if (!cart) return;
-
-    startTransition(() => {
-      addOptimisticCart((prevCart) => {
-        if (!prevCart) return null;
-        return {
-          ...prevCart,
-          items: prevCart.items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
-          ),
-        };
-      });
-    });
-
-    try {
-      await cartRequestApis.updateCartItemQuantity({ productId, quantity });
-      // Update the actual cart state after successful API call
-      setCart((prevCart) => {
-        if (!prevCart) return null;
-        return {
-          ...prevCart,
-          items: prevCart.items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
-          ),
-        };
-      });
-      messageApi.success({
-        description: "Cập nhật số lượng sản phẩm thành công",
-      });
-    } catch (error) {
-      console.error(error);
-      messageApi.error({
-        error: "Lỗi cập nhật số lượng sản phẩm",
-      });
-      // The optimistic state will be automatically reverted by React
-    }
-  };
-
-  const updateCartItemQuantityMutation = useMutation({
-    mutationKey: ["updateCartQuantity"],
-    mutationFn: updateCartItemQuantity,
-  });
-
-  const removeProductFromCart = async (productId: string) => {
-    if (!cart) return;
-
-    startTransition(() => {
-      addOptimisticCart((prevCart) => {
-        if (!prevCart) return null;
-        return {
-          ...prevCart,
-          items: prevCart.items.filter((item) => item.product.id !== productId),
-        };
-      });
-    });
-
-    try {
-      await cartRequestApis.removeProductFromCart(productId);
-      // Update the actual cart state after successful API call
-      setCart((prevCart) => {
-        if (!prevCart) return null;
-        return {
-          ...prevCart,
-          items: prevCart.items.filter((item) => item.product.id !== productId),
-        };
-      });
-      messageApi.success({
-        description: "Xóa sản phẩm khỏi giỏ hàng thành công",
-      });
-    } catch (error) {
-      console.error(error);
-      messageApi.error({
-        error: "Lỗi xóa sản phẩm khỏi giỏ hàng",
-      });
-      // The optimistic state will be automatically reverted by React
-    }
-  };
+  const {
+    total,
+    cart,
+    isLoadingCart,
+    handleGetCart,
+    handleRemoveProductFromCart,
+    handleUpdateCartItemQuantity,
+  } = useCart();
 
   useEffect(() => {
-    if (cartData) {
-      setCart(cartData);
-    }
-  }, [cartData]);
-
-  const total =
-    optimisticCart?.items.reduce(
-      (accumulator, item) => accumulator + item.product.price * item.quantity,
-      0
-    ) || 0;
+    handleGetCart();
+  }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -178,17 +70,19 @@ export default function CartSection() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading && (
+            {isLoadingCart && (
               <TableRow>
                 <TableCell colSpan={4}>
-                  <p className="text-center leading-10">Loading...</p>
+                  <p className="text-center leading-10">
+                    Đang tải dữ liệu giỏ hàng ...
+                  </p>
                 </TableCell>
               </TableRow>
             )}
-            {!isLoading &&
-              optimisticCart &&
-              optimisticCart.items.length > 0 &&
-              optimisticCart.items.map((item) => (
+            {!isLoadingCart &&
+              cart &&
+              cart.items.length > 0 &&
+              cart.items.map((item) => (
                 <TableRow key={item.product.id}>
                   <TableCell>
                     <div className="flex items-center gap-4">
@@ -224,7 +118,7 @@ export default function CartSection() {
                               <AlertDialogCancel>Huỷ</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() =>
-                                  removeProductFromCart(item.product.id)
+                                  handleRemoveProductFromCart(item.product.id)
                                 }
                               >
                                 Tiếp tục
@@ -237,62 +131,29 @@ export default function CartSection() {
                   </TableCell>
                   <TableCell>{item.product.price.toLocaleString()}đ</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => {
-                          updateCartItemQuantityMutation.mutate({
-                            productId: item.product.id,
-                            quantity: Math.max(1, item.quantity - 1),
-                          });
-                        }}
-                        disabled={isPending}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateCartItemQuantityMutation.mutate({
-                            productId: item.product.id,
-                            quantity: Math.max(1, Number(e.target.value)),
-                          })
-                        }
-                        className="w-16 h-8 text-center"
-                        disabled={isPending}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() =>
-                          updateCartItemQuantityMutation.mutate({
-                            productId: item.product.id,
-                            quantity: item.quantity + 1,
-                          })
-                        }
-                        disabled={isPending}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <QuantitySelector
+                      id={item.product.id}
+                      quantity={item.quantity}
+                      onUpdateQuantity={(id: string, quantity: number) => {
+                        handleUpdateCartItemQuantity({
+                          productId: id,
+                          quantity,
+                        });
+                      }}
+                    ></QuantitySelector>
                   </TableCell>
                   <TableCell className="text-right">
                     {(item.product.price * item.quantity).toLocaleString()}đ
                   </TableCell>
                 </TableRow>
               ))}
-            {!isLoading &&
-              (!optimisticCart || optimisticCart.items.length === 0) && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <p className="text-center leading-10">Giỏ hàng trống</p>
-                  </TableCell>
-                </TableRow>
-              )}
+            {!isLoadingCart && (!cart || cart.items.length === 0) && (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <p className="text-center leading-10">Giỏ hàng trống</p>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
 

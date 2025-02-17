@@ -7,7 +7,7 @@ import MobileHeader from "./mobile-header";
 const Header = () => {
   const { account, cart } = useAppContext();
   return (
-    <div className="print:hidden w-full flex justify-center">
+    <div className="print:hidden w-full flex justify-center px-5">
       <DesktopHeader
         className="hidden lg:block"
         account={account}

@@ -1,6 +1,6 @@
 import prisma from '@/database'
-import { BloomFilterService } from '@/lb/bloom-filter'
-import { EntityError, StatusError } from '@/utils/errors'
+import RedisPlugin from '@/provider/redis'
+import { StatusError } from '@/utils/errors'
 import { createPairTokens } from '@/utils/jwt'
 import { Account, Session, SocialEnum } from '@prisma/client'
 import { OAuth2Client } from 'google-auth-library'
@@ -49,9 +49,9 @@ export abstract class SocialAuthService {
   }
 
   async checkEmailExist(email: string): Promise<boolean> {
-    const bloomFilter = BloomFilterService.getInstance()
-    const emailExist = await bloomFilter.check({ filterName: 'email', value: email })
-    return emailExist
+    // const emailExist = await bloomFilter.check({ filterName: 'email', value: email })
+    const result = await RedisPlugin.checkEmailInBloomFilter(email)
+    return result
   }
 
   async handleAccount({ email, fullname, avatar }: { email: string; fullname: string; avatar: string }) {

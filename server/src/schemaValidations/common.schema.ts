@@ -5,13 +5,13 @@ export enum Order {
   Desc = 'desc'
 }
 
-export const MessageRes = z
+export const MessageResponseSchema = z
   .object({
     message: z.string()
   })
   .strict()
 
-export type MessageResType = z.TypeOf<typeof MessageRes>
+export type MessageResponseSchemaType = z.TypeOf<typeof MessageResponseSchema>
 
 export const PaginationQuery = z.object({
   // positive: số dương

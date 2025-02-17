@@ -16,6 +16,7 @@ export const routePath = {
     productDetail: "/product-detail/",
     cart: "/cart",
     checkout: "/checkout",
+    orderConfirmation: "/checkout/order-confirmation",
 
     // private routes
     account: {

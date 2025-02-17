@@ -1,7 +1,6 @@
 import { PrismaErrorCode } from '@/constants/error-reference'
 import prisma from '@/database'
-import { BloomFilterService } from '@/lb/bloom-filter'
-import { redisInstance } from '@/provider/redis'
+import RedisPlugin from '@/provider/redis'
 import { LoginBodyType, RegisterBodyType } from '@/schemaValidations/auth.schema'
 import { comparePassword, hashPassword } from '@/utils/crypto'
 import { EntityError, isPrismaClientKnownRequestError, StatusError } from '@/utils/errors'
@@ -12,12 +11,7 @@ export default class AuthService {
   async createSession(account: Account) {
     const { accessToken, refreshToken } = createPairTokens({
       account: {
-        id: account.id,
-        email: account.email,
-        phoneNumber: account.phoneNumber,
-        fullname: account.fullname,
-        avatar: account.avatar,
-        role: account.role
+        id: account.id
       }
     })
 
@@ -37,9 +31,9 @@ export default class AuthService {
         - Thay vì phải kiểm tra trong db thì chỉ cần kiểm tra trong redis 
         - Sử dụng bloom filter để kiểm tra email và phoneNumber đã tồn tại hay chưa(xem trong docs)
       */
-      const bloomFilter = BloomFilterService.getInstance()
-      const emailExist = await bloomFilter.check({ filterName: 'email', value: data.email })
-      const phoneExist = await bloomFilter.check({ filterName: 'phoneNumber', value: data.phoneNumber })
+
+      const emailExist = await RedisPlugin.checkEmailInBloomFilter(data.email)
+      const phoneExist = await RedisPlugin.checkPhoneNumberInBloomFilter(data.phoneNumber)
 
       if (emailExist || phoneExist) {
         throw new Error('Email hoặc số điện thoại đã tồn tại!')
@@ -50,7 +44,18 @@ export default class AuthService {
           fullname: data.fullname,
           phoneNumber: data.phoneNumber,
           email: data.email,
-          password: hashedPassword
+          password: hashedPassword,
+          cart: {
+            items: [],
+            updatedAt: new Date()
+          },
+          role: 'USER',
+          shippingAddress: {
+            address: '',
+            district: '',
+            ward: '',
+            province: ''
+          }
         }
       })
 
@@ -59,9 +64,8 @@ export default class AuthService {
          - Giảm thời gian truy cập nếu có lượng đồng thời cao
          - Sử dụng bloom filter để tối ưu bộ nhớ sử dụng cho redis
      */
-      bloomFilter.add({ filterName: 'email', value: data.email })
-      bloomFilter.add({ filterName: 'phoneNumber', value: data.phoneNumber })
-      redisInstance!.set(account.email, 1)
+      await RedisPlugin.addEmailToBloomFilter(data.email)
+      await RedisPlugin.addPhoneNumberToBloomFilter(data.phoneNumber)
 
       const session = await this.createSession(account)
       return {

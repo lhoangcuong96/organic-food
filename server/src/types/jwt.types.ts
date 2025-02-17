@@ -1,10 +1,18 @@
 import { TokenType } from '@/constants/type'
-import { Account } from '@prisma/client'
 
 export type TokenTypeValue = (typeof TokenType)[keyof typeof TokenType]
 
+interface AccountJwtPayload {
+  id: string
+  email: string
+  role: string
+  fullname: string
+  avatar?: string | null
+  phoneNumber?: string | null
+}
+
 export interface TokenPayload {
-  account: Partial<Account>
+  account: AccountJwtPayload
   tokenType: TokenTypeValue
   exp: number
   iat: number

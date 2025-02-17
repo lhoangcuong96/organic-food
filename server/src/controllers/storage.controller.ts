@@ -1,4 +1,4 @@
-import { S3StorageService, StorageContext, StorageService } from '@/services/storage-service'
+import { S3StorageService, StorageContext, StorageService } from '@/services/storage.service'
 
 export default class StorageController {
   service

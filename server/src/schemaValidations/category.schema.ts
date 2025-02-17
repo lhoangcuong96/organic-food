@@ -5,10 +5,10 @@ import z from 'zod'
 export const MAX_CATEGORY_SAMPLE_IMAGES = 5
 
 export const CategoryImageSchema = z.object({
-  thumbnail: z.string().url().nullable().optional(),
+  thumbnail: z.string().url(),
   banner: z.string().url().nullable().optional(),
-  featured: z.string().url(),
-  sample: z.array(z.string().url()).max(MAX_CATEGORY_SAMPLE_IMAGES).min(1)
+  featured: z.string().url().nullable().optional(),
+  sample: z.array(z.string().url()).max(MAX_CATEGORY_SAMPLE_IMAGES).min(1).nullable().optional()
 })
 
 export const CreateCategoryBodySchema = z
@@ -16,8 +16,7 @@ export const CreateCategoryBodySchema = z
     name: z.string(),
     description: z.string().optional().nullable(),
     parent: z.string().optional().nullable(),
-    image: z.object(CategoryImageSchema.shape),
-    attributes: z.array(z.string())
+    image: z.object(CategoryImageSchema.shape)
   })
   .strict()
 
@@ -29,9 +28,16 @@ export const ListCategorySchema: z.ZodSchema = z.lazy(() =>
   z.object({
     id: z.string(),
     name: z.string(),
+    slug: z.string(),
+    description: z.string().optional().nullable(),
     image: CategoryImageSchema,
-    attributes: z.array(z.string()),
-    subCategories: z.array(ListCategorySchema).default([])
+    parent: z
+      .object({
+        id: z.string().optional().nullable(),
+        name: z.string().optional().nullable()
+      })
+      .nullable()
+      .optional()
   })
 )
 

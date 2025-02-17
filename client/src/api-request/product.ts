@@ -10,6 +10,7 @@ const productRequestApi = {
     return http.get(`/products/metrics`);
   },
   getProductDetail: (slug: string) => {
+    console.log(`/products/${slug}`, slug);
     return http.get<ProductDetailResponseType>(`/products/${slug}`);
   },
   getProducts: (params: ProductQueryType) => {

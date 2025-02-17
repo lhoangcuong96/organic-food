@@ -1,0 +1,26 @@
+model Order {
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId // MongoDB uses ObjectId @db.ObjectId
+    accountId       String          @map("userId") @db.ObjectId
+    account         Account         @relation(fields: [accountId], references: [id])
+    items           OrderItem[]
+    totalAmount     Float
+    shippingAddress ShippingAddress
+    shippingFee     Float
+    status          OrderStatus     @default(PENDING)
+    createdAt       DateTime        @default(now())
+    updatedAt       DateTime        @updatedAt
+}
+
+type OrderItem {
+    quantity  Int
+    price     Float
+    createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+    PENDING
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+}

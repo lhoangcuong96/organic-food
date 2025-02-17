@@ -1,34 +1,75 @@
 import envConfig from '@/config'
-import { BloomFilterService } from '@/lb/bloom-filter'
-import fastifyRedis, { FastifyRedis } from '@fastify/redis'
-import { FastifyInstance } from 'fastify'
+import { AccountMeType } from '@/schemaValidations/account.schema'
+import { Account } from '@prisma/client'
+import Redis from 'ioredis'
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    interface Global {
-      redis?: FastifyRedis
+const redisClient = new Redis(envConfig.REDIS_URL)
+
+async function setupBloomFilter() {
+  try {
+    // Check if filter exists (by trying BF.EXISTS)
+    const exists = await redisClient.call('BF.EXISTS', 'emails', 'test@example.com').catch(() => null)
+    // If the Bloom filter doesn't exist, create it
+    if (exists === null) {
+      console.log('Creating Bloom filter: emails, phone')
+      await redisClient.call('BF.RESERVE', 'emails', 0.01, 10000) // 1% false positive rate, 10k capacity
+      await redisClient.call('BF.ADD', 'email', 'test@example.com')
+
+      await redisClient.call('BF.RESERVE', 'phone', 0.01, 10000)
+    } else {
+      console.log('Bloom filter already exists')
     }
+  } catch (err) {
+    console.error('Error initializing Bloom filter:', err)
   }
 }
 
-export async function registerRedis(fastify: FastifyInstance) {
-  fastify
-    .register(fastifyRedis, {
-      url: envConfig.REDIS_URL
-    })
-    .after(() => {
-      ;(global as NodeJS.Global).redis = fastify.redis
-      // sử dụng lrucache để lưu trữ dữ liệu
-      // redis cloud không hỗ trợ những key này
-      // fastify.redis.config('SET', 'maxmemory', '20mb')
-      // fastify.redis.config('SET', 'maxmemory-policy', 'allkeys-lru')
-
-      // Sử dụng bloom filter để lưu trữ email và phoneNumber
-      const bloomFilter = new BloomFilterService(fastify)
-      bloomFilter.createBloomFilter({ filterName: 'email', expectedElements: 100000, falsePositiveRate: 0.001 })
-      bloomFilter.createBloomFilter({ filterName: 'phoneNumber', expectedElements: 100000, falsePositiveRate: 0.001 })
-    })
+async function addEmailToBloomFilter(email: string) {
+  await redisClient.call('BF.ADD', 'emails', email)
 }
 
-export const redisInstance = (global as NodeJS.Global).redis
+async function checkEmailInBloomFilter(email: string) {
+  const isExist: boolean = (await redisClient.call('BF.EXISTS', 'emails', email)) as boolean
+  return isExist
+}
+
+async function addPhoneNumberToBloomFilter(email: string) {
+  await redisClient.call('BF.ADD', 'emails', email)
+}
+
+async function checkPhoneNumberInBloomFilter(email: string) {
+  const isExist: boolean = (await redisClient.call('BF.EXISTS', 'emails', email)) as boolean
+  return isExist
+}
+
+async function cacheAccountInfo(user: AccountMeType) {
+  if (!user.id) {
+    throw new Error('User id is required')
+  }
+  await redisClient.set(`user:${user.id}`, JSON.stringify(user))
+}
+
+async function getAccountInfo(userId: string): Promise<AccountMeType | null> {
+  const user = await redisClient.get(`user:${userId}`)
+  return user ? JSON.parse(user) : null
+}
+
+async function invalidateAccountInfo(userId: string) {
+  await redisClient.del(`user:${userId}`)
+}
+
+// Initialize Bloom filter on startup
+setupBloomFilter()
+
+const RedisPlugin = {
+  redisClient,
+  addEmailToBloomFilter,
+  checkEmailInBloomFilter,
+  addPhoneNumberToBloomFilter,
+  checkPhoneNumberInBloomFilter,
+  cacheAccountInfo,
+  getAccountInfo,
+  invalidateAccountInfo
+}
+
+export default RedisPlugin

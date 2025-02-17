@@ -65,7 +65,10 @@ export function SignInForm() {
         throw new Error("Có lỗi xảy ra trong quá trình lấy giỏ hàng");
       }
       setCart(cart);
-
+      messageApi.success({
+        title: "Thành công",
+        description: "Đăng nhập thành công",
+      });
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("redirect")) {
         const redirectPath = urlParams.get("redirect");

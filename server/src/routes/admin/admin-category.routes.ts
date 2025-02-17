@@ -4,7 +4,7 @@ import {
   CreateCategoryBodyType,
   ListCategoryResponseSchema
 } from '@/schemaValidations/category.schema'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export function AdminCategoryRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -27,7 +27,7 @@ export function AdminCategoryRoutes(fastify: FastifyInstance, options: FastifyPl
   )
 
   fastify.post<{
-    Rely: MessageResType
+    Rely: MessageResponseSchemaType
     Body: CreateCategoryBodyType
   }>(
     '/',
@@ -35,7 +35,7 @@ export function AdminCategoryRoutes(fastify: FastifyInstance, options: FastifyPl
       schema: {
         body: CreateCategoryBodySchema,
         response: {
-          200: MessageRes
+          200: MessageResponseSchema
         }
       }
     },

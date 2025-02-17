@@ -1,5 +1,5 @@
 import { CreateCategoryBodyType } from '@/schemaValidations/category.schema'
-import AdminCategoryService from '@/services/admin/admin-category-service'
+import AdminCategoryService from '@/services/admin/admin-category.service'
 
 export default class AdminCategoryController {
   static async create(data: CreateCategoryBodyType) {

@@ -79,7 +79,7 @@ export default async function ProductDetail({
   }
 
   return (
-    <div className="flex flex-col w-full items-center justify-center h-full text-sm">
+    <div className="flex flex-col w-full items-center justify-center h-full text-sm font-medium">
       <AppBreadcrumb
         pageTitle={productDetail?.name || errorMessage}
         breadcrumbItems={[
@@ -114,7 +114,7 @@ export default async function ProductDetail({
                     </div>
                     <div className="my-6">
                       <ProductPromotions />
-                      <ProductTabs />
+                      <ProductTabs description={productDetail.description} />
                     </div>
                   </div>
                   <div className="lg:col-span-1">

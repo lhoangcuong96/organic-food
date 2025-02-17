@@ -1,18 +1,5 @@
 import { z } from "zod";
 
-/* Add product to cart*/
-export const AddProductToCartSchema = z
-  .object({
-    productId: z.string(),
-    quantity: z.number().int().positive(),
-  })
-  .strict();
-
-export type AddProductToCartRequestType = z.infer<
-  typeof AddProductToCartSchema
->;
-/* Add product to cart*/
-
 /* Get cart*/
 const CartItemSchema = z.object({
   quantity: z.number().int().positive(),
@@ -40,6 +27,28 @@ export const GetCartResponseSchema = z.object({
 export type CartType = z.TypeOf<typeof CartSchema>;
 export type GetCartResponseType = z.TypeOf<typeof GetCartResponseSchema>;
 /* Get cart*/
+
+/* Add product to cart*/
+export const AddProductToCartSchema = z
+  .object({
+    productId: z.string(),
+    quantity: z.number().int().positive(),
+  })
+  .strict();
+
+export const AddProductToCartResponseSchema = z.object({
+  data: CartSchema,
+  message: z.string(),
+});
+
+export type AddProductToCartRequestType = z.infer<
+  typeof AddProductToCartSchema
+>;
+export type AddProductToCartResponseType = z.infer<
+  typeof AddProductToCartResponseSchema
+>;
+
+/* Add product to cart*/
 
 /* Update cart*/
 export type UpdateCartRequestType = AddProductToCartRequestType;

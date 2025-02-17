@@ -1,42 +1,16 @@
-import prisma from '@/database'
 import { UpdateProfileBodyType } from '@/schemaValidations/account.schema'
-import { comparePassword, hashPassword } from '@/utils/crypto'
-import { StatusError } from '@/utils/errors'
+import { AccountService } from '@/services/account.service'
 
-export const updateMeController = async (accountId: string, body: UpdateProfileBodyType) => {
-  const account = prisma.account.update({
-    where: {
-      id: accountId
-    },
-    data: {
-      ...body
-    }
-  })
-  return account
-}
+export class AccountController {
+  static getMe = async (accountId: string) => {
+    return AccountService.getMe(accountId)
+  }
 
-export const changePasswordController = async (accountId: string, oldPassword: string, newPassword: string) => {
-  const account = await prisma.account.findUnique({ where: { id: accountId } })
-  if (!account) {
-    throw new StatusError({
-      message: 'Tài khoản không tồn tại',
-      status: 404
-    })
+  static updateMe = async (accountId: string, body: UpdateProfileBodyType) => {
+    return AccountService.updateMe(accountId, body)
   }
-  const isPasswordMatch = await comparePassword(oldPassword, account.password!)
-  if (!isPasswordMatch) {
-    throw new StatusError({
-      message: 'Mật khẩu cũ không đúng',
-      status: 400
-    })
+
+  static changePassword = async (accountId: string, oldPassword: string, newPassword: string) => {
+    return AccountService.changePassword(accountId, oldPassword, newPassword)
   }
-  const hashedPassword = await hashPassword(newPassword)
-  return await prisma.account.update({
-    where: {
-      id: accountId
-    },
-    data: {
-      password: hashedPassword
-    }
-  })
 }

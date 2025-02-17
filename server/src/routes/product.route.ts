@@ -1,6 +1,8 @@
 import ProductController from '@/controllers/product.controller'
 import {
+  ProductDetailParamsSchema,
   ProductDetailParamsType,
+  ProductDetailResponseSchema,
   ProductDetailResponseType,
   ProductDetailSchema,
   ProductListQuerySchema,
@@ -46,13 +48,14 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
     '/:slug',
     {
       schema: {
-        params: ProductDetailSchema,
+        params: ProductDetailParamsSchema,
         response: {
-          200: ProductDetailSchema
+          200: ProductDetailResponseSchema
         }
       }
     },
     async (request, reply) => {
+      console.log(request.params.slug)
       const product = await controller.getProductDetail(request.params.slug)
       reply.send({
         data: product,

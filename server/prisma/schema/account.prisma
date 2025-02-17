@@ -20,6 +20,23 @@ type SocialAccount {
     providerId String
 }
 
+type Cart {
+    items     CartItem[]
+    updatedAt DateTime
+}
+
+type CartItem {
+    productId String @db.ObjectId
+    quantity  Int
+}
+
+type ShippingAddress {
+    address  String
+    district String
+    ward     String
+    province String
+}
+
 model Account {
     id          String      @id @default(auto()) @map("_id") @db.ObjectId
     email       String      @unique
@@ -36,4 +53,10 @@ model Account {
     role        RoleType    @default(USER)
 
     providers SocialAccount[]
+
+    cart Cart
+
+    shippingAddress ShippingAddress
+
+    orders Order[]
 }

@@ -1,6 +1,7 @@
 import { http } from "@/lib/http";
 import {
   AddProductToCartRequestType,
+  AddProductToCartResponseType,
   GetCartResponseType,
   UpdateCartRequestType,
 } from "@/validation-schema/cart";
@@ -8,7 +9,7 @@ import { MessageResponseType } from "@/validation-schema/common";
 
 export const cartRequestApis = {
   addProductToCart: async (data: AddProductToCartRequestType) => {
-    return http.post<MessageResponseType>("/cart/add", data, {
+    return http.post<AddProductToCartResponseType>("/cart/add", data, {
       isPrivate: true,
     });
   },

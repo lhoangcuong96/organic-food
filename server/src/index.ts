@@ -14,11 +14,12 @@ import fastifyCookie from '@fastify/cookie'
 import cors from '@fastify/cors'
 import fastifyHelmet from '@fastify/helmet'
 import RateLimit from '@fastify/rate-limit'
+import fastifyStatic from '@fastify/static'
 import Fastify from 'fastify'
 import path from 'path'
-import { registerRedis } from './provider/redis'
 import adminRoutes from './routes/admin'
-import fastifyStatic from '@fastify/static'
+import { cartRoutes } from './routes/cart.route'
+import { CategoryRoutes } from './routes/category.routes'
 import StorageRoutes from './routes/storage.route'
 
 const fastify = Fastify({
@@ -29,9 +30,6 @@ const fastify = Fastify({
 const start = async () => {
   try {
     createFolder(path.resolve(envConfig.UPLOAD_FOLDER))
-
-    // Register redis
-    registerRedis(fastify)
 
     // Giới hạn số lượng requests của 1 IP
     fastify.register(RateLimit, {
@@ -80,6 +78,12 @@ const start = async () => {
     })
     fastify.register(productRoutes, {
       prefix: '/products'
+    })
+    fastify.register(cartRoutes, {
+      prefix: '/cart'
+    })
+    fastify.register(CategoryRoutes, {
+      prefix: '/category'
     })
     fastify.register(adminRoutes, {
       prefix: '/admin'

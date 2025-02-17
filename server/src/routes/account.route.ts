@@ -1,48 +1,48 @@
-import { changePasswordController, updateMeController } from '@/controllers/account.controller'
+import { AccountController } from '@/controllers/account.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
 import {
-  AccountRes,
-  AccountResType,
+  AccountMeResponseSchema,
+  AccountMeResponseType,
   ChangePasswordBody,
   ChangePasswordBodyType,
   UpdateProfileBodyType
 } from '@/schemaValidations/account.schema'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.addHook('preValidation', fastify.auth([requireLoggedHook]))
-  fastify.get<{ Reply: AccountResType }>(
+  fastify.get<{ Reply: AccountMeResponseType }>(
     '/me',
     {
       schema: {
         response: {
-          200: AccountRes
+          200: AccountMeResponseSchema
         }
       }
     },
     async (request, reply) => {
       reply.send({
-        data: request.account!,
+        data: await AccountController.getMe(request.account!.id),
         message: 'Lấy thông tin thành công'
       })
     }
   )
 
   fastify.put<{
-    Reply: AccountResType
+    Reply: AccountMeResponseType
     Body: UpdateProfileBodyType
   }>(
     '/me',
     {
       schema: {
         response: {
-          200: AccountRes
+          200: AccountMeResponseSchema
         }
       }
     },
     async (request, reply) => {
-      const result = await updateMeController(request.account!.id, request.body)
+      const result = await AccountController.updateMe(request.account!.id, request.body)
       reply.send({
         data: result,
         message: 'Cập nhật thông tin thành công'
@@ -50,18 +50,18 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     }
   )
 
-  fastify.post<{ Rely: MessageResType; Body: ChangePasswordBodyType }>(
+  fastify.post<{ Rely: MessageResponseSchemaType; Body: ChangePasswordBodyType }>(
     '/change-password',
     {
       schema: {
         body: ChangePasswordBody,
         response: {
-          200: MessageRes
+          200: MessageResponseSchema
         }
       }
     },
     async (request, reply) => {
-      await changePasswordController(request.account!.id, request.body.oldPassword, request.body.newPassword)
+      await AccountController.changePassword(request.account!.id, request.body.oldPassword, request.body.newPassword)
       reply.send({
         message: 'Đổi mật khẩu thành công'
       })

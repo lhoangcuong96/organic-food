@@ -11,11 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { locations } from "@/constants/locations";
 import { useAppContext } from "@/provider/app-provider";
+import { useState } from "react";
 
 export default function DeliveryInformation() {
   const { account } = useAppContext();
+  const [selectedProvince, setSelectedProvince] = useState<any | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<any | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
   const { shippingAddress } = account;
+
+  console.log(selectedProvince);
   return (
     <div className="lg:col-span-2 space-y-8">
       {/* Customer Information */}
@@ -64,37 +71,64 @@ export default function DeliveryInformation() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="province">Tỉnh thành</Label>
-              <Select>
+              <Select
+                onValueChange={(value) => {
+                  const province = locations.find((loc) => loc.label === value);
+                  setSelectedProvince(province);
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn tỉnh thành" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hanoi">Hà Nội</SelectItem>
-                  <SelectItem value="hcm">TP. Hồ Chí Minh</SelectItem>
+                  {locations.map((province) => (
+                    <SelectItem key={province.key} value={province.label}>
+                      {province.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <Label htmlFor="district">Quận huyện</Label>
-              <Select>
+              <Select
+                onValueChange={(value) => {
+                  const district = selectedProvince?.districts.find(
+                    (dis: any) => dis.label === value
+                  );
+                  setSelectedDistrict(district);
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn quận huyện" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="district1">Quận 1</SelectItem>
-                  <SelectItem value="district2">Quận 2</SelectItem>
+                  {selectedProvince &&
+                    selectedProvince.districts.map((district: any) => (
+                      <SelectItem key={district.key} value={district.label}>
+                        {district.label}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <Label htmlFor="ward">Phường xã</Label>
-              <Select>
+              <Select onValueChange={(value) => setSelectedWard(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn phường xã" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ward1">Phường 1</SelectItem>
-                  <SelectItem value="ward2">Phường 2</SelectItem>
+                  {selectedDistrict &&
+                    selectedDistrict.wards.map((ward: any) => (
+                      <SelectItem
+                        key={ward.key}
+                        value={ward.label}
+                        onClick={() => setSelectedWard(ward.label)}
+                      >
+                        {ward.label}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -112,15 +146,15 @@ export default function DeliveryInformation() {
       </div>
 
       {/* Shipping Method */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      {/* <div className="bg-white p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4">Vận chuyển</h2>
         <div className="bg-blue-50 p-4 rounded-md text-sm">
           Vui lòng nhập thông tin giao hàng
         </div>
-      </div>
+      </div> */}
 
       {/* Payment Method */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      {/* <div className="bg-white p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4">Thanh toán</h2>
         <RadioGroup defaultValue="cod">
           <div className="flex items-center space-x-2 border p-4 rounded-md">
@@ -128,7 +162,7 @@ export default function DeliveryInformation() {
             <Label htmlFor="cod">Thanh toán khi giao hàng (COD)</Label>
           </div>
         </RadioGroup>
-      </div>
+      </div> */}
     </div>
   );
 }

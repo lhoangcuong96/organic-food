@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function ProductTabs() {
+export function ProductTabs({ description }: { description: string }) {
   return (
     <div className="mt-8">
       <Tabs defaultValue="description">
@@ -10,21 +10,7 @@ export function ProductTabs() {
         </TabsList>
         <TabsContent value="description" className="mt-4">
           <div className="prose max-w-none leading-loose border border-lime-600 p-3 rounded-lg text-sm">
-            <p>
-              Rau an toàn 4KFarm với tiêu chí 4 KHÔNG, luôn ưu tiên bảo vệ sức
-              khỏe người tiêu dùng. Vị ngọt mát, thành phần dinh dưỡng cao đặc
-              biệt là hàm lượng sắt dồi dào, Rau Dền 4KFarm sẽ là món canh bổ
-              dưỡng hỗ trợ điều trị nhiều loại bệnh như táo bón, tiểu đường,
-              thiếu máu...
-            </p>
-            <h3>4KFarm là gì?</h3>
-            <p>
-              Rau dền 4KFarm là một loại rau xanh được các bà nội trợ bổ sung
-              trong thực đơn mỗi ngày. Ngoài vị ngọt mát và thành phần dinh
-              dưỡng cao, rau dền còn mang đến nhiều lợi ích như Chống táo bón,
-              điều trị tăng huyết áp, tốt cho bệnh nhân tiểu đường, ngừa ung
-              thư...
-            </p>
+            {description}
           </div>
         </TabsContent>
         <TabsContent value="guide">

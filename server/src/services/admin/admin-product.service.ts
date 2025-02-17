@@ -7,7 +7,7 @@ import {
 } from '@/schemaValidations/admin/product/admin-product-schema'
 import { InventoryService } from '../inventory.service'
 import { CreateVegetableProductBodySchema } from '@/schemaValidations/admin/product/vegetable-product.schema'
-import { CategoryService } from '../category-service'
+import { CategoryService } from '../category.service'
 
 const ProductValidationSchema: { [key: string]: any } = {
   vegetable: CreateVegetableProductBodySchema

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
+import { routePath } from "@/constants/routes";
 
 export default function OrderSummary() {
   const [deliveryCost, setDeliveryCost] = useState(0);
@@ -73,21 +75,26 @@ export default function OrderSummary() {
             </div>
             <div className="flex justify-between">
               <span>Phí vận chuyển</span>
-              <span>-</span>
+              <span>{deliveryCost.toLocaleString()}đ</span>
             </div>
             <div className="flex justify-between font-semibold pt-2 border-t">
               <span>Tổng cộng</span>
-              <span>{totalCost.toLocaleString()}đ</span>
+              <span>{(totalCost + deliveryCost).toLocaleString()}đ</span>
             </div>
           </div>
 
           <div className="space-y-4">
-            <Button className="w-full" size="lg">
-              ĐẶT HÀNG
-            </Button>
-            <Button variant="outline" className="w-full" size="lg">
-              Quay về giỏ hàng
-            </Button>
+            <Link href={routePath.customer.orderConfirmation}>
+              <Button className="w-full" size="lg">
+                ĐẶT HÀNG
+              </Button>
+            </Link>
+
+            <Link href={routePath.customer.cart}>
+              <Button variant="outline" className="w-full" size="lg">
+                Quay về giỏ hàng
+              </Button>
+            </Link>
           </div>
         </div>
       </Card>

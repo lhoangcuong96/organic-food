@@ -12,11 +12,6 @@ model Product {
     title       String? // Chứa nội dung mô tả ngắn gọn về sản phẩm để SEO
     description String? // Chứa nội dung mô tả chi tiết về sản phẩm để SEO
     slug        String       @unique
-    price       Float
-    stock       Int          @default(0)
-    sold        Int          @default(0)
-    sellerId    Int? // ID của người bán, có thể thêm mô hình User @unique nếu cần
-    seller      String? // Tên người bán
     image       ProductImage // Danh sách URL hình ảnh sản phẩm
     rating      Float? // Đánh giá trung bình
     reviewCount Int?         @default(0)
@@ -34,11 +29,7 @@ model Product {
     categoryId String   @db.ObjectId
     category   Category @relation(fields: [categoryId], references: [id])
 
-    // 1 product chỉ có 1 khuyến mãi, 
-    promotionIDs String[]    @db.ObjectId
-    promotions   Promotion[] @relation(fields: [promotionIDs], references: [id])
-
-    // 1 product chỉ có 1 inventory
-    inventory   Inventory @relation(fields: [inventoryId], references: [id])
-    inventoryId String    @unique @db.ObjectId
+    stock Int   @default(0)
+    price Float @default(0)
+    sold  Int   @default(0)
 }

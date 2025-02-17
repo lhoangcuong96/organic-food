@@ -1,9 +1,9 @@
-datasource db {
-    provider = "mongodb"
-    url      = env("database_url")
-}
-
 generator client {
     provider        = "prisma-client-js"
     previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("database_url")
 }

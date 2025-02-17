@@ -1,24 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Card as Card2 } from "@/components/ui/card";
-import { Heart, Minus, Plus } from "lucide-react";
-import { IoCartOutline } from "react-icons/io5";
+import { Heart } from "lucide-react";
 
-import Image from "next/image";
 import { ProductDetailType } from "@/validation-schema/product";
+import Image from "next/image";
+import AddToCart from "./add-to-cart";
 
 export function ProductInfo({ product }: { product: ProductDetailType }) {
   return (
     <div className="space-y-6">
       <ProductHeader productName={product.name} />
       <ProductPrice productPrice={product.price} />
-      <ProductQuantity />
-      <Button className="w-full bg-lime-600 hover:bg-lime-600 flex flex-row h-fit">
-        <IoCartOutline className="!w-8 !h-8"></IoCartOutline>
-        <div className="flex flex-col w-full">
-          <p className="font-semibold">THÊM VÀO GIỎ</p>
-          <p className="font-normal">Giao hàng tận nơi</p>
-        </div>
-      </Button>
+      <AddToCart id={product.id}></AddToCart>
       <ProductPromotions />
     </div>
   );
@@ -40,38 +33,13 @@ function ProductPrice({ productPrice }: { productPrice: number }) {
     <div className="bg-[#f3fce8] p-4 rounded-lg">
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-lime-600">
-          {productPrice}₫
+          {productPrice.toLocaleString()}₫
         </span>
-        <span className="text-sm line-through text-muted-foreground">
+        {/* <span className="text-sm line-through text-muted-foreground">
           14.000₫
-        </span>
+        </span> */}
       </div>
-      <div className="text-sm text-red-500">Tiết kiệm: 4100₫</div>
-    </div>
-  );
-}
-
-function ProductQuantity() {
-  return (
-    <div className="flex items-center gap-4">
-      <span className="text-sm">Số lượng:</span>
-      <div className="flex items-center border border-lime-600 p-1 rounded-sm">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 bg-lime-600 text-white"
-        >
-          <Minus className="w-4 h-4" />
-        </Button>
-        <input type="number" className="w-16 h-8 text-center border-none" />
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 bg-lime-600 text-white"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
-      </div>
+      {/* <div className="text-sm text-red-500">Tiết kiệm: 4100₫</div> */}
     </div>
   );
 }

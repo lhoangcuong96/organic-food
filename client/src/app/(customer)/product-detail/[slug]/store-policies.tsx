@@ -12,7 +12,7 @@ export function StorePolicies() {
         <PolicyItem
           icon={<Truck className="w-5 h-5 text-lime-600" />}
           title="Miễn phí vận chuyển"
-          description="Cho tất cả đơn hàng trong nội thành Hồ Chí Minh"
+          description="Cho tất cả đơn hàng trong phường Tân Hiệp thành phố Biên Hòa tỉnh Đồng Nai"
         />
         <PolicyItem
           icon={<RefreshCw className="w-5 h-5 text-lime-600" />}
@@ -22,7 +22,7 @@ export function StorePolicies() {
         <PolicyItem
           icon={<HeadphonesIcon className="w-5 h-5 text-lime-600" />}
           title="Hỗ trợ nhanh chóng"
-          description="Gọi Hotline: 19006/50 để được hỗ trợ ngay"
+          description="Gọi Hotline: 0975209429 để được hỗ trợ ngay"
         />
         <PolicyItem
           icon={<Package className="w-5 h-5 text-lime-600" />}

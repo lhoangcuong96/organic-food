@@ -2,6 +2,18 @@ import prisma from '@/database'
 import { Category } from '@prisma/client/'
 
 export class CategoryService {
+  static list = () => {
+    return prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        image: true
+      }
+    })
+  }
+
   static getCategoryBySlug = ({ slug, select }: { slug: string; select?: Array<keyof Category> }) => {
     const defaultFields: Array<keyof Category> = ['id', 'name', 'description', 'slug', 'image']
     const selectObject: Partial<Record<keyof Category, boolean>> = (select || defaultFields).reduce(

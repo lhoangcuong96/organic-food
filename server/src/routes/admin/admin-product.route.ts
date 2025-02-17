@@ -16,7 +16,7 @@ import {
   UpdateProductParamsSchema,
   UpdateProductParamsType
 } from '@/schemaValidations/admin/product/admin-product-schema'
-import { MessageRes, MessageResType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function AdminProductRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -95,7 +95,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
   fastify.put<{
     Params: UpdateProductParamsType
     Body: UpdateProductBodyType
-    Reply: MessageResType
+    Reply: MessageResponseSchemaType
   }>(
     '/:id',
     {
@@ -103,7 +103,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
         params: UpdateProductParamsSchema,
         body: UpdateProductBodySchema,
         response: {
-          200: MessageRes
+          200: MessageResponseSchema
         }
       },
       preValidation: fastify.auth([requireLoggedHook])
@@ -118,14 +118,14 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
 
   fastify.delete<{
     Params: DeleteProductParamsType
-    Reply: MessageResType
+    Reply: MessageResponseSchemaType
   }>(
     '/:id',
     {
       schema: {
         params: DeleteProductParamsSchema,
         response: {
-          200: MessageRes
+          200: MessageResponseSchema
         }
       },
       preValidation: fastify.auth([requireLoggedHook])

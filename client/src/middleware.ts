@@ -9,7 +9,8 @@ import { routePath } from "./constants/routes";
 import { RoleType } from "@prisma/client";
 
 // const privatePaths = [Object.values(routePath.customer.account)].flat();
-const publicPaths = ["/sign-in", "/sign-up"];
+const privateRoutes = ["account", "admin", "cart", "checkout"];
+const authRoutes = ["sign-in", "sign-up"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -18,52 +19,61 @@ export async function middleware(request: NextRequest) {
   const refreshToken = cookieStore.get("refreshToken");
   const role = cookieStore.get("role");
 
-  console.log("accessToken", accessToken);
-  if (publicPaths.some((path) => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-  if (!accessToken || !accessToken.value) {
-    return NextResponse.redirect(new URL(routePath.signIn, request.url));
-  }
-  if (pathname.includes("admin") && (!role || RoleType.ADMIN !== role.value)) {
-    return NextResponse.redirect(new URL(routePath.customer.home, request.url));
-  }
-  /*
+  if (accessToken) {
+    const previousUrl = request.headers.get("referer") || "/"; // Get the previous page or fallback to "/"
+    if (authRoutes.some((route) => pathname.includes(route))) {
+      return NextResponse.redirect(new URL(previousUrl));
+    }
+    if (
+      pathname.includes("admin") &&
+      (!role || RoleType.ADMIN !== role.value)
+    ) {
+      return NextResponse.redirect(
+        new URL(routePath.customer.home, request.url)
+      );
+    }
+
+    /*
       - Kiểm tra accessToken có hết hạn không
       - Nếu hết hạn thì refresh lại và update request header và tiếp tục
   */
-  const isExpired = isTokenExpired(accessToken.value);
-  if (isExpired && refreshToken?.value) {
-    const resp = await authApiRequest.refreshTokenFromNextServerToApiServer(
-      accessToken.value,
-      refreshToken.value
-    );
-    if (resp && resp.payload?.data.accessToken) {
-      // set lại request header với accessToken mới
-      const response = NextResponse.next();
-      response.cookies.set("accessToken", resp.payload.data.accessToken, {
-        path: "/",
-        httpOnly: true,
-        sameSite: "strict",
-      });
-      response.cookies.set("refreshToken", resp.payload.data.refreshToken, {
-        path: "/",
-        httpOnly: true,
-        sameSite: "strict",
-      });
-      return response;
-    } else {
+    const isExpired = isTokenExpired(accessToken.value);
+    if (isExpired && refreshToken?.value) {
+      const resp = await authApiRequest.refreshTokenFromNextServerToApiServer(
+        accessToken.value,
+        refreshToken.value
+      );
+      if (resp && resp.payload?.data.accessToken) {
+        // set lại request header với accessToken mới
+        const response = NextResponse.next();
+        response.cookies.set("accessToken", resp.payload.data.accessToken, {
+          path: "/",
+          httpOnly: true,
+          sameSite: "strict",
+        });
+        response.cookies.set("refreshToken", resp.payload.data.refreshToken, {
+          path: "/",
+          httpOnly: true,
+          sameSite: "strict",
+        });
+        return response;
+      } else {
+        return NextResponse.redirect(new URL(routePath.signOut, request.url));
+      }
+    }
+    if (isExpired && !refreshToken?.value) {
       return NextResponse.redirect(new URL(routePath.signOut, request.url));
     }
+  } else {
+    if (privateRoutes.some((path) => pathname.includes(path))) {
+      return NextResponse.redirect(new URL(routePath.signIn, request.url));
+    }
   }
-  if (isExpired && !refreshToken?.value) {
-    return NextResponse.redirect(new URL(routePath.signOut, request.url));
-  }
-  return NextResponse.redirect(new URL(routePath.customer.home, request.url));
+  return NextResponse.next();
 }
 
 export const config = {
   // bắt buộc phải rõ ra chứ không sử dụng spread operator được
   // matcher: [...privatePaths, ...publicPaths],
-  matcher: ["/sign-up", "/sign-in", "/me"],
+  matcher: ["/account", "/admin", "/cart", "/checkout"],
 };

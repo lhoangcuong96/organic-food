@@ -1,5 +1,5 @@
 import { ProductListQueryType } from '@/schemaValidations/product.schema'
-import { ProductService } from '@/services/product-service'
+import { ProductService } from '@/services/product.service'
 
 export default class ProductController {
   service: ProductService
