@@ -12,8 +12,6 @@ import { CartType } from "@/validation-schema/cart";
 import { cookies } from "next/headers";
 import "swiper/css";
 import "./globals.css";
-import { routePath } from "@/constants/routes";
-import { redirect } from "next/navigation";
 
 const quicksand = Quicksand({
   subsets: ["latin"],

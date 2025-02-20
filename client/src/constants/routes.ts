@@ -15,8 +15,11 @@ export const routePath = {
     storeLocations: "/store-locations",
     productDetail: "/product-detail/",
     cart: "/cart",
-    checkout: "/checkout",
-    orderConfirmation: "/checkout/order-confirmation",
+    checkout: {
+      deliveryInformation: "/checkout",
+      orderConfirmation: (orderCode: string) =>
+        `/checkout/order-confirmation/${orderCode}`,
+    },
 
     // private routes
     account: {
@@ -25,7 +28,7 @@ export const routePath = {
       address: "/account/address",
       vouchers: "/account/vouchers",
       shopVouchers: "/account/shop-vouchers",
-      changePassword: "/account/change-password",
+      changePassword: "/account/profile/change-password",
       changePhoneNumber: "/account/change-phone-number",
       changeEmail: "/account/change-email",
       notifications: "/account/notifications",

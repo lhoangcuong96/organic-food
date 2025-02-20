@@ -208,4 +208,26 @@ export class CartService {
       }
     })
   }
+
+  static clearCart = async (userId?: string) => {
+    if (!userId) {
+      throw new Error('Không tìm thấy user')
+    }
+    try {
+      const user = await prisma.account.update({
+        where: {
+          id: userId
+        },
+        data: {
+          cart: {
+            items: [],
+            updatedAt: new Date()
+          }
+        }
+      })
+    } catch (error) {
+      console.error('Error clearing cart:', error)
+      throw new Error('Failed to clear cart')
+    }
+  }
 }

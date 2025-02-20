@@ -4,30 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { routePath } from "@/constants/routes";
-import { AccountType } from "@/validation-schema/account";
-import { CartType } from "@/validation-schema/cart";
+import { useAppContext } from "@/provider/app-provider";
 import { Menu, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { menuItems } from "./menu";
 
-export default function MobileHeader({
-  className,
-  account,
-  cart,
-}: {
-  className?: string;
-  account?: AccountType;
-  cart?: CartType;
-}) {
+export default function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(cart);
+  const { cart, account } = useAppContext();
 
   return (
-    <header
-      className={`max-w-screen-xl w-full h-fit mt-5 relative z-50 ${className} font-medium`}
-    >
+    <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50 font-medium block lg:hidden">
       <div className="border-b bg-white">
         <div className="container mx-auto px-4 h-24">
           <div className="flex items-center justify-between h-16">
@@ -114,7 +103,7 @@ export default function MobileHeader({
               </SheetContent>
             </Sheet>
 
-            <Link href="/" className="flex items-center">
+            <Link href={routePath.customer.home} className="flex items-center">
               <Image
                 src="/images/logo-3.jpeg"
                 alt="Heo sạch nhà Thoa"
@@ -124,16 +113,18 @@ export default function MobileHeader({
             </Link>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-lime-600 relative"
-              >
-                <ShoppingBag className="!h-6 !w-6" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cart?.items.length}
-                </span>
-              </Button>
+              <Link href={routePath.customer.cart}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-lime-600 relative"
+                >
+                  <ShoppingBag className="!h-6 !w-6" />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cart?.items.length}
+                  </span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

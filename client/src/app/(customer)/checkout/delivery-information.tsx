@@ -1,168 +1,130 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { locations } from "@/constants/locations";
+import orderRequestApis from "@/api-request/order";
+import { locations, Period } from "@/constants/order";
+import { routePath } from "@/constants/routes";
+import useCart from "@/hooks/modules/use-cart";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import { useAppContext } from "@/provider/app-provider";
-import { useState } from "react";
+import { CartType } from "@/validation-schema/cart";
+import { CreateOrderBodyType } from "@/validation-schema/order";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Actions } from "./actions";
+import DeliveryDate from "./delivery-date";
+import DeliveryFormContent from "./delivery-form-content";
+import OrderSummary from "./order-summary";
 
-export default function DeliveryInformation() {
+const formSchema = z.object({
+  email: z.string().email("Email không hợp lệ"),
+  fullname: z.string().trim().min(2, "Họ và tên phải có ít nhất 2 ký tự"),
+  phoneNumber: z.string().refine((value) => {
+    const phoneRegex = /^(\+84|0)\d{9,10}$/;
+    return phoneRegex.test(value);
+  }, "Số điện thoại không hợp lệ"),
+  address: z.string().trim().min(5, "Địa chỉ phải có ít nhất 5 ký tự"),
+  province: z.string().min(1, "Tỉnh/Thành phố là bắt buộc"),
+  district: z.string().min(1, "Quận/Huyện là bắt buộc"),
+  ward: z.string().min(1, "Phường/Xã là bắt buộc"),
+  note: z.string().optional(),
+  shippingDate: z.date().optional().nullable(),
+  shippingPeriod: z.string().optional().nullable(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+export default function DeliveryInformation({ cart }: { cart: CartType }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { account } = useAppContext();
-  const [selectedProvince, setSelectedProvince] = useState<any | null>(null);
-  const [selectedDistrict, setSelectedDistrict] = useState<any | null>(null);
-  const [selectedWard, setSelectedWard] = useState<string | null>(null);
-  const { shippingAddress } = account;
+  const { setCart } = useCart();
+  const { messageApi } = useHandleMessage();
+  const router = useRouter();
 
-  console.log(selectedProvince);
+  const methods = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: account?.email || "",
+      fullname: account?.fullname || "",
+      phoneNumber: account?.phoneNumber || "",
+      address: account?.shippingAddress?.address || "",
+      province: account?.shippingAddress?.province || locations[0].label || "",
+      district:
+        account?.shippingAddress?.district ||
+        locations[0].districts[0].label ||
+        "",
+      ward: account?.shippingAddress?.ward || "",
+      shippingDate: new Date(),
+      shippingPeriod: Period.MORNING,
+      note: "",
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      setIsLoading(true);
+      const body: CreateOrderBodyType = {
+        items:
+          cart?.items.map((item) => ({
+            productId: item.product.id,
+            quantity: item.quantity,
+          })) || [],
+        deliveryInformation: {
+          recipientFullname: data.fullname,
+          recipientPhoneNumber: data.phoneNumber,
+          recipientEmail: data.email,
+          recipientAddress: {
+            address: data.address,
+            ward: data.ward,
+            district: data.district,
+            province: data.province,
+          },
+          shippingFee: 0,
+          shippingDate: data.shippingDate,
+          shippingPeriod: data.shippingPeriod,
+          note: data.note,
+        },
+      };
+      const response = await orderRequestApis.createOrder(body);
+      if (!response.payload) throw new Error("Có lỗi xảy ra khi tạo đơn hàng");
+      const order = response.payload.data;
+      setCart({
+        items: [],
+        updatedAt: new Date(),
+      });
+      router.push(
+        routePath.customer.checkout.orderConfirmation(order.orderCode)
+      );
+    } catch (error) {
+      messageApi.error({
+        error: (error as Error).message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setCart(cart);
+  }, [cart]);
   return (
-    <div className="lg:col-span-2 space-y-8">
-      {/* Customer Information */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Thông tin nhận hàng</h2>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="Email"
-              defaultValue={account?.email}
-            />
-          </div>
-          <div>
-            <Label htmlFor="name">Họ và tên</Label>
-            <Input
-              id="name"
-              placeholder="Họ và tên"
-              defaultValue={account?.fullname}
-            />
-          </div>
-          <div>
-            <Label htmlFor="phone">Số điện thoại</Label>
-            <div className="flex">
-              <Select defaultValue="+84">
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue placeholder="+84" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="+84">+84</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                id="phone"
-                placeholder="Số điện thoại"
-                className="flex-1 ml-2"
-                defaultValue={account?.phoneNumber || ""}
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="address">Địa chỉ</Label>
-            <Input id="address" placeholder="Địa chỉ" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="province">Tỉnh thành</Label>
-              <Select
-                onValueChange={(value) => {
-                  const province = locations.find((loc) => loc.label === value);
-                  setSelectedProvince(province);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn tỉnh thành" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((province) => (
-                    <SelectItem key={province.key} value={province.label}>
-                      {province.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="district">Quận huyện</Label>
-              <Select
-                onValueChange={(value) => {
-                  const district = selectedProvince?.districts.find(
-                    (dis: any) => dis.label === value
-                  );
-                  setSelectedDistrict(district);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn quận huyện" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedProvince &&
-                    selectedProvince.districts.map((district: any) => (
-                      <SelectItem key={district.key} value={district.label}>
-                        {district.label}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="ward">Phường xã</Label>
-              <Select onValueChange={(value) => setSelectedWard(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn phường xã" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedDistrict &&
-                    selectedDistrict.wards.map((ward: any) => (
-                      <SelectItem
-                        key={ward.key}
-                        value={ward.label}
-                        onClick={() => setSelectedWard(ward.label)}
-                      >
-                        {ward.label}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="!m-0 flex justify-end">
-            <Button variant="link" className="p-0 text-lime-600 underline">
-              Lưu địa chỉ
-            </Button>
-          </div>
-          <div>
-            <Label htmlFor="note">Ghi chú</Label>
-            <Input id="note" placeholder="Ghi chú" />
-          </div>
+    <FormProvider {...methods}>
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className="grid gap-8 lg:grid-cols-3"
+      >
+        <div className="lg:col-span-2 ">
+          <DeliveryFormContent />
         </div>
-      </div>
-
-      {/* Shipping Method */}
-      {/* <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Vận chuyển</h2>
-        <div className="bg-blue-50 p-4 rounded-md text-sm">
-          Vui lòng nhập thông tin giao hàng
+        <div className="grid gap-4">
+          <OrderSummary />
+          <DeliveryDate />
+          <Actions isLoading={isLoading} />
         </div>
-      </div> */}
-
-      {/* Payment Method */}
-      {/* <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Thanh toán</h2>
-        <RadioGroup defaultValue="cod">
-          <div className="flex items-center space-x-2 border p-4 rounded-md">
-            <RadioGroupItem value="cod" id="cod" />
-            <Label htmlFor="cod">Thanh toán khi giao hàng (COD)</Label>
-          </div>
-        </RadioGroup>
-      </div> */}
-    </div>
+      </form>
+    </FormProvider>
   );
 }

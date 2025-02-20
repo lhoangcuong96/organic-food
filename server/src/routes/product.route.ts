@@ -12,7 +12,7 @@ import {
 } from '@/schemaValidations/product.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
-export default async function productRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+export default async function ProductRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const controller = new ProductController()
   fastify.get<{
     Reply: ProductListResType
@@ -55,7 +55,6 @@ export default async function productRoutes(fastify: FastifyInstance, options: F
       }
     },
     async (request, reply) => {
-      console.log(request.params.slug)
       const product = await controller.getProductDetail(request.params.slug)
       reply.send({
         data: product,

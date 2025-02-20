@@ -1,20 +1,34 @@
 model Order {
-    id              String          @id @default(auto()) @map("_id") @db.ObjectId // MongoDB uses ObjectId @db.ObjectId
-    accountId       String          @map("userId") @db.ObjectId
-    account         Account         @relation(fields: [accountId], references: [id])
-    items           OrderItem[]
-    totalAmount     Float
-    shippingAddress ShippingAddress
-    shippingFee     Float
-    status          OrderStatus     @default(PENDING)
-    createdAt       DateTime        @default(now())
-    updatedAt       DateTime        @updatedAt
+    id                  String              @id @default(auto()) @map("_id") @db.ObjectId // MongoDB uses ObjectId @db.ObjectId
+    orderCode           String              @unique
+    accountId           String              @db.ObjectId
+    account             Account             @relation(fields: [accountId], references: [id])
+    items               OrderItem[]
+    subtotal            Float
+    totalAmount         Float
+    deliveryInformation DeliveryInformation
+    status              OrderStatus         @default(PENDING)
+    createdAt           DateTime            @default(now())
+    updatedAt           DateTime            @updatedAt
+}
+
+type DeliveryInformation {
+    recipientFullname    String
+    recipientPhoneNumber String
+    recipientEmail       String?
+    recipientAddress     ShippingAddress
+    shippingFee          Float
+    shippingDate         DateTime?
+    shippingPeriod       String?
+    note                 String?
 }
 
 type OrderItem {
-    quantity  Int
-    price     Float
-    createdAt DateTime @default(now())
+    productId       String
+    productQuantity Int
+    productPrice    Float
+    productImage    String
+    productName     String
 }
 
 enum OrderStatus {

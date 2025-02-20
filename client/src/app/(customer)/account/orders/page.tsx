@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Metadata } from "next";
 import { Suspense } from "react";
-import ProfileContent from "./profile-content";
+import OrdersTable from "./orders-table";
 
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
@@ -12,16 +12,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export default async function Profile() {
   return (
-    <Card className="w-full mx-auto px-4 :py-2 sm:px-8 h-fit rounded-sm">
+    <Card className="w-full mx-auto lg:py-2 lg:px-8 h-fit rounded-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Hồ Sơ Của Tôi</CardTitle>
+        <CardTitle className="text-2xl">Đơn hàng của bạn</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Quản lý thông tin hồ sơ để bảo mật tài khoản
+          Quản lý thông tin đơn hàng
         </p>
       </CardHeader>
       <CardContent>
         <Suspense fallback="...Loading">
-          <ProfileContent></ProfileContent>
+          <OrdersTable></OrdersTable>
         </Suspense>
       </CardContent>
     </Card>

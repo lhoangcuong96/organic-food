@@ -99,11 +99,11 @@ export default function UpdateProfileForm({
   };
   return (
     <form
-      className="flex flex-col md:flex-row gap-8"
+      className="flex flex-col-reverse md:flex-row gap-8"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex-1 space-y-8">
-        <div className="grid grid-cols-[100px_auto] gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label htmlFor="fullname" className="mt-2">
             Họ và tên
           </Label>
@@ -127,7 +127,7 @@ export default function UpdateProfileForm({
             }}
           />
         </div>
-        <div className="grid grid-cols-[100px_auto] items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label htmlFor="email" className="">
             Email
           </Label>
@@ -139,7 +139,7 @@ export default function UpdateProfileForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-[100px_auto] items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label htmlFor="phone" className="">
             Số điện thoại
           </Label>
@@ -150,7 +150,7 @@ export default function UpdateProfileForm({
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-[100px_auto] items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label htmlFor="password" className="">
             Mật khẩu
           </Label>
@@ -162,7 +162,7 @@ export default function UpdateProfileForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-[100px_auto] items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label className="w-28">Giới tính</Label>
           <RadioGroup
             className="flex gap-4"
@@ -191,7 +191,7 @@ export default function UpdateProfileForm({
           </RadioGroup>
         </div>
 
-        <div className="grid grid-cols-[100px_auto] gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-[100px_auto] gap-2">
           <Label htmlFor="birthday" className="mt-2">
             Ngày sinh
           </Label>
@@ -223,7 +223,10 @@ export default function UpdateProfileForm({
           </div>
         </div>
 
-        <DefaultButton className="mt-6" disabled={isLoading}>
+        <DefaultButton
+          className="mt-6 justify-self-center md:justify-self-start"
+          disabled={isLoading}
+        >
           {isLoading ? (
             <p className="loading-animation">Đang cập nhật</p>
           ) : (

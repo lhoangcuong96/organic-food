@@ -44,6 +44,35 @@ const loggedProfileItems: MenuProps[] = [
     icon: <CgProfile className="!text-lg" />,
   },
   {
+    label: (
+      <Link href={routePath.customer.account.orders}>Đơn hàng của bạn</Link>
+    ),
+    key: routePath.admin.home,
+    icon: <FaShoppingBasket className="!text-lg" />,
+  },
+  {
+    label: (
+      <Link href={routePath.customer.account.changePassword}>
+        Thay đổi mật khẩu
+      </Link>
+    ),
+    key: routePath.customer.account.changePassword,
+    icon: <MdOutlinePassword className="!text-lg" />,
+  },
+  {
+    label: <Link href={routePath.signOut}>Đăng xuất</Link>,
+    key: routePath.signOut,
+    icon: <RiLoginBoxLine className="!text-lg" />,
+  },
+];
+
+const adminProfileItems: MenuProps[] = [
+  {
+    label: <Link href={routePath.customer.account.profile}>Tài khoản</Link>,
+    key: routePath.signIn,
+    icon: <CgProfile className="!text-lg" />,
+  },
+  {
     label: <Link href={routePath.admin.home}>Quản lý shop</Link>,
     key: routePath.admin.home,
     icon: <FaShoppingBasket className="!text-lg" />,
@@ -69,6 +98,12 @@ export default function ProfileDropdown({
 }: {
   account: Partial<Account> | undefined;
 }) {
+  const isAdmin = account?.role === "ADMIN";
+  const items = isAdmin
+    ? adminProfileItems
+    : account
+    ? loggedProfileItems
+    : unLoggedProfileItems;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -78,27 +113,19 @@ export default function ProfileDropdown({
         ></DefaultButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {account ? (
+        {account && (
           <>
             <DropdownMenuLabel>Hi, {account.fullname}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {loggedProfileItems?.map((item) => {
-              return (
-                <DropdownMenuItem key={item.key}>
-                  {item.icon} {item.label}
-                </DropdownMenuItem>
-              );
-            })}
           </>
-        ) : (
-          unLoggedProfileItems?.map((item) => {
-            return (
-              <DropdownMenuItem key={item.key}>
-                {item.icon} {item.label}
-              </DropdownMenuItem>
-            );
-          })
         )}
+        {items?.map((item) => {
+          return (
+            <DropdownMenuItem key={item.key}>
+              {item.icon} {item.label}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

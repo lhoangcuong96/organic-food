@@ -9,7 +9,6 @@ export class SocialAuthServiceFactory {
   static registry: Record<string, any> = {}
   service
   constructor(type: SocialEnum) {
-    console.log(type, SocialAuthServiceFactory.registry)
     const serviceType = SocialAuthServiceFactory.registry[type]
     if (!serviceType) {
       throw new Error('Invalid social type')

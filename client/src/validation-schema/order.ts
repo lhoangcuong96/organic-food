@@ -1,4 +1,4 @@
-import z from 'zod'
+import z from "zod";
 
 const OrderSchema = z.object({
   id: z.string(),
@@ -10,7 +10,7 @@ const OrderSchema = z.object({
       productQuantity: z.number(),
       productPrice: z.number(),
       productName: z.string(),
-      productImage: z.string()
+      productImage: z.string(),
     })
   ),
   deliveryInformation: z.object({
@@ -21,70 +21,72 @@ const OrderSchema = z.object({
       address: z.string(),
       ward: z.string(),
       district: z.string(),
-      province: z.string()
+      province: z.string(),
     }),
     shippingFee: z.number(),
     shippingDate: z.union([z.string(), z.date()]).optional().nullable(),
     shippingPeriod: z.string().optional().nullable(),
-    note: z.string().optional().nullable()
+    note: z.string().optional().nullable(),
   }),
   subtotal: z.number(),
   totalAmount: z.number(),
-  createdAt: z.date()
-})
+  createdAt: z.date(),
+});
+
+export type OrderType = z.TypeOf<typeof OrderSchema>;
 
 /* Create Order */
 export const CreateOrderBodySchema = OrderSchema.pick({
-  deliveryInformation: true
+  deliveryInformation: true,
 }).extend({
   items: z.array(
     z.object({
       productId: z.string(),
-      quantity: z.number()
+      quantity: z.number(),
     })
-  )
-})
+  ),
+});
 
 export const CreateOrderResponseSchema = z
   .object({
     data: OrderSchema,
-    message: z.string()
+    message: z.string(),
   })
-  .strip()
+  .strip();
 
-export type CreateOrderBodyType = z.TypeOf<typeof CreateOrderBodySchema>
-export type CreateOrderResponseType = z.TypeOf<typeof CreateOrderResponseSchema>
+export type CreateOrderBodyType = z.TypeOf<typeof CreateOrderBodySchema>;
+export type CreateOrderResponseType = z.TypeOf<
+  typeof CreateOrderResponseSchema
+>;
 /* Create Order */
 
 /* Get Order */
 export const GetOrderParamSchema = z
   .object({
-    orderCode: z.string()
+    orderCode: z.string(),
   })
-  .strip()
+  .strip();
 
-export const GetOrderDataSchema = OrderSchema.omit({
-  createdAt: true
-})
+export const GetOrderDataSchema = OrderSchema;
 
 export const GetOrderResponseSchema = z
   .object({
     data: GetOrderDataSchema,
-    message: z.string()
+    message: z.string(),
   })
-  .strip()
+  .strip();
 
-export type GetOrderDataType = z.TypeOf<typeof GetOrderDataSchema>
-export type GetOrderResponseType = z.TypeOf<typeof GetOrderResponseSchema>
+export type GetOrderDataType = z.TypeOf<typeof GetOrderDataSchema>;
+export type GetOrderResponseType = z.TypeOf<typeof GetOrderResponseSchema>;
 /* Get Order */
 
 /* Get List Orders */
 export const GetListOrdersQuerySchema = z
   .object({
     page: z.string().optional().nullable(),
-    limit: z.string().optional().nullable()
+    limit: z.string().optional().nullable(),
   })
-  .strip()
+  .strip();
 
 export const GetListOrderDataSchema = OrderSchema.pick({
   id: true,
@@ -92,16 +94,18 @@ export const GetListOrderDataSchema = OrderSchema.pick({
   status: true,
   items: true,
   totalAmount: true,
-  createdAt: true
-}).strip()
+  createdAt: true,
+});
 
 export const GetListOrdersResponseSchema = z.object({
   data: z.array(GetListOrderDataSchema),
-  message: z.string()
-})
+  message: z.string(),
+});
 
-export type GetListOrdersQueryType = z.TypeOf<typeof GetListOrdersQuerySchema>
-export type GetListOrderDataType = z.TypeOf<typeof GetListOrderDataSchema>
-export type GetListOrdersResponseType = z.TypeOf<typeof GetListOrdersResponseSchema>
+export type GetListOrdersQueryType = z.TypeOf<typeof GetListOrdersQuerySchema>;
+export type GetListOrderDataType = z.TypeOf<typeof GetListOrderDataSchema>;
+export type GetListOrdersResponseType = z.TypeOf<
+  typeof GetListOrdersResponseSchema
+>;
 
 /* Get List Orders */

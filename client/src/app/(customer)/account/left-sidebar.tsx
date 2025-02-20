@@ -27,13 +27,13 @@ type MenuItem = {
   subItems?: { label: string; url: string; key: string }[];
 };
 
-const menuItems: MenuItem[] = [
+export const accountMenuItems: MenuItem[] = [
   { icon: Home, label: "Trang chủ", url: routePath.customer.home, key: "home" },
   {
     icon: User,
     label: "Tài khoản của tôi",
     url: "",
-    key: "account",
+    key: "profile",
     subItems: [
       {
         label: "Hồ sơ",
@@ -65,7 +65,7 @@ const menuItems: MenuItem[] = [
   },
   {
     icon: ShoppingBag,
-    label: "Đơn mua",
+    label: "Đơn hàng",
     url: routePath.customer.account.orders,
     key: "orders",
   },
@@ -87,19 +87,19 @@ export function LeftSidebar() {
   const { account } = useAppContext();
   const router = useRouter();
   const [expandedItem, setExpandedItem] = useState<string | null>(
-    menuItems.find((item) => location.pathname.includes(item.key))?.label ||
-      null
+    accountMenuItems.find((item) => location.pathname.includes(item.key))
+      ?.label || null
   );
 
   useEffect(() => {
     setExpandedItem(
-      menuItems.find((item) => location.pathname.includes(item.key))?.label ||
-        null
+      accountMenuItems.find((item) => location.pathname.includes(item.key))
+        ?.label || null
     );
   }, [router]);
 
   return (
-    <div className="w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">
+    <div className="hidden lg:block w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">
       <div className="grid grid-cols-[max-content_auto] items-center space-x-3 mb-8">
         <Avatar className="w-12 h-12 relative ">
           {account?.avatar ? (
@@ -124,14 +124,14 @@ export function LeftSidebar() {
         </div>
       </div>
       <nav>
-        {menuItems.map((item, index) => {
-          const isParentActive = window.location.pathname.includes(item.key);
+        {accountMenuItems.map((item, index) => {
+          const isActive = window.location.pathname.includes(item.key);
           return (
             <div key={index}>
               <div
                 className={cn(
                   "!text-gray-700 no-underline cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 hover:text-lime-600",
-                  isParentActive && "!text-lime-600"
+                  isActive && "!text-lime-600"
                 )}
                 onClick={() => {
                   if (item.url) {
@@ -165,16 +165,15 @@ export function LeftSidebar() {
                 {item.subItems && expandedItem === item.label && (
                   <div className="ml-9 mb-2 ">
                     {item.subItems.map((subItem, subIndex) => {
-                      const isChildActive = window.location.pathname.includes(
-                        subItem.key
-                      );
+                      const isSubActive =
+                        window.location.pathname === subItem.url;
                       return (
                         <a
                           key={subIndex}
                           href={subItem.url}
                           className={cn(
                             "block px-4 py-2 rounded-lg mb-1 text-sm text-gray-600 hover:text-lime-600",
-                            isChildActive && "text-lime-600"
+                            isSubActive && "text-lime-600"
                           )}
                         >
                           {subItem.label}

@@ -14,7 +14,7 @@ export const accountSchema = z.object({
     .object({
       address: z.string(),
       district: z.string(),
-      commune: z.string(),
+      ward: z.string(),
       province: z.string(),
     })
     .optional(),

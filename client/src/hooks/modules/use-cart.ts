@@ -125,6 +125,7 @@ export default function useCart() {
 
   return {
     cart,
+    setCart,
     isLoadingCart,
     total,
     countItems,

@@ -16,24 +16,14 @@ import { routePath } from "@/constants/routes";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
-import { AccountType } from "@/validation-schema/account";
+import { useAppContext } from "@/provider/app-provider";
 import ProfileDropdown from "../profile-dropdown";
 import Menu from "./menu";
-import { CartType } from "@/validation-schema/cart";
 
-export default function DesktopHeader({
-  className,
-  account,
-  cart,
-}: {
-  className?: string;
-  account?: AccountType;
-  cart?: CartType;
-}) {
+export default function DesktopHeader() {
+  const { cart, account } = useAppContext();
   return (
-    <header
-      className={`max-w-screen-xl w-full h-fit mt-5 relative z-50 ${className}`}
-    >
+    <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50 hidden lg:block">
       <div className="grid grid-cols-[max-content_auto_max-content] items-center gap-4">
         <Link href={routePath.customer.home}>
           <Image

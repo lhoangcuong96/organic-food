@@ -112,3 +112,24 @@ export const locations = [
     ],
   },
 ];
+
+export enum Period {
+  MORNING = "morning",
+  AFTERNOON = "afternoon",
+  EVENING = "evening",
+}
+
+export const periodOptions = [
+  { label: "Sáng", value: Period.MORNING },
+  { label: "Chiều", value: Period.AFTERNOON },
+  { label: "Tối", value: Period.EVENING },
+];
+
+export const orderStatusEnum = {
+  PENDING: "Đang chờ xử lý",
+  PROCESSING: "Đang xử lý",
+  DELIVERING: "Đang giao hàng",
+  DELIVERED: "Đang giao hàng",
+  CANCELLED: "Đã hủy",
+  COMPLETED: "Đã hoàn thành",
+};

@@ -18,9 +18,11 @@ import fastifyStatic from '@fastify/static'
 import Fastify from 'fastify'
 import path from 'path'
 import adminRoutes from './routes/admin'
-import { cartRoutes } from './routes/cart.route'
+import { CartRoutes } from './routes/cart.route'
 import { CategoryRoutes } from './routes/category.routes'
+import OrderRoutes from './routes/order.route'
 import StorageRoutes from './routes/storage.route'
+import ProductRoutes from '@/routes/product.route'
 
 const fastify = Fastify({
   logger: true
@@ -76,11 +78,14 @@ const start = async () => {
     fastify.register(staticRoutes, {
       prefix: '/static'
     })
-    fastify.register(productRoutes, {
+    fastify.register(ProductRoutes, {
       prefix: '/products'
     })
-    fastify.register(cartRoutes, {
+    fastify.register(CartRoutes, {
       prefix: '/cart'
+    })
+    fastify.register(OrderRoutes, {
+      prefix: '/order'
     })
     fastify.register(CategoryRoutes, {
       prefix: '/category'

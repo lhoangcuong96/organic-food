@@ -12,7 +12,7 @@ import {
 import { MessageResponseSchema } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify'
 
-export function cartRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+export function CartRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.addHook('preHandler', fastify.auth([requireLoggedHook]))
   fastify.post(
     '/add',
