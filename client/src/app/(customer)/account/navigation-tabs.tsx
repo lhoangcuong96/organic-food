@@ -6,13 +6,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { accountMenuItems } from "./left-sidebar";
+import { AccountItems } from "./left-sidebar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function NavigationTabs() {
+  const pathName = usePathname();
   return (
-    <div className="flex gap-3 flex-wrap overflow-x-auto text-sm lg:hidden">
-      {accountMenuItems.map((item) => {
-        const isActive = window.location.pathname.includes(item.key);
+    <div
+      key={pathName}
+      className="flex gap-3 flex-wrap overflow-x-auto text-sm lg:hidden"
+    >
+      {AccountItems.map((item) => {
+        const isActive = pathName.includes(item.key);
         const hasChildren = item.subItems && item.subItems.length > 0;
         if (hasChildren) {
           return (
@@ -38,7 +44,7 @@ export default function NavigationTabs() {
                     const isSubActive =
                       window.location.pathname === subItem.url;
                     return (
-                      <a
+                      <Link
                         key={subIndex}
                         href={subItem.url}
                         className={cn(
@@ -47,7 +53,7 @@ export default function NavigationTabs() {
                         )}
                       >
                         {subItem.label}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -56,19 +62,20 @@ export default function NavigationTabs() {
           );
         }
         return (
-          <button
-            key={item.key}
-            className={cn(
-              "flex gap-2 items-center px-2 py-1 text-sm font-medium transition-all whitespace-nowrap",
-              "border-b-2 hover:text-primary focus:outline-none focus:!ring-0 focus-visible:ring-0",
-              isActive
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:border-primary/50"
-            )}
-          >
-            {item.icon && <item.icon className="!w-5 !h-5"></item.icon>}
-            {item.label}
-          </button>
+          <Link href={item.url} key={item.key}>
+            <button
+              className={cn(
+                "flex gap-2 items-center px-2 py-1 text-sm font-medium transition-all whitespace-nowrap",
+                "border-b-2 hover:text-primary focus:outline-none focus:!ring-0 focus-visible:ring-0",
+                isActive
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:border-primary/50"
+              )}
+            >
+              {item.icon && <item.icon className="!w-5 !h-5"></item.icon>}
+              {item.label}
+            </button>
+          </Link>
         );
       })}
     </div>

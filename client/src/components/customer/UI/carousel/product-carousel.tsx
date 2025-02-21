@@ -119,7 +119,7 @@ export function ProductCarousel({
             ref={swiperRef}
             modules={[Navigation, Pagination, Scrollbar, A11y]}
             spaceBetween={15}
-            slidesPerView={5}
+            slidesPerView={"auto"}
             navigation
             pagination={{ clickable: true }}
             scrollbar={{ draggable: true }}

@@ -1,12 +1,18 @@
 import prisma from '@/database'
 import RedisPlugin from '@/provider/redis'
-import { AccountMeSchema, AccountMeType, UpdateProfileBodyType } from '@/schemaValidations/account.schema'
+import {
+  AccountSchema,
+  AccountType,
+  ShippingAddressType,
+  UpdateProfileBodyType,
+  UpdateShippingAddressBodyType
+} from '@/schemaValidations/account.schema'
 import { comparePassword, hashPassword } from '@/utils/crypto'
 import { StatusError } from '@/utils/errors'
 export class AccountService {
   static getMe = async (accountId: string) => {
     const cachedAccount = await RedisPlugin.getAccountInfo(accountId)
-    let account: AccountMeType | null = null
+    let account: AccountType | null = null
     if (!cachedAccount) {
       account = await prisma.account.findUnique({
         where: { id: accountId },
@@ -46,7 +52,21 @@ export class AccountService {
         ...body
       }
     })
-    const updatedAccount = AccountMeSchema.parse(account)
+    const updatedAccount = AccountSchema.parse(account)
+    await RedisPlugin.cacheAccountInfo(updatedAccount)
+    return updatedAccount
+  }
+
+  static updateShippingAddress = async (accountId: string, body: UpdateShippingAddressBodyType) => {
+    const account = await prisma.account.update({
+      where: {
+        id: accountId
+      },
+      data: {
+        shippingAddress: body
+      }
+    })
+    const updatedAccount = AccountSchema.parse(account)
     await RedisPlugin.cacheAccountInfo(updatedAccount)
     return updatedAccount
   }

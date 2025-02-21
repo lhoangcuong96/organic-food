@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { routePath } from "@/constants/routes";
 import { Apple, Leaf, ShieldCheck } from "lucide-react";
 import Image from "next/image";
+import Link from "next/Link";
 
 export async function generateMetadata() {
   return {
@@ -38,9 +39,11 @@ export default function ContactPage() {
                   Thịt heo chất lượng cao từ những chú heo được nuôi bằng thực
                   phẩm thuần thực vật
                 </p>
-                <Button className="bg-lime-600 hover:bg-lime-700 text-white font-semibold py-3 px-6 rounded-full text-lg">
-                  Đặt Hàng Ngay
-                </Button>
+                <Link href={routePath.customer.home}>
+                  <Button className="bg-lime-600 hover:bg-lime-700 text-white font-semibold py-3 px-6 rounded-full text-lg">
+                    Đặt Hàng Ngay
+                  </Button>
+                </Link>
               </div>
             </section>
 

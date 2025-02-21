@@ -1,5 +1,6 @@
 "use client";
 
+import { accountApiRequest } from "@/api-request/account";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,23 +12,58 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { locations } from "@/constants/order";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import { Controller, useFormContext } from "react-hook-form";
 
 export default function DeliveryFormContent() {
+  const { messageApi } = useHandleMessage();
   const {
     register,
     formState: { errors },
     watch,
     control,
+    getValues,
+    trigger,
   } = useFormContext();
 
   const province = watch("province");
-  console.log(province);
   const listDistrict =
     locations.find((item) => item.label === province)?.districts || [];
   const district = watch("district");
   const listWard =
     listDistrict.find((item) => item.label === district)?.wards || [];
+
+  const saveShippingAddress = async () => {
+    const address = getValues("address");
+    const province = getValues("province");
+    const district = getValues("district");
+    const ward = getValues("ward");
+    const isValid = await trigger();
+
+    if (!address || !province || !district || !ward || !isValid) {
+      messageApi.error({
+        error: "Vui lòng nhập đầy đủ thông tin địa chỉ",
+      });
+      return;
+    }
+    const data = {
+      address,
+      province,
+      district,
+      ward,
+    };
+    try {
+      await accountApiRequest.updateShippingAddress(data);
+      messageApi.success({
+        description: "Lưu địa chỉ thành công",
+      });
+    } catch (error) {
+      console.error(error);
+      messageApi.error({
+        error: "Có lỗi xảy ra khi lưu địa chỉ",
+      });
+    }
+  };
   return (
     <div className="lg:col-span-2 space-y-8">
       {/* Customer Information */}
@@ -198,6 +234,8 @@ export default function DeliveryFormContent() {
           <Button
             variant="link"
             className="p-0 m-0 !w-fit underline text-lime-600 hover:text-lime-700"
+            onClick={() => saveShippingAddress()}
+            type="button"
           >
             Lưu địa chỉ
           </Button>

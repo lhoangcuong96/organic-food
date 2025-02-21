@@ -1,23 +1,25 @@
 import { AccountController } from '@/controllers/account.controller'
 import { requireLoggedHook } from '@/hooks/auth.hooks'
 import {
-  AccountMeResponseSchema,
-  AccountMeResponseType,
+  AccountResponseSchema,
+  AccountResponseType,
   ChangePasswordBody,
   ChangePasswordBodyType,
-  UpdateProfileBodyType
+  UpdateProfileBodyType,
+  UpdateShippingAddressBody,
+  UpdateShippingAddressBodyType
 } from '@/schemaValidations/account.schema'
 import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.addHook('preValidation', fastify.auth([requireLoggedHook]))
-  fastify.get<{ Reply: AccountMeResponseType }>(
+  fastify.get<{ Reply: AccountResponseType }>(
     '/me',
     {
       schema: {
         response: {
-          200: AccountMeResponseSchema
+          200: AccountResponseSchema
         }
       }
     },
@@ -30,14 +32,14 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
   )
 
   fastify.put<{
-    Reply: AccountMeResponseType
+    Reply: AccountResponseType
     Body: UpdateProfileBodyType
   }>(
     '/me',
     {
       schema: {
         response: {
-          200: AccountMeResponseSchema
+          200: AccountResponseSchema
         }
       }
     },
@@ -64,6 +66,24 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
       await AccountController.changePassword(request.account!.id, request.body.oldPassword, request.body.newPassword)
       reply.send({
         message: 'Đổi mật khẩu thành công'
+      })
+    }
+  )
+
+  fastify.put<{ Reply: MessageResponseSchemaType; Body: UpdateShippingAddressBodyType }>(
+    '/shipping-address',
+    {
+      schema: {
+        body: UpdateShippingAddressBody,
+        response: {
+          200: MessageResponseSchema
+        }
+      }
+    },
+    async (request, reply) => {
+      const result = await AccountController.updateShippingAddress(request.account!.id, request.body)
+      reply.send({
+        message: 'Cập nhật địa chỉ giao hàng thành công'
       })
     }
   )

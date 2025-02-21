@@ -16,12 +16,31 @@ import { routePath } from "@/constants/routes";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { useHandleMessage } from "@/hooks/use-hande-message";
 import { useAppContext } from "@/provider/app-provider";
+import { useState } from "react";
 import ProfileDropdown from "../profile-dropdown";
+import { CartPopup } from "./cart-popup";
 import Menu from "./menu";
 
 export default function DesktopHeader() {
   const { cart, account } = useAppContext();
+  const { messageApi } = useHandleMessage();
+  const [isShowCartPopup, setIsShowCartPopup] = useState(false);
+
+  const showErrorMessage = () => {
+    messageApi.error({
+      error: "Bạn cần đăng nhập để thực hiện chức năng này",
+    });
+  };
+
   return (
     <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50 hidden lg:block">
       <div className="grid grid-cols-[max-content_auto_max-content] items-center gap-4">
@@ -53,7 +72,6 @@ export default function DesktopHeader() {
             0975209429
           </DefaultButton>
           <ProfileDropdown account={account}></ProfileDropdown>
-
           <Link href={routePath.customer.storeLocations}>
             <DefaultButton
               suffix={
@@ -72,21 +90,36 @@ export default function DesktopHeader() {
             suffix={<FaRegHeart className="!w-6 !h-6"></FaRegHeart>}
             className="!font-semibold"
           ></DefaultButton>
-          <Link href={routePath.customer.cart}>
-            <DefaultButton
-              suffix={
-                <div className="relative">
-                  <IoCartOutline className="!w-6 !h-6"></IoCartOutline>
-                  {cart && (
-                    <Badge className="rounded-full bg-red-600 w-4 h-4 p-0 absolute -top-1/4 -right-1/4 hover:bg-red-500">
-                      <p className="w-full">{cart?.items.length}</p>
-                    </Badge>
-                  )}
-                </div>
-              }
-              className="!font-semibold"
-            ></DefaultButton>
-          </Link>
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <Link
+                  href={account ? routePath.customer.cart : "#"}
+                  onClick={() => {
+                    if (!account) {
+                      showErrorMessage();
+                    }
+                  }}
+                >
+                  <NavigationMenuTrigger>
+                    <div className="relative">
+                      <IoCartOutline className="!w-6 !h-6"></IoCartOutline>
+                      {cart && (
+                        <Badge className="rounded-full bg-red-600 w-4 h-4 p-0 absolute -top-1/4 -right-1/4 hover:bg-red-500">
+                          <p className="w-full">{cart?.items.length}</p>
+                        </Badge>
+                      )}
+                    </div>
+                  </NavigationMenuTrigger>
+                </Link>
+                {account && (
+                  <NavigationMenuContent>
+                    <CartPopup />
+                  </NavigationMenuContent>
+                )}
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
       </div>
       <Menu></Menu>

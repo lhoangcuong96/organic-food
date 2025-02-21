@@ -1,5 +1,5 @@
 import envConfig from '@/config'
-import { AccountMeType } from '@/schemaValidations/account.schema'
+import { AccountType } from '@/schemaValidations/account.schema'
 import { Account } from '@prisma/client'
 import Redis from 'ioredis'
 
@@ -42,14 +42,14 @@ async function checkPhoneNumberInBloomFilter(email: string) {
   return isExist
 }
 
-async function cacheAccountInfo(user: AccountMeType) {
+async function cacheAccountInfo(user: AccountType) {
   if (!user.id) {
     throw new Error('User id is required')
   }
   await redisClient.set(`user:${user.id}`, JSON.stringify(user))
 }
 
-async function getAccountInfo(userId: string): Promise<AccountMeType | null> {
+async function getAccountInfo(userId: string): Promise<AccountType | null> {
   const user = await redisClient.get(`user:${userId}`)
   return user ? JSON.parse(user) : null
 }

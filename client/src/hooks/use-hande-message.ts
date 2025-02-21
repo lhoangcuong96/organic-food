@@ -25,22 +25,14 @@ export const useHandleMessage = () => {
           message: item.message,
         });
       });
-    }
-    if (error instanceof Error) {
+    } else {
+      const errorMessage =
+        error instanceof String ? error : (error as Error).message;
       toast({
         variant: "destructive",
-        title: title || "Uh oh! Something went wrong.",
+        title: title || "Đã có lỗi xảy ra",
         type: "foreground",
-        description: error.message,
-        duration: duration || 3000,
-      });
-    }
-    if (typeof error === "string") {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        type: "foreground",
-        description: error,
+        description: errorMessage,
         duration: duration || 3000,
       });
     }

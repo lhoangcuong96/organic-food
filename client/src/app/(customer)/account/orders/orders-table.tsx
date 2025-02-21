@@ -26,12 +26,17 @@ export default function OrdersTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState<GetListOrderDataType[]>([]);
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [expandedOrder, setExpandedOrder] = useState<string[]>([]);
 
   const { messageApi } = useHandleMessage();
 
   const toggleOrderDetails = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId);
+    setExpandedOrder((prev) => {
+      if (prev.includes(orderId)) {
+        return prev.filter((id) => id !== orderId);
+      }
+      return [...prev, orderId];
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -126,7 +131,7 @@ export default function OrdersTable() {
                 onClick={() => toggleOrderDetails(order.id)}
                 className="w-full mt-2"
               >
-                {expandedOrder === order.id ? (
+                {expandedOrder.includes(order.id) ? (
                   <>
                     Ẩn chi tiết
                     <ChevronUp className="ml-2 h-4 w-4" />
@@ -138,7 +143,7 @@ export default function OrdersTable() {
                   </>
                 )}
               </Button>
-              {expandedOrder === order.id && (
+              {expandedOrder.includes(order.id) && (
                 <Table className="mt-4">
                   <TableHeader>
                     <TableRow>

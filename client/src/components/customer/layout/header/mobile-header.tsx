@@ -80,7 +80,6 @@ export default function MobileHeader() {
                           {item.label}
                         </Link>
                       ))}
-                      x{" "}
                     </nav>
                   </div>
                   <div className="p-4">

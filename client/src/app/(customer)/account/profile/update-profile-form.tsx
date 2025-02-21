@@ -2,8 +2,8 @@
 
 import {
   AccountType,
-  UpdateAccountDataType,
-  updateAccountSchema,
+  UpdateProfileBody,
+  UpdateProfileBodyType,
 } from "@/validation-schema/account";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDate } from "date-fns";
@@ -48,18 +48,20 @@ export default function UpdateProfileForm({
     }
   };
   const { control, register, handleSubmit, setError } =
-    useForm<UpdateAccountDataType>({
-      resolver: zodResolver(updateAccountSchema),
+    useForm<UpdateProfileBodyType>({
+      resolver: zodResolver(UpdateProfileBody),
       defaultValues: {
         ...profile,
         gender: profile.gender || "OTHER",
         dateOfBirth: profile.dateOfBirth
           ? formatDate(profile.dateOfBirth, "yyyy-MM-dd")
           : "",
+        phoneNumber: profile.phoneNumber || "",
+        address: profile.address || "",
       },
     });
 
-  const onSubmit = async (data: UpdateAccountDataType) => {
+  const onSubmit = async (data: UpdateProfileBodyType) => {
     try {
       setIsLoading(true);
       let avatar = "";
@@ -208,7 +210,7 @@ export default function UpdateProfileForm({
                       className="!w-fit"
                       error={fieldState.error?.message}
                       {...field}
-                      value={field.value || ""}
+                      value={field.value.toString() || ""}
                     />
                     {fieldState.error?.message && (
                       <FormError

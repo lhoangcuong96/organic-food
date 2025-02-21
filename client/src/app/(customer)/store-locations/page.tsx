@@ -103,7 +103,7 @@ export default function StoreLocations() {
                   <div className="space-y-4">
                     <StoreCard
                       name="Heo nhà Thoa - Đồng Nai"
-                      address="152 A7/1 Phạm Văn Khoai P.Tân Hiệp Biên Hoà Đồng Nai - Đối diện chợ Tân Hiệp"
+                      address="152 A7/1 Phạm Văn Khoai P.Tân Hiệp Biên Hoà Đồng Nai - Đối diên cổng A sân banh Đồng Nai"
                       hotline="0975209429"
                     />
                   </div>

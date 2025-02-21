@@ -1,6 +1,13 @@
 import z from 'zod'
 
-export const AccountMeSchema = z
+export const ShippingAddressSchema = z.object({
+  address: z.string(),
+  district: z.string(),
+  ward: z.string(),
+  province: z.string()
+})
+
+export const AccountSchema = z
   .object({
     id: z.string(),
     fullname: z.string(),
@@ -13,27 +20,26 @@ export const AccountMeSchema = z
       .optional(),
     avatar: z.string().nullable().optional(),
     address: z.string().nullable().optional(),
-    shippingAddress: z
-      .object({
-        address: z.string(),
-        district: z.string(),
-        ward: z.string(),
-        province: z.string()
-      })
-      .optional(),
+    shippingAddress: ShippingAddressSchema.nullable().optional(),
     role: z.enum(['USER', 'ADMIN'])
   })
   .strip()
-export const AccountMeResponseSchema = z
+export const AccountResponseSchema = z
   .object({
-    data: AccountMeSchema,
+    data: AccountSchema,
     message: z.string()
   })
   .strict()
 
-export type AccountMeType = z.TypeOf<typeof AccountMeSchema>
-export type AccountMeResponseType = z.TypeOf<typeof AccountMeResponseSchema>
+export type ShippingAddressType = z.TypeOf<typeof ShippingAddressSchema>
 
+/* Get account me */
+export type AccountType = z.TypeOf<typeof AccountSchema>
+export type AccountResponseType = z.TypeOf<typeof AccountResponseSchema>
+
+/* Get account me*/
+
+/* Update account */
 export const UpdateProfileBody = z.object({
   fullname: z.string().trim().min(2, 'Họ và tên ít nhất 2 kí tự').max(256, 'Họ và tên nhiều nhất 256 kí tự'),
   phoneNumber: z
@@ -45,10 +51,19 @@ export const UpdateProfileBody = z.object({
 })
 
 export type UpdateProfileBodyType = z.TypeOf<typeof UpdateProfileBody>
+/* Update account */
 
+/* Change password*/
 export const ChangePasswordBody = z.object({
   oldPassword: z.string(),
   newPassword: z.string().min(6, 'Mật khẩu mới ít nhất 6 kí tự')
 })
 
 export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>
+/* Change password*/
+
+/* Update shipping address */
+export const UpdateShippingAddressBody = ShippingAddressSchema
+
+export type UpdateShippingAddressBodyType = z.TypeOf<typeof UpdateShippingAddressBody>
+/* Update shipping address */

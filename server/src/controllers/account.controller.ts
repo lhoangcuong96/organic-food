@@ -1,4 +1,4 @@
-import { UpdateProfileBodyType } from '@/schemaValidations/account.schema'
+import { UpdateProfileBodyType, UpdateShippingAddressBodyType } from '@/schemaValidations/account.schema'
 import { AccountService } from '@/services/account.service'
 
 export class AccountController {
@@ -8,6 +8,10 @@ export class AccountController {
 
   static updateMe = async (accountId: string, body: UpdateProfileBodyType) => {
     return AccountService.updateMe(accountId, body)
+  }
+
+  static updateShippingAddress = async (accountId: string, body: UpdateShippingAddressBodyType) => {
+    return AccountService.updateShippingAddress(accountId, body)
   }
 
   static changePassword = async (accountId: string, oldPassword: string, newPassword: string) => {

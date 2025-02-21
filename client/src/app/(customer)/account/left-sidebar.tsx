@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import { Link } from "@/components/ui/link";
 import { routePath } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { useAppContext } from "@/provider/app-provider";
@@ -14,10 +14,10 @@ import {
   CreditCard,
   Home,
   ShoppingBag,
+  User,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { RiEdit2Line } from "react-icons/ri";
-import { useRouter } from "next/navigation";
-import { Link } from "@/components/ui/link";
 
 type MenuItem = {
   icon: React.ElementType;
@@ -27,7 +27,7 @@ type MenuItem = {
   subItems?: { label: string; url: string; key: string }[];
 };
 
-export const accountMenuItems: MenuItem[] = [
+export const AccountItems: MenuItem[] = [
   { icon: Home, label: "Trang chủ", url: routePath.customer.home, key: "home" },
   {
     icon: User,
@@ -85,21 +85,16 @@ export const accountMenuItems: MenuItem[] = [
 
 export function LeftSidebar() {
   const { account } = useAppContext();
-  const router = useRouter();
+  const pathname = usePathname();
   const [expandedItem, setExpandedItem] = useState<string | null>(
-    accountMenuItems.find((item) => location.pathname.includes(item.key))
-      ?.label || null
+    AccountItems[1].label
   );
 
-  useEffect(() => {
-    setExpandedItem(
-      accountMenuItems.find((item) => location.pathname.includes(item.key))
-        ?.label || null
-    );
-  }, [router]);
-
   return (
-    <div className="hidden lg:block w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold">
+    <div
+      key={pathname}
+      className="hidden lg:block w-72 bg-transparent p-4 border-gray-200 text-sm font-semibold"
+    >
       <div className="grid grid-cols-[max-content_auto] items-center space-x-3 mb-8">
         <Avatar className="w-12 h-12 relative ">
           {account?.avatar ? (
@@ -124,36 +119,36 @@ export function LeftSidebar() {
         </div>
       </div>
       <nav>
-        {accountMenuItems.map((item, index) => {
-          const isActive = window.location.pathname.includes(item.key);
+        {AccountItems.map((item, index) => {
+          const isActive = pathname.includes(item.key);
+          console.log(item.label, isActive);
           return (
             <div key={index}>
-              <div
-                className={cn(
-                  "!text-gray-700 no-underline cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 hover:text-lime-600",
-                  isActive && "!text-lime-600"
-                )}
-                onClick={() => {
-                  if (item.url) {
-                    router.push(item.url);
-                  } else {
-                    setExpandedItem(
-                      expandedItem === item.label ? null : item.label
-                    );
-                  }
-                }}
-              >
-                <div className="flex items-center space-x-3">
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+              <Link href={item.url ? item.url : "#"} className="no-underline">
+                <div
+                  className={cn(
+                    "!text-gray-700 no-underline cursor-pointer flex items-center justify-between px-4 py-2 rounded-lg mb-1 hover:text-lime-600",
+                    isActive && "!text-lime-600"
+                  )}
+                  onClick={() => {
+                    setExpandedItem((prev) => {
+                      return expandedItem === item.label ? item.label : prev;
+                    });
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.subItems &&
+                    (expandedItem === item.label ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    ))}
                 </div>
-                {item.subItems &&
-                  (expandedItem === item.label ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  ))}
-              </div>
+              </Link>
+
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-out",

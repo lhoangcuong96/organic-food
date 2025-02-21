@@ -71,8 +71,8 @@ export function Footer() {
             <div className="font-semibold">
               <p className="inline-block">
                 <span className="text-lime-600 mr-2">Địa chỉ:</span>
-                152 A7/1 Phạm Văn Khoai P.Tân Hiệp Biên Hoà Đồng Nai - Đối diện
-                chợ Tân Hiệp
+                152 A7/1 Phạm Văn Khoai P.Tân Hiệp Biên Hoà Đồng Nai - Đối diên
+                cổng A sân banh Đồng Nai
               </p>
             </div>
             <div className="font-semibold">
@@ -99,7 +99,7 @@ export function Footer() {
                 Liên kết sàn
               </h3>
               <div className="flex flex-row gap-4 mt-3">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/icons/zalo.webp"
                     width="32"
@@ -108,7 +108,11 @@ export function Footer() {
                     title="Theo dõi chúng tôi trên Zalo để cập nhật tin tức mới nhất và các sự kiện hấp dẫn"
                   ></Image>
                 </Link>
-                <Link href="#">
+                <Link
+                  href="https://www.facebook.com/profile.php?id=100081602436561"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image
                     src="/images/icons/facebook.webp"
                     width="32"
@@ -117,7 +121,7 @@ export function Footer() {
                     title="Theo dõi chúng tôi trên Facebook để cập nhật tin tức mới nhất và các sự kiện hấp dẫn"
                   ></Image>
                 </Link>
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/icons/youtube.webp"
                     width="32"
@@ -126,7 +130,7 @@ export function Footer() {
                     title="Khám phá video độc đáo của chúng tôi trên Youtube."
                   ></Image>
                 </Link>
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/icons/google.webp"
                     width="32"
@@ -144,7 +148,7 @@ export function Footer() {
             <h3 className="text-lime-600 font-bold text-xl mb-5 ">Instagram</h3>
             <div className="flex flex-row flex-wrap gap-2">
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_1.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."
@@ -159,7 +163,7 @@ export function Footer() {
                 </Link>
               </div>
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_2.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."
@@ -174,7 +178,7 @@ export function Footer() {
                 </Link>
               </div>
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_3.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."
@@ -189,7 +193,7 @@ export function Footer() {
                 </Link>
               </div>
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_4.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."
@@ -204,7 +208,7 @@ export function Footer() {
                 </Link>
               </div>
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_5.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."
@@ -220,7 +224,7 @@ export function Footer() {
               </div>
 
               <div className="relative group">
-                <Link href="#">
+                <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Image
                     src="/images/instagram/image_ins_6.webp"
                     alt="Khám phá hình ảnh, video độc đáo của chúng tôi trên Instagram."

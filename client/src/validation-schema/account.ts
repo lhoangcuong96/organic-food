@@ -1,54 +1,82 @@
-import { isValidDate } from "@/lib/utils";
-import { z } from "zod";
+import z from "zod";
 
-export const accountSchema = z.object({
-  id: z.string(),
-  fullname: z.string(),
-  email: z.string(),
-  phoneNumber: z.string().nullable().optional(),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]).nullable().optional(),
-  dateOfBirth: z.date().nullable().optional(),
-  avatar: z.string().nullable().optional(),
-  address: z.string().nullable().optional(),
-  shippingAddress: z
-    .object({
-      address: z.string(),
-      district: z.string(),
-      ward: z.string(),
-      province: z.string(),
-    })
-    .optional(),
-  role: z.enum(["USER", "ADMIN"]),
+export const ShippingAddressSchema = z.object({
+  address: z.string(),
+  district: z.string(),
+  ward: z.string(),
+  province: z.string(),
 });
 
-export const accountResponseSchema = z.object({
-  data: accountSchema,
-  message: z.string(),
-});
-
-export const updateAccountSchema = z.object({
-  fullname: z.string().min(1, "Họ và tên không hợp lệ"),
-  dateOfBirth: z.string().refine((value) => isValidDate(value), {
-    message: "Ngày sinh không hợp lệ",
-  }),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-  avatar: z.string().nullable().optional(),
-});
-
-export const changePasswordSchema = z
+export const AccountSchema = z
   .object({
-    oldPassword: z.string().min(1, "Vui lòng nhập mật khẩu cũ"),
-    newPassword: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-    confirmPassword: z.string(),
+    id: z.string(),
+    fullname: z.string(),
+    email: z.string(),
+    phoneNumber: z.string().nullable().optional(),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"]).nullable().optional(),
+    dateOfBirth: z
+      .preprocess(
+        (val) => (val instanceof Date ? val : new Date(val as string)),
+        z.date()
+      )
+      .nullable()
+      .optional(),
+    avatar: z.string().nullable().optional(),
+    address: z.string().nullable().optional(),
+    shippingAddress: ShippingAddressSchema.nullable().optional(),
+    role: z.enum(["USER", "ADMIN"]),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Mật khẩu xác nhận không khớp",
-    path: ["confirmPassword"],
-  });
+  .strip();
+export const AccountResponseSchema = z
+  .object({
+    data: AccountSchema,
+    message: z.string(),
+  })
+  .strict();
 
-export type AccountType = z.infer<typeof accountSchema>;
-export type AccountResponseDataType = z.infer<typeof accountResponseSchema>;
+export type ShippingAddressType = z.TypeOf<typeof ShippingAddressSchema>;
 
-export type UpdateAccountDataType = z.infer<typeof updateAccountSchema>;
+/* Get account me */
+export type AccountType = z.TypeOf<typeof AccountSchema>;
+export type AccountResponseType = z.TypeOf<typeof AccountResponseSchema>;
 
-export type ChangePasswordDataType = z.infer<typeof changePasswordSchema>;
+/* Get account me*/
+
+/* Update account */
+export const UpdateProfileBody = z.object({
+  fullname: z
+    .string()
+    .trim()
+    .min(2, "Họ và tên ít nhất 2 kí tự")
+    .max(256, "Họ và tên nhiều nhất 256 kí tự"),
+  phoneNumber: z
+    .string()
+    .regex(
+      new RegExp("^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$"),
+      "Số điện thoại không đúng!"
+    ),
+  address: z.string().optional(),
+  avatar: z.string().nullable().optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+  dateOfBirth: z.union([z.date(), z.string()]),
+});
+
+export type UpdateProfileBodyType = z.TypeOf<typeof UpdateProfileBody>;
+/* Update account */
+
+/* Change password*/
+export const ChangePasswordBody = z.object({
+  oldPassword: z.string(),
+  newPassword: z.string().min(6, "Mật khẩu mới ít nhất 6 kí tự"),
+});
+
+export type ChangePasswordBodyType = z.TypeOf<typeof ChangePasswordBody>;
+/* Change password*/
+
+/* Update shipping address */
+export const UpdateShippingAddressBody = ShippingAddressSchema;
+
+export type UpdateShippingAddressBodyType = z.TypeOf<
+  typeof UpdateShippingAddressBody
+>;
+/* Update shipping address */
