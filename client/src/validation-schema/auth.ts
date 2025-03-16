@@ -2,8 +2,17 @@ import { TokenType } from "@/constants/types";
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().email("Email không đúng!"),
-  password: z.string().min(1, { message: "Xin vui lòng nhập mật khẩu!" }),
+  phoneNumber: z
+    .string({
+      required_error: "Xin vui lòng nhập số điện thoại!",
+    })
+    .regex(
+      new RegExp("^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$"),
+      "Số điện thoại không đúng!"
+    ),
+  password: z.string({
+    required_error: "Xin vui lòng nhập mật khẩu!",
+  }),
   remember: z.boolean().optional(),
 });
 
@@ -23,8 +32,18 @@ export const signInResponseSchema = z.object({
 export const signUpSchema = z
   .object({
     fullname: z.string().min(1, "Xin vui lòng nhập họ và tên!"),
-    phoneNumber: z.string().min(1, "Xin vui lòng nhập số điện thoại!"),
-    email: z.string().email("Email không đúng!"),
+    phoneNumber: z
+      .string()
+      .regex(
+        new RegExp("^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$"),
+        "Số điện thoại không đúng!"
+      ),
+    email: z
+      .string()
+      .email("Email không đúng!")
+      .optional()
+      .or(z.literal(""))
+      .or(z.null()),
     password: z
       .string()
       .min(6, "Mật khẩu phải có ít nhất 6 kí tự!")

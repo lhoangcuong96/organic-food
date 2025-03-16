@@ -32,7 +32,7 @@ function deleteCategory(id: string) {
   );
 }
 
-export const categoryRequestApis = {
+export const categoryAdminRequestApis = {
   createCategory,
   getCategoryList,
   deleteCategory,

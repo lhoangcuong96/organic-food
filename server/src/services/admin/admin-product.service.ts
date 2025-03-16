@@ -1,63 +1,39 @@
 import prisma from '@/database'
-import { Order } from '@/schemaValidations/common.schema'
 import {
   CreateProductBodyType,
+  ProductDetailType,
+  ProductInListType,
   ProductListQueryType,
-  ProductListType
-} from '@/schemaValidations/admin/product/admin-product-schema'
-import { InventoryService } from '../inventory.service'
-import { CreateVegetableProductBodySchema } from '@/schemaValidations/admin/product/vegetable-product.schema'
-import { CategoryService } from '../category.service'
-
-const ProductValidationSchema: { [key: string]: any } = {
-  vegetable: CreateVegetableProductBodySchema
-}
+  ProductType,
+  UpdateProductBodyType
+} from '@/schemaValidations/admin/admin-product-schema'
+import { Order } from '@/schemaValidations/common.schema'
+import { slugify } from '@/utils/helpers'
 
 export class AdminProductService {
-  async validateProductData(product: CreateProductBodyType): Promise<CreateProductBodyType> {
-    const { categoryId, ...data } = product
-    const category = await CategoryService.getCategoryById({ id: categoryId, select: ['name'] })
-    if (!category) {
-      throw new Error('Category not found')
-    }
-    const schema = ProductValidationSchema[category.name]
-    if (!schema) {
-      throw new Error('Invalid category')
-    }
-    const result = ProductValidationSchema.safeParse(data)
-    if (result.success === false) {
-      throw new Error(result.error.message)
-    }
-    return result.data
-  }
-
-  async create(data: CreateProductBodyType): Promise<void> {
-    const validatedData = await this.validateProductData(data)
-    const { categoryId, ...rest } = validatedData
+  async create(data: CreateProductBodyType): Promise<Partial<ProductType>> {
+    const { categoryId, ...rest } = data
+    const slug = slugify(rest.name)
     const product = await prisma.product.create({
       data: {
         ...rest,
+        slug,
+        image: {
+          ...data.image,
+          gallery: data.image.gallery || []
+        },
         category: {
           connect: {
             id: categoryId
-          }
-        },
-        inventory: {
-          create: {
-            stock: rest.stock
           }
         }
       }
     })
 
-    // insert inventory
-    await InventoryService.createInventory({
-      productId: product.id,
-      quantity: rest.stock
-    })
+    return product as Partial<ProductType>
   }
 
-  async list(queryParams: ProductListQueryType): Promise<ProductListType> {
+  async list(queryParams: ProductListQueryType): Promise<ProductInListType> {
     const { page = 1, limit = 20, category, sort = 'createdAt', order = Order.Desc, search } = queryParams
     const skip = (page - 1) * limit
     const take = limit
@@ -82,8 +58,15 @@ export class AdminProductService {
       name: true,
       price: true,
       stock: true,
-      isDraft: true,
+      slug: true,
+      sold: true,
       isPublished: true,
+      isFeatured: true,
+      isBestSeller: true,
+      isPromotion: true,
+      promotionPercent: true,
+      promotionStart: true,
+      promotionEnd: true,
       image: {
         select: {
           thumbnail: true
@@ -109,24 +92,28 @@ export class AdminProductService {
     })
   }
 
-  async update(id: string, data: any): Promise<void> {
-    const { stock, category } = data
+  async update(id: string, data: UpdateProductBodyType): Promise<Partial<ProductType>> {
+    const { categoryId, ...rest } = data
+    const slug = slugify(rest.name)
     const product = await prisma.product.update({
       where: {
         id
       },
       data: {
+        ...rest,
+        slug,
+        image: {
+          ...data.image,
+          gallery: data.image.gallery || []
+        },
         category: {
           connect: {
-            id: category
+            id: categoryId
           }
         }
       }
     })
-    if (stock && product.inventoryId) {
-      const inventory = await InventoryService.getInventory(product.inventoryId)
-      await InventoryService.updateInventory(inventory.id, { quantity: stock })
-    }
+    return product as Partial<ProductType>
   }
 
   async delete(id: string) {
@@ -137,22 +124,39 @@ export class AdminProductService {
     })
   }
 
-  async getDetailBySlug(slug: string) {
-    return prisma.product.findFirstOrThrow({
+  async getDetailBySlug(slug: string): Promise<ProductDetailType> {
+    const product = await prisma.product.findFirstOrThrow({
       where: {
         slug
-      }
-    })
-  }
-  async getDetailById(id: string) {
-    return prisma.product.findFirstOrThrow({
-      where: {
-        id
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        title: true,
+        price: true,
+        description: true,
+        slug: true,
+        stock: true,
+        isPublished: true,
+        image: {
+          select: {
+            thumbnail: true
+          }
+        },
+        isFeatured: true,
+        isBestSeller: true,
         category: true,
-        promotions: true
+        attributes: true,
+        tags: true,
+        isPromotion: true,
+        promotionPercent: true,
+        promotionStart: true,
+        promotionEnd: true,
+        createdAt: true,
+        updatedAt: true
       }
     })
+    console.log(product)
+    return product
   }
 }

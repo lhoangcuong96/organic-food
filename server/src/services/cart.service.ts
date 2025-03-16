@@ -131,6 +131,8 @@ export class CartService {
       }))
     }
 
+    console.log('cartData:', cartData)
+
     return cartData
   }
 

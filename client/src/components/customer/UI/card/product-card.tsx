@@ -1,33 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { routePath } from "@/constants/routes";
 import { formatCurrency } from "@/helper";
-import { Product } from "@prisma/client";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { Card } from "@/components/ui/card";
 import useCart from "@/hooks/modules/use-cart";
+import { ProductInListType } from "@/validation-schema/product";
 import { Heart, Search, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { AppProgress } from "../progress";
 
-export function ProductCard({ product }: { product: Partial<Product> }) {
+export function ProductCard({ product }: { product: ProductInListType }) {
   const { handleAddToCart } = useCart();
 
+  const promotionalPrice = product.promotionPercent
+    ? product.price - (product.price * product.promotionPercent) / 100
+    : 0;
   return (
-    <Card className="w-56 p-3 rounded-lg relative gap-1 m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline">
+    <Card className="w-full max-w-56 p-3 rounded-lg relative gap-1 m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline">
       <Link
         className="w-full h-full flex flex-col gap-1"
         href={`${routePath.customer.productDetail}/${product.slug}`}
       >
-        <div className="absolute -left-[1px] -top-[1px] bg-red-500 text-white px-3 py-1 text-sm rounded-br-lg rounded-tl-lg z-50">
-          <p>Giảm 11%</p>
-        </div>
+        {product.isPromotion && (
+          <div className="absolute -left-[1px] -top-[1px] bg-red-500 text-white px-3 py-1 text-sm rounded-br-lg rounded-tl-lg z-50">
+            <p>Giảm {product.promotionPercent}%</p>
+          </div>
+        )}
+
         <Image
           src={product?.image?.thumbnail || ""}
-          alt={product.description || ""}
-          height={234}
-          width={234}
+          alt={product.name || ""}
+          height={148}
+          width={198}
           className="m-auto"
         ></Image>
         <h3
@@ -46,21 +50,17 @@ export function ProductCard({ product }: { product: Partial<Product> }) {
           <p className="text-lime-600 font-semibold">
             {formatCurrency(product.price || 0)}
           </p>
-          <p className="line-through text-xs">
-            {formatCurrency(product.price || 0)}
-          </p>
+          {product.isPromotion && (
+            <p className="line-through text-xs">
+              {formatCurrency(promotionalPrice)}
+            </p>
+          )}
         </div>
-        <AppProgress />
+        {/* <AppProgress /> */}
         <p className="font-semibold text-sm">Đã bán: 136</p>
       </Link>
 
-      <div
-        className="absolute top-2 right-2 flex flex-col gap-2 z-20"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.2 }}
-      >
+      <div className="absolute top-2 right-2 flex flex-col gap-2 z-20">
         <Button
           size="icon"
           variant="secondary"

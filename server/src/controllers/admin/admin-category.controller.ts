@@ -1,4 +1,4 @@
-import { CreateCategoryBodyType } from '@/schemaValidations/category.schema'
+import { CreateCategoryBodyType } from '@/schemaValidations/admin/admin-category-schema'
 import AdminCategoryService from '@/services/admin/admin-category.service'
 
 export default class AdminCategoryController {

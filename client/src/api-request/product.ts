@@ -2,7 +2,7 @@ import { http } from "@/lib/http";
 import {
   ProductDetailResponseType,
   ProductListResponseType,
-  ProductQueryType,
+  ProductListQueryType,
 } from "@/validation-schema/product";
 
 const productRequestApi = {
@@ -10,14 +10,11 @@ const productRequestApi = {
     return http.get(`/products/metrics`);
   },
   getProductDetail: (slug: string) => {
-    console.log(`/products/${slug}`, slug);
     return http.get<ProductDetailResponseType>(`/products/${slug}`);
   },
-  getProducts: (params: ProductQueryType) => {
-    const url = `/products?page=${params.page || 1}&limit=${params.limit | 20}&
-    search=${params.search}&sort=${params.sort || "name"}&order=${
-      params.order || "asc"
-    }`;
+  getProducts: (params: ProductListQueryType) => {
+    const currentParams = new URLSearchParams(params as any);
+    const url = `/products?${currentParams.toString()}`;
     return http.get<ProductListResponseType>(url);
   },
 };

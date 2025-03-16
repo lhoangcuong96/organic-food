@@ -6,7 +6,7 @@ export const RegisterBody = z
     phoneNumber: z
       .string()
       .regex(new RegExp('^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$'), 'Số điện thoại không đúng!'),
-    email: z.string().email('Email không đúng!'),
+    email: z.string().email('Email không đúng!').optional().or(z.literal('')).or(z.null()),
     password: z.string().min(6, 'Password ít nhất 6 kí tự').max(100, 'Password nhiều nhất 100 kí tự'),
     confirmPassword: z.string().min(6, 'Password ít nhất kí tự').max(100, 'Password nhiều nhất 100 kí tự')
   })
@@ -36,7 +36,7 @@ export const RegisterRes = z.object({
 
 export const LoginBody = z
   .object({
-    email: z.string().email(),
+    phoneNumber: z.string().regex(new RegExp('^(0[1-9]{1}[0-9]{8})$|^(84[1-9]{1}[0-9]{8})$')),
     password: z.string().min(6).max(100)
   })
   .strict()

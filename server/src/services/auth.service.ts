@@ -11,7 +11,8 @@ export default class AuthService {
   async createSession(account: Account) {
     const { accessToken, refreshToken } = createPairTokens({
       account: {
-        id: account.id
+        id: account.id,
+        role: account.role
       }
     })
 
@@ -31,8 +32,10 @@ export default class AuthService {
         - Thay vì phải kiểm tra trong db thì chỉ cần kiểm tra trong redis 
         - Sử dụng bloom filter để kiểm tra email và phoneNumber đã tồn tại hay chưa(xem trong docs)
       */
-
-      const emailExist = await RedisPlugin.checkEmailInBloomFilter(data.email)
+      let emailExist = false
+      if (data.email) {
+        emailExist = await RedisPlugin.checkEmailInBloomFilter(data.email)
+      }
       const phoneExist = await RedisPlugin.checkPhoneNumberInBloomFilter(data.phoneNumber)
 
       if (emailExist || phoneExist) {
@@ -43,13 +46,13 @@ export default class AuthService {
         data: {
           fullname: data.fullname,
           phoneNumber: data.phoneNumber,
-          email: data.email,
+          email: data.email || '',
           password: hashedPassword,
           cart: {
             items: [],
             updatedAt: new Date()
           },
-          role: 'USER',
+          role: 'ADMIN',
           shippingAddress: {
             address: '',
             district: '',
@@ -64,7 +67,9 @@ export default class AuthService {
          - Giảm thời gian truy cập nếu có lượng đồng thời cao
          - Sử dụng bloom filter để tối ưu bộ nhớ sử dụng cho redis
      */
-      await RedisPlugin.addEmailToBloomFilter(data.email)
+      if (data.email) {
+        await RedisPlugin.addEmailToBloomFilter(data.email)
+      }
       await RedisPlugin.addPhoneNumberToBloomFilter(data.phoneNumber)
 
       const session = await this.createSession(account)
@@ -85,7 +90,7 @@ export default class AuthService {
   async login(data: LoginBodyType) {
     const account = await prisma.account.findUnique({
       where: {
-        email: data.email
+        phoneNumber: data.phoneNumber
       }
     })
     if (!account) {

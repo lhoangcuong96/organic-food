@@ -60,8 +60,6 @@ export const CategoryInListSchema: z.ZodSchema = z.lazy(() =>
     id: z.string(),
     name: z.string(),
     image: CategoryImageSchema,
-    attributes: z.array(z.string()),
-    subCategories: z.array(CategoryInListSchema).default([]),
   })
 );
 

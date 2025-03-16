@@ -18,7 +18,7 @@ This document outlines the flow of the Dolar application.
     2. [Kiểm tra email tồn tại hay chưa](#kiểm-tra-email-tồn-tại-hay-chưa)
 5. [Giải pháp an toàn dữ liệu](#giải-pháp-an-toàn-dữ-liệu)
     1. [Rate limits(giới hạn tần suất)](#rate-limits)
-6. [Các thuật toán sử dụng](#các-thuật-toán-sử-dụng)
+6. [Tối ưu hoá](#tối-ưu-hoá)
 7. [Tích hợp dịch vụ khác](#tích-hợp-dịch-vụ-khác)
     1. [AWS S3](#aws-s3)
 8. [Một số định nghĩa khác](#một-số-định-nghĩa-khác)
@@ -195,10 +195,69 @@ This document outlines the flow of the Dolar application.
 - Gồm nhiều cách nhưng hiện tại trang web sử dụng Fixed Window
 
 
-## Các thuật toán sử dụng
+## Tối ưu hoá
 - [LRU caching](#lru-caching)
 - [Bloom Filter](#bloom-filterkiểm-tra-một-phần-tử-có-nằm-trong-tập-hợp-không)
+- Pagination
+  - Offset pagination
+    - Sử dụng skip để bỏ qua và take để lấy các giá trị cần 
+    - Nhược điểm:
+      - Vẫn phải quét qua những dữ liệu skip => db quá to sẽ ảnh hưởng rất lớn đến hiệu xuất
+    - Chỉ nên sử dụng cho các tập dữ liệu nhỏ
+    - Cả 2 cách đều có nhược điểm có thể sử dụng kết hợp 
+      - 100 pages đầu sử dụng offset pagination
+      - Các trang tiếp theo sử dụng cursor pagination
+    - Code: 
+    ```
+    const results = await prisma.post.findMany({
+      skip: 200,
+      take: 20,
+      where: {
+        email: {
+          contains: 'Prisma',
+        },
+      },
+      orderBy: {
+        title: 'desc',
+      },
+    })
+    ```
+  - Cursor pagination
+    - Sử dụng các record để đánh dấu vị trí để lấy ra các giá trị cần
+    - Ưu điểm: 
+      - Có thể lấy dữ liệu mà không cần phải quét toàn bộ như offset
+    - Nhược điểm:
+      - Chỉ sử dụng khi sort theo các unique fields như _id, createdAt ...
+        - Nếu sử dụng các field k unique thì các giá trị bằng nhau (vd: price) sẽ bị missed
+        - Để giải quyết vấn đề này có thể sử dụng kết hợp thêm _id hoặc createdAt vào cùng field
+      - Không thể biết vị trí hiện tại ở trang mấy, ở đầu hay ở cuối.
+      - Chỉ nên sử dụng cho infinite scroll
+        - Do không biết vị trí, có biết được next hoặc prev phải sử dụng query khác
+        - Chỉ cần sort theo thời gian => luôn unique
+      - Code
+      ```
+      const orders = await prisma.order.findMany({
+        take: limit, // Fetch next `limit` orders
+        cursor: cursor ? { id: cursor } : undefined, // Start from this cursor
+        skip: cursor ? 1 : 0, // Skip the cursor itself
+        orderBy: { id: "asc" } // Ensure consistent order
+      });
 
+      const nextCursor = orders.length > 0 ? orders[orders.length - 1].id : null;
+
+      return { data: orders, nextCursor };
+      ```
+        - Ở đây sử dụng id để sort => chỉ cần so sánh id nếu id lớn hơn thì lấy
+  - Total:
+    - Chỉ nên giới hạn số lượng nhất định vd:999, khi hiển thị cũng vậy mức đối đa có thể là 999 hay 9999
+    - Code 
+    ```
+    const total = await prisma.$runCommandRaw({
+      count: "Order", // Collection name (use your actual model name)
+      query: {}, // No filter (count all documents)
+      limit: 10000 // Limit to 10,000 documents
+    });
+    ```
 ## Tích hợp dịch vụ khác
 ### AWS S3
 - Cách tiếp cận

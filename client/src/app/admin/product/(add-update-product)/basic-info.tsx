@@ -1,6 +1,6 @@
 "use client";
 
-import { ImagePlus, Upload, X } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import { CiEdit } from "react-icons/ci";
 
 import { Button } from "@/components/ui/button";
@@ -13,35 +13,26 @@ import {
 } from "@/components/ui/form";
 import { ImageEditor } from "@/components/ui/image-editor";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import Image from "next/image";
-import { useCallback, useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import {
   ControllerRenderProps,
   FieldValues,
   useFormContext,
 } from "react-hook-form";
-import { CategorySelector } from "@/components/share/category-selector";
+import CategoryDropdown from "./category-dropdown";
 
-const MAX_PRODUCT_IMAGES = 9;
+const MAX_PRODUCT_IMAGES = 1;
 
 export default function BasicInfo() {
   const form = useFormContext();
-  const [videoPreview, setVideoPreview] = useState<string>("");
   const [isOpenCategorySelector, setIsOpenCategorySelector] = useState(false);
   const [editedImage, setEditedImage] = useState<string | null>(null);
 
-  const [aspectRatioProductImages, setAspectRatioProductImages] = useState<
-    "1:1" | "3:4"
-  >("1:1");
-
   const { messageApi } = useHandleMessage();
   const productImageRef = useRef<HTMLInputElement>(null);
-  const productCoverRef = useRef<HTMLInputElement>(null);
-  const productVideoRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -49,17 +40,7 @@ export default function BasicInfo() {
   ) => {
     const files = e.target.files;
     if (!files) return;
-    if (files.length > MAX_PRODUCT_IMAGES) {
-      messageApi.error({
-        error: new Error(
-          `Chỉ được tải lên tối đa ${MAX_PRODUCT_IMAGES} hình ảnh`
-        ),
-      });
-      return;
-    }
-    const prevImages = field.value || [];
-    const fileArray = Array.from(files);
-    field.onChange([...prevImages, ...fileArray]);
+    field.onChange(files[0]);
     e.target.value = "";
   };
 
@@ -75,43 +56,13 @@ export default function BasicInfo() {
     }
   };
 
-  const deleteCoverImage = (
-    field: ControllerRenderProps<FieldValues, "coverImage">
-  ) => {
-    const image = field.value;
-    if (image) {
-      field.onChange(null);
-    }
-  };
-
-  const handleCoverUpload = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      field.onChange(file);
-      e.target.value = "";
-    },
-    []
-  );
-
-  const handleVideoUpload = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      field.onChange(file);
-      setVideoPreview(URL.createObjectURL(file));
-    },
-    []
-  );
-
   return (
     <div className="rounded-lg border bg-white p-6 flex flex-col gap-6">
       <h2 className="mb-4 text-lg font-medium">Thông tin cơ bản</h2>
 
-      <FormField
+      {/* <FormField
         control={form.control}
-        name="productImages"
+        name="thumbnail"
         render={({ field }) => {
           const productImages = field.value || [];
           const urls = productImages.map((item: File | string) => {
@@ -121,44 +72,22 @@ export default function BasicInfo() {
             return URL.createObjectURL(item);
           });
           return (
-            <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
-              <FormLabel className="w-36">
-                Hình ảnh sản phẩm <span className="text-destructive">*</span>
+            <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+              <FormLabel className="w-36 pt-2">
+                Hình ảnh sản phẩm (thumbnail)
+                <span className="text-destructive">*</span>
               </FormLabel>
               <div className="!m-0 flex flex-col gap-4 h-auto">
-                <RadioGroup
-                  value={aspectRatioProductImages}
-                  onValueChange={(value: "1:1" | "3:4") =>
-                    setAspectRatioProductImages(value)
-                  }
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1:1" id="ratio-1-1" />
-                    <Label htmlFor="ratio-1-1">Hình ảnh tỷ lệ 1:1</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="3:4" id="ratio-3-4" />
-                    <Label htmlFor="ratio-3-4">Hình ảnh tỷ lệ 3:4</Label>
-                  </div>
-                </RadioGroup>
                 <FormControl>
                   <div className="inline-flex gap-4 flex-wrap">
                     {urls.map((url: string, index: number) => (
-                      <div key={index} className="relative aspect-square group">
+                      <div key={index} className="relative group">
                         <Image
                           src={url}
                           alt={`Product ${index + 1}`}
                           className="rounded-lg object-contain"
-                          width={112}
-                          height={
-                            aspectRatioProductImages === "1:1" ? 112 : 150
-                          }
-                          style={{
-                            height:
-                              aspectRatioProductImages === "1:1" ? 112 : 150,
-                            width: 112,
-                          }}
+                          width={150}
+                          height={112}
                           placeholder="blur"
                           blurDataURL="/images/blur-image.png"
                         />
@@ -187,7 +116,7 @@ export default function BasicInfo() {
                         </div>
                       </div>
                     ))}
-                    <div className="relative aspect-square">
+                    <div className="relative">
                       <Input
                         type="file"
                         accept="image/*"
@@ -200,16 +129,11 @@ export default function BasicInfo() {
                       />
                       {productImages.length < MAX_PRODUCT_IMAGES && (
                         <div
-                          className="w-28 h-28 flex flex-col items-center justify-center rounded-lg border-2 border-dashed cursor-pointer"
+                          className="w-[150px] h-28 flex flex-col items-center justify-center rounded-lg border-2 border-dashed cursor-pointer"
                           onClick={() => {
                             if (productImageRef?.current) {
                               productImageRef.current.click();
                             }
-                          }}
-                          style={{
-                            height:
-                              aspectRatioProductImages === "1:1" ? 112 : 150,
-                            width: 112,
                           }}
                         >
                           <ImagePlus className="h-6 w-6 text-muted-foreground" />
@@ -229,105 +153,96 @@ export default function BasicInfo() {
             </FormItem>
           );
         }}
-      />
-
+      /> */}
       <FormField
         control={form.control}
-        name="coverImage"
+        name="thumbnail"
         render={({ field }) => {
-          const coverImage = field.value;
-          const coverUrl = coverImage
-            ? typeof coverImage === "string"
-              ? coverImage
-              : URL.createObjectURL(coverImage)
-            : null;
+          const thumbnail = field.value || "";
+          let url = "";
+          if (typeof thumbnail === "string") {
+            url = thumbnail;
+          } else {
+            url = URL.createObjectURL(thumbnail);
+          }
           return (
-            <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
-              <FormLabel className="w-36">
-                Ảnh bìa <span className="text-destructive">*</span>
+            <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+              <FormLabel className="w-36 pt-2">
+                Hình ảnh sản phẩm (thumbnail)
+                <span className="text-destructive">*</span>
               </FormLabel>
-              <div className="!m-0 h-36">
-                <div className="grid grid-cols-[max-content_auto] flex-nowrap gap-4">
-                  <FormControl>
-                    <div className="inline-flex">
-                      {coverUrl && (
-                        <div className="relative aspect-square group">
-                          <Image
-                            src={coverUrl}
-                            alt={`Product cover image`}
-                            className="w-28 h-28 rounded-lg object-contain"
-                            width={112}
-                            height={112}
-                            placeholder="blur"
-                            blurDataURL="/images/blur-image.png"
-                          />
-                          <div
-                            className="w-full absolute bottom-0 h-fit group-hover:opacity-100 
-                        flex items-center justify-center gap-2 opacity-0 transition-opacity duration-200 bg-lime-50"
-                          >
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
-                              onClick={() => setEditedImage(coverUrl)}
-                            >
-                              <CiEdit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
-                              onClick={() => deleteCoverImage(field)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                      <div className="relative aspect-square">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          className="absolute inset-0 cursor-pointer opacity-0"
-                          onChange={(e) => {
-                            handleCoverUpload(e, field);
-                          }}
-                          ref={productCoverRef}
+              <div className="!m-0 h-auto">
+                <FormControl>
+                  <div className="inline-flex flex-wrap">
+                    {url ? (
+                      <div className="relative group">
+                        <Image
+                          src={url}
+                          alt={`Product image`}
+                          className="rounded-lg object-contain"
+                          width={150}
+                          height={112}
+                          placeholder="blur"
+                          blurDataURL="/images/blur-image.png"
                         />
-                        {!coverImage && (
-                          <div
-                            className="w-28 h-28 flex flex-col items-center justify-center rounded-lg border-2 border-dashed cursor-pointer"
-                            onClick={() => {
-                              if (productCoverRef?.current) {
-                                productCoverRef.current.click();
-                              }
-                            }}
+                        <div
+                          className="w-full absolute bottom-0 h-fit group-hover:opacity-100 
+                    flex items-center justify-center gap-2 opacity-0 transition-opacity duration-200 bg-lime-50"
+                        >
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
+                            onClick={() => setEditedImage(url)}
                           >
-                            <ImagePlus className="h-6 w-6 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground mx mt-2">
-                              Thêm hình ảnh
-                            </span>
-                          </div>
-                        )}
+                            <CiEdit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
+                            onClick={() => field.onChange("")}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </FormControl>
-                  <div className="text-xs max-w-[600px] w-full">
-                    <ul className="list-disc pl-4">
-                      <li>Tải lên hình ảnh 1:1.</li>
-                      <li>
-                        Ảnh bìa sẽ được hiển thị tại các trang Kết quả tìm kiếm,
-                      </li>
-                      <li>
-                        Gợi ý hôm nay,... Việc sử dụng ảnh bìa đẹp sẽ thu hút
-                        thêm lượt truy cập vào sản phẩm của bạn
-                      </li>
-                    </ul>
+                    ) : (
+                      <>
+                        <div className="relative">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="absolute inset-0 cursor-pointer opacity-0"
+                            onChange={(e) => {
+                              handleImageUpload(e, field);
+                            }}
+                            ref={productImageRef}
+                          />
+                        </div>
+                        <div
+                          className="w-[150px] h-28 flex flex-col items-center justify-center rounded-lg border-2 border-dashed cursor-pointer"
+                          onClick={() => {
+                            if (productImageRef?.current) {
+                              productImageRef.current.click();
+                            }
+                          }}
+                        >
+                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground mx mt-2">
+                            Thêm hình ảnh
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            0/1
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
-                </div>
-
+                </FormControl>
                 <FormMessage />
               </div>
             </FormItem>
@@ -337,79 +252,10 @@ export default function BasicInfo() {
 
       <FormField
         control={form.control}
-        name="video"
-        render={({ field }) => (
-          <FormItem className="grid grid-cols-[max-content_auto]">
-            <FormLabel className="w-36">Video sản phẩm</FormLabel>
-
-            <FormControl>
-              <div className="inline-flex gap-4">
-                <div className="relative aspect-video w-28 h-28">
-                  {videoPreview ? (
-                    <>
-                      <video
-                        src={videoPreview}
-                        controls
-                        className="h-full w-full rounded-lg object-contain"
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute right-2 top-2"
-                        onClick={() => setVideoPreview("")}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Input
-                        type="file"
-                        accept="video/mp4"
-                        className="absolute inset-0 opacity-0"
-                        onChange={(e) => handleVideoUpload(e, field)}
-                        ref={productVideoRef}
-                      />
-                      <div
-                        className="flex h-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed cursor-pointer"
-                        onClick={() => {
-                          if (productVideoRef?.current) {
-                            productVideoRef.current.click();
-                          }
-                        }}
-                      >
-                        <Upload className="h-6 w-6 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">
-                          Thêm video
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="text-xs">
-                  <ul className="list-disc pl-4">
-                    <li>
-                      Kích thước tối đa 300Mb, độ phân giải không vượt quá
-                      1280x1280px
-                    </li>
-                    <li>Độ dài: 10s-60s</li>
-                    <li>Định dạng: MP4</li>
-                  </ul>
-                </div>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
         name="name"
         render={({ field }) => (
-          <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
-            <FormLabel className="w-36">
+          <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+            <FormLabel className="w-36 pt-2">
               Tên sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
             <div className="!m-0">
@@ -417,11 +263,38 @@ export default function BasicInfo() {
                 <div className="relative inline-flex items-center w-full gap-6">
                   <Input
                     {...field}
-                    placeholder="Tên sản phẩm + Thương hiệu + Model + Thông số kỹ thuật"
+                    placeholder="Tên sản phẩm + Trọng lượng. VD: Ba rọi 300g"
                   />
                   <span className="absolute right-3 top-2.5 text-sm text-muted-foreground">
-                    {field.value.length}/120
+                    {field.value?.length}/120
                   </span>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </div>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="weight"
+        render={({ field }) => (
+          <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+            <FormLabel className="w-36 pt-2">
+              Trọng lượng(g)<span className="text-destructive">*</span>
+            </FormLabel>
+            <div className="!m-0">
+              <FormControl>
+                <div className="relative inline-flex items-center w-full gap-6">
+                  <Input
+                    {...field}
+                    placeholder="Trọng lượng tính bằng gram"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      field.onChange(+value);
+                    }}
+                    value={field.value ? field.value.toLocaleString() : ""}
+                  />
                 </div>
               </FormControl>
               <FormMessage />
@@ -434,22 +307,19 @@ export default function BasicInfo() {
         control={form.control}
         name="category"
         render={({ field }) => (
-          <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
-            <FormLabel className="w-36">
-              loại sản phẩm <span className="text-destructive">*</span>
+          <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+            <FormLabel className="w-36 pt-2">
+              Loại sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
             <div className="!m-0">
               <FormControl>
                 <div className="relative inline-flex items-center w-full gap-6">
-                  <Input
-                    value={field.value.join(" > ") || ""}
-                    placeholder="Chọn loại sản phẩm"
-                    readOnly
-                    onClick={() => {
-                      setIsOpenCategorySelector(true);
+                  <CategoryDropdown
+                    onSelect={(category) => {
+                      field.onChange(category.id);
                     }}
-                  />
-                  <Input {...field} disabled className="hidden"></Input>
+                    value={field.value}
+                  ></CategoryDropdown>
                 </div>
               </FormControl>
               <FormMessage />
@@ -462,8 +332,8 @@ export default function BasicInfo() {
         control={form.control}
         name="description"
         render={({ field }) => (
-          <FormItem className="grid grid-cols-[max-content_auto] flex-nowrap">
-            <FormLabel className="w-36">
+          <FormItem className="grid grid-cols-[max-content_auto] gap-2">
+            <FormLabel className="w-36 pt-2">
               Mô tả sản phẩm <span className="text-destructive">*</span>
             </FormLabel>
             <div className="!m-0">
@@ -478,7 +348,7 @@ export default function BasicInfo() {
                 <FormMessage />
                 <div className="text-right">
                   <span className="text-sm text-muted-foreground">
-                    {field.value.length}/3000
+                    {field.value?.length}/10000
                   </span>
                 </div>
               </div>
@@ -486,17 +356,11 @@ export default function BasicInfo() {
           </FormItem>
         )}
       />
-      <CategorySelector
-        open={isOpenCategorySelector}
-        onOpenChange={() => setIsOpenCategorySelector(false)}
-        onSelect={(path) => form.setValue("category", path)}
-      ></CategorySelector>
       {editedImage && (
         <ImageEditor
           open={true}
           imageUrl={editedImage}
           onSave={() => {}}
-          aspectRatio={aspectRatioProductImages}
           onOpenChange={() => {
             setEditedImage(null);
           }}

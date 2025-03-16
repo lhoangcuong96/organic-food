@@ -10,7 +10,7 @@ import Spinner from "@/components/ui/spinner";
 import XButton from "@/components/ui/x-button";
 import { routePath } from "@/constants/routes";
 import SessionStore from "@/helper/local-store/session-store";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { SignUpRequestDataType, signUpSchema } from "@/validation-schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-dropdown-menu";
@@ -30,16 +30,18 @@ export function SignUpForm() {
 
   const { setAccount, setCart } = useAppContext();
 
-  const { control, handleSubmit, setError } = useForm<SignUpRequestDataType>({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      fullname: "",
-      phoneNumber: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { control, handleSubmit, setError, formState } =
+    useForm<SignUpRequestDataType>({
+      resolver: zodResolver(signUpSchema),
+      defaultValues: {
+        fullname: "",
+        phoneNumber: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      },
+      mode: "all",
+    });
 
   const onSubmit = async (data: SignUpRequestDataType) => {
     setIsSubmitting(true);
@@ -76,6 +78,8 @@ export function SignUpForm() {
       setIsSubmitting(false);
     }
   };
+
+  console.log(formState.errors);
 
   return (
     <form
@@ -117,7 +121,7 @@ export function SignUpForm() {
           )}
         />
       </div>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <Controller
           control={control}
           name="email"
@@ -130,12 +134,13 @@ export function SignUpForm() {
                 type="email"
                 formNoValidate
                 error={error?.message}
+                value={field.value || ""}
               />
               {error?.message && <FormError error={error.message} />}
             </>
           )}
         />
-      </div>
+      </div> */}
 
       <div className="mb-4">
         <Controller

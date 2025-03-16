@@ -2,6 +2,7 @@ import AppBreadcrumb from "@/components/customer/layout/breadcrumb";
 import { routePath } from "@/constants/routes";
 import CartSection from "./cart-section";
 import VoucherSection from "./voucher-section";
+import Promotions from "@/components/ui/promotions";
 
 export default function CartPage() {
   return (
@@ -21,7 +22,7 @@ export default function CartPage() {
       <div className="w-screen p-8 flex items-center justify-center h-full">
         <div className="max-w-7xl mx-auto p-4 md:p-6">
           {/* Server-side rendered section */}
-          <VoucherSection />
+          <Promotions />
 
           {/* Client-side rendered section */}
           <CartSection />

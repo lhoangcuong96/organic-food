@@ -9,7 +9,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { MdOutlineNavigateBefore, MdOutlineNavigateNext } from "react-icons/md";
-import { A11y, Navigation, Pagination, Scrollbar } from "swiper/modules";
+import {
+  A11y,
+  Autoplay,
+  Navigation,
+  Pagination,
+  Scrollbar,
+  Virtual,
+} from "swiper/modules";
 import { Swiper, SwiperClass, SwiperSlide } from "swiper/react";
 
 export function FeaturedCategories({
@@ -62,7 +69,14 @@ export function FeaturedCategories({
             onSlideChange={(swiper) => {
               swiperRef.current = swiper;
             }}
-            modules={[Navigation, Pagination, Scrollbar, A11y]}
+            modules={[
+              Navigation,
+              Pagination,
+              Scrollbar,
+              A11y,
+              Autoplay,
+              Virtual,
+            ]}
             spaceBetween={0}
             slidesPerView="auto"
             navigation
@@ -74,7 +88,9 @@ export function FeaturedCategories({
               return (
                 <SwiperSlide key={category.id} className="!w-fit !m-2">
                   <Link
-                    href={`${routePath.customer.products}/?category=${category.slug}`}
+                    href={`${routePath.customer.products({
+                      category: category.slug,
+                    })}`}
                   >
                     <CategoryCard category={category} key={category.id} />
                   </Link>

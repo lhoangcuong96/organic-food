@@ -3,7 +3,7 @@ import { routePath } from "@/constants/routes";
 import { useAppContext } from "@/provider/app-provider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useHandleMessage } from "../use-hande-message";
+import { useHandleMessage } from "../use-handle-message";
 
 export default function useCart() {
   const { cart, account, setCart } = useAppContext();

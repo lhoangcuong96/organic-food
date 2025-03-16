@@ -1,11 +1,14 @@
+"use client";
 import { Bell, HelpCircle, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { routePath } from "@/constants/routes";
+import { useAppContext } from "@/provider/app-provider";
 
 export function Header() {
+  const { account } = useAppContext();
   return (
     <header className="border-b sticky top-0 z-50 bg-white">
       <div className="flex h-16 items-center px-4">
@@ -30,7 +33,7 @@ export function Header() {
               <AvatarImage src="/placeholder-avatar.jpg" alt="@username" />
               <AvatarFallback>UN</AvatarFallback>
             </Avatar>
-            <span>tieuthien96</span>
+            <span>{account?.fullname}</span>
             <ChevronDown className="h-4 w-4" />
           </Button>
         </div>

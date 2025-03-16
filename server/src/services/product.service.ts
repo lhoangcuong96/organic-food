@@ -1,6 +1,7 @@
 import prisma from '@/database'
 import { Order } from '@/schemaValidations/common.schema'
-import { ProductListQueryType, ProductListType } from '@/schemaValidations/product.schema'
+import { ProductListQueryType, ProductInListType } from '@/schemaValidations/product.schema'
+import { CategoryService } from './category.service'
 
 export class ProductService {
   async checkProductAvailability(productId: string, quantity: number) {
@@ -18,25 +19,57 @@ export class ProductService {
     return product
   }
 
-  async list(queryParams: ProductListQueryType): Promise<ProductListType> {
-    const { page = 1, limit = 20, category, sort = 'createdAt', order = Order.Desc, search } = queryParams
+  async list(queryParams: ProductListQueryType): Promise<ProductInListType[]> {
+    const {
+      page = 1,
+      limit = 20,
+      category,
+      sort = 'createdAt',
+      order = Order.Desc,
+      search,
+      isPromotion = false,
+      isBestSeller = false,
+      isFeatured = false,
+      price
+    } = queryParams
     const skip = (page - 1) * limit
     const take = limit
+
+    console.log('isPromotion, isBestSeller, isFeatured', isPromotion, isBestSeller, isFeatured)
+
+    const priceRanges = price ? decodeURIComponent(price).split(',') : []
+    const priceFilters = priceRanges.map((range) => {
+      const [min, max] = range.split('-').map(Number)
+      return { price: { gte: min, lte: max } } // Prisma expects `gte` and `lte`
+    })
+
+    const categoryObj = category
+      ? await prisma.category.findFirst({
+          where: {
+            slug: category
+          },
+          select: {
+            id: true
+          }
+        })
+      : undefined
+    const categoryId = categoryObj?.id
+    console.log(search)
     const where = {
       AND: [
-        category
+        categoryId
           ? {
-              categories: {
-                some: {
-                  name: {
-                    equals: category
-                  }
-                }
+              category: {
+                id: categoryId
               }
             }
           : {},
-        search ? { name: { contains: search }, mode: 'insensitive' } : {}
-      ]
+        search ? { name: { contains: search, mode: 'insensitive' } } : {},
+        isPromotion ? { isPromotion: true } : {},
+        isBestSeller ? { isBestSeller: true } : {},
+        isFeatured ? { isFeatured: true } : {}
+      ],
+      OR: priceFilters.length ? priceFilters : undefined
     }
     const select = {
       id: true,
@@ -46,6 +79,12 @@ export class ProductService {
       description: true,
       title: true,
       stock: true,
+      isBestSeller: true,
+      isFeatured: true,
+      isPromotion: true,
+      promotionPercent: true,
+      promotionStart: true,
+      promotionEnd: true,
       image: {
         select: {
           thumbnail: true
@@ -61,14 +100,16 @@ export class ProductService {
       }
     }
 
-    return prisma.product.findMany({
+    const data = await prisma.product.findMany({
       where,
       skip,
       take,
       orderBy,
       select
     })
+    return data
   }
+
   async getDetailBySlug(slug: string) {
     return prisma.product.findFirstOrThrow({
       where: {

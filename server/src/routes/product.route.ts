@@ -5,7 +5,7 @@ import {
   ProductDetailResponseSchema,
   ProductDetailResponseType,
   ProductDetailSchema,
-  ProductListQuerySchema,
+  ProductListQueryParamsSchema,
   ProductListQueryType,
   ProductListResSchema,
   ProductListResType
@@ -26,7 +26,7 @@ export default async function ProductRoutes(fastify: FastifyInstance, options: F
         response: {
           200: ProductListResSchema
         },
-        querystring: ProductListQuerySchema
+        querystring: ProductListQueryParamsSchema
       }
     },
     async (request, reply) => {

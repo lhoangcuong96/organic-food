@@ -8,6 +8,7 @@ import SessionStore from "@/helper/local-store/session-store";
 import { isTokenExpired } from "@/utils/auth";
 import { AccountType } from "@/validation-schema/account";
 import { CartType } from "@/validation-schema/cart";
+import { CategoryInListType } from "@/validation-schema/category";
 import ms from "ms";
 import { redirect } from "next/navigation";
 import {
@@ -25,11 +26,15 @@ const AppContext = createContext<{
   setAccount: Dispatch<SetStateAction<AccountType | undefined>>;
   cart?: CartType;
   setCart: Dispatch<SetStateAction<CartType | undefined>>;
+  categories: CategoryInListType[];
+  setCategories: Dispatch<SetStateAction<CategoryInListType[]>>;
 }>({
   account: undefined,
   setAccount: () => {},
   cart: undefined,
   setCart: () => {},
+  categories: [],
+  setCategories: () => {},
 });
 
 export const useAppContext = () => {
@@ -54,6 +59,8 @@ export default function AppProvider({
   );
 
   const [cart, setCart] = useState<CartType | undefined>(initialCart);
+
+  const [categories, setCategories] = useState<CategoryInListType[]>([]);
 
   // Kiểm tra ở client(server thì ở trong http.ts)
   const callApiRefreshToken = async () => {
@@ -82,7 +89,6 @@ export default function AppProvider({
   }, []);
 
   useEffect(() => {
-    console.log(initialAccount);
     setAccount(initialAccount);
   }, [initialAccount]);
 
@@ -93,6 +99,8 @@ export default function AppProvider({
         setAccount,
         cart,
         setCart,
+        categories,
+        setCategories,
       }}
     >
       {children}

@@ -1,8 +1,9 @@
 import {
   CreateProductBodyType,
   ProductListQueryType,
+  ProductType,
   UpdateProductBodyType
-} from '@/schemaValidations/admin/product/admin-product-schema'
+} from '@/schemaValidations/admin/admin-product-schema'
 import { AdminProductService } from '@/services/admin/admin-product.service'
 
 export default class AdminProductController {
@@ -19,7 +20,7 @@ export default class AdminProductController {
     return this.service.getDetailBySlug(slug)
   }
 
-  createProduct = (data: CreateProductBodyType) => {
+  createProduct = (data: CreateProductBodyType): Promise<Partial<ProductType>> => {
     return this.service.create(data)
   }
   updateProduct = (id: string, data: UpdateProductBodyType) => {

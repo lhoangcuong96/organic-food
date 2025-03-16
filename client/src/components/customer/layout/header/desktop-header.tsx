@@ -23,22 +23,41 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useHandleMessage } from "@/hooks/use-hande-message";
 import { useAppContext } from "@/provider/app-provider";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import ProfileDropdown from "../profile-dropdown";
 import { CartPopup } from "./cart-popup";
 import Menu from "./menu";
 
 export default function DesktopHeader() {
   const { cart, account } = useAppContext();
-  const { messageApi } = useHandleMessage();
-  const [isShowCartPopup, setIsShowCartPopup] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const showErrorMessage = () => {
-    messageApi.error({
-      error: "Bạn cần đăng nhập để thực hiện chức năng này",
-    });
+  const handleSearch = () => {
+    if (searchRef.current) {
+      const paramsObject: Record<string, string | string[]> = {};
+
+      // Process search params to support multiple values per key
+      searchParams.forEach((value, key) => {
+        if (paramsObject[key]) {
+          paramsObject[key] = Array.isArray(paramsObject[key])
+            ? [...paramsObject[key], value] // Append new values to existing array
+            : [paramsObject[key], value]; // Convert single value to array
+        } else {
+          paramsObject[key] = value; // Store as string initially
+        }
+      });
+      paramsObject["search"] = searchRef.current.value;
+      console.log(paramsObject);
+      router.push(
+        routePath.customer.products({
+          ...paramsObject,
+        })
+      );
+    }
   };
 
   return (
@@ -57,10 +76,21 @@ export default function DesktopHeader() {
         <DefaultInput
           wrapperClassName="max-w-[400px] w-full"
           className="!h-10"
+          ref={searchRef}
+          defaultValue={searchParams.get("search") || ""}
+          placeholder="Bạn muốn tìm gì ..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              return handleSearch();
+            }
+          }}
           suffix={
             <DefaultButton
               className="!w-8 !h-8"
               suffix={<IoSearchOutline className="!w-5 !h-5"></IoSearchOutline>}
+              onClick={() => {
+                return handleSearch();
+              }}
             ></DefaultButton>
           }
         ></DefaultInput>
@@ -94,12 +124,7 @@ export default function DesktopHeader() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <Link
-                  href={account ? routePath.customer.cart : "#"}
-                  onClick={() => {
-                    if (!account) {
-                      showErrorMessage();
-                    }
-                  }}
+                  href={account ? routePath.customer.cart : routePath.signIn}
                 >
                   <NavigationMenuTrigger>
                     <div className="relative">

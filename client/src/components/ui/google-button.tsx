@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { routePath } from "@/constants/routes";
 import envConfig from "@/envConfig";
 import sessionStore from "@/helper/local-store/session-store";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FaGoogle } from "react-icons/fa6";

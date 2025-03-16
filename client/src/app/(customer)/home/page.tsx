@@ -1,16 +1,18 @@
 import { categoryApiRequests } from "@/api-request/category";
-import productRequestApi from "@/api-request/product";
+import landingApiRequest from "@/api-request/landing";
 import { HeroImage } from "@/components/customer/layout/hero-image";
 import Spinner from "@/components/ui/spinner";
+import { routePath } from "@/constants/routes";
 import { CategoriesWithProductsResponse } from "@/services/category";
 import { CategoryInListType } from "@/validation-schema/category";
-import { ProductListType } from "@/validation-schema/product";
+import { GetLandingDataType } from "@/validation-schema/landing";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import { FeaturedCategories } from "./featured-categories";
 import FoodSection from "./food-section";
 import { OurSpecialServices } from "./our-special-services";
-import { PromotionalProducts } from "./promotional-products";
+import { ProductSection } from "./product-section";
+import { ProductInListType } from "@/validation-schema/product";
 
 // type Props = {
 //   params: Promise<{ id: string }>;
@@ -26,19 +28,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CustomerHomePage() {
-  let products: ProductListType[] = [];
+  let landingPageData: GetLandingDataType | undefined;
   let getProductError;
 
   try {
-    const response = await productRequestApi.getProducts({
-      page: 1,
-      limit: 10,
-      search: "",
-    });
-    if (!response || !response.payload) {
+    const response = await landingApiRequest.getLandingData();
+    landingPageData = response.payload?.data;
+    if (!landingPageData) {
       throw new Error("Có lỗi xảy ra khi lấy dữ liệu sản phẩm!");
     }
-    products = response.payload.data;
   } catch (err) {
     console.error("Error fetching products:", err);
     getProductError = "Failed to load products. Please try again later.";
@@ -49,6 +47,8 @@ export default async function CustomerHomePage() {
   try {
     const resp = await categoryApiRequests.getListCategory();
     const payload = resp.payload as unknown as { data: CategoryInListType[] };
+    const data = await landingApiRequest.getLandingData();
+    console.log(data);
     if (payload && payload.data.length > 0) {
       categories = payload.data;
     } else {
@@ -82,10 +82,38 @@ export default async function CustomerHomePage() {
           ></FeaturedCategories>
         </Suspense>
         <Suspense fallback={<Spinner />}>
-          <PromotionalProducts
-            products={products}
+          <ProductSection
+            products={
+              landingPageData?.promotionalProducts as ProductInListType[]
+            }
             error={getProductError}
-          ></PromotionalProducts>
+            title="Sản phẩm khuyến mãi"
+            viewAllUrl={routePath.customer.products({
+              isPromotion: true,
+            })}
+          ></ProductSection>
+          <ProductSection
+            products={
+              landingPageData?.bestSellerProducts as ProductInListType[]
+            }
+            error={getProductError}
+            title="Sản phẩm bán chạy"
+            banner="/images/product_section_banner_1.jpg"
+            viewAllUrl={routePath.customer.products({
+              isBestSeller: true,
+            })}
+          ></ProductSection>
+          <ProductSection
+            products={
+              landingPageData?.bestSellerProducts as ProductInListType[]
+            }
+            error={getProductError}
+            title="Sản phẩm nổi bật"
+            banner="/images/product_section_banner_2.jpg"
+            viewAllUrl={routePath.customer.products({
+              isFeatured: true,
+            })}
+          ></ProductSection>
         </Suspense>
 
         <OurSpecialServices></OurSpecialServices>

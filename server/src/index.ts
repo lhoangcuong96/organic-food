@@ -23,6 +23,7 @@ import { CategoryRoutes } from './routes/category.routes'
 import OrderRoutes from './routes/order.route'
 import StorageRoutes from './routes/storage.route'
 import ProductRoutes from '@/routes/product.route'
+import LandingRoutes from './routes/landing.route'
 
 const fastify = Fastify({
   logger: true
@@ -93,10 +94,12 @@ const start = async () => {
     fastify.register(adminRoutes, {
       prefix: '/admin'
     })
-
-    fastify.register(StorageRoutes, {
-      prefix: '/storage'
-    })
+    fastify.register(LandingRoutes, {
+      prefix: '/landing'
+    }),
+      fastify.register(StorageRoutes, {
+        prefix: '/storage'
+      })
 
     fastify.register(testRoutes, {
       prefix: '/test'

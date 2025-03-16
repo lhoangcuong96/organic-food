@@ -9,9 +9,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { ProductListType } from "@/validation-schema/admin/product";
+import { ProductInListType } from "@/validation-schema/admin/product";
+import { routePath } from "@/constants/routes";
+import Link from "next/link";
 
-export function ProductTable({ products }: { products: ProductListType }) {
+export function ProductTable({ products }: { products: ProductInListType }) {
   return (
     <Table>
       <TableHeader>
@@ -23,7 +25,9 @@ export function ProductTable({ products }: { products: ProductListType }) {
           <TableHead>Doanh số</TableHead>
           <TableHead>Giá</TableHead>
           <TableHead>Kho hàng</TableHead>
-          <TableHead>Chất Lượng Nội Dung</TableHead>
+          <TableHead>Sản phẩm nổi bật</TableHead>
+          <TableHead>Sản phẩm bán chạy</TableHead>
+          <TableHead>Thông tin khuyến mãi</TableHead>
           <TableHead>Thao tác</TableHead>
         </TableRow>
       </TableHeader>
@@ -51,11 +55,11 @@ export function ProductTable({ products }: { products: ProductListType }) {
                 </div> */}
               </div>
             </TableCell>
-            <TableCell>10</TableCell>
-            <TableCell>{product.price}</TableCell>
+            <TableCell>{product.sold || 0}</TableCell>
+            <TableCell>{product.price.toLocaleString()}đ</TableCell>
             <TableCell>
               {product.stock ? (
-                product.stock
+                product.stock.toLocaleString()
               ) : (
                 <Button variant="link" className="text-lime-600">
                   Cập nhật
@@ -63,27 +67,46 @@ export function ProductTable({ products }: { products: ProductListType }) {
               )}
             </TableCell>
             <TableCell>
-              <Button variant="link" className="text-lime-600">
-                Xem thêm
-              </Button>
+              <Checkbox checked={product.isFeatured} />
+            </TableCell>
+            <TableCell>
+              <Checkbox checked={product.isBestSeller} />
+            </TableCell>
+            <TableCell>
+              {product.isPromotion ? (
+                <div>
+                  <div className="text-sm text-muted-foreground">
+                    {product.promotionPercent}% giảm giá
+                  </div>
+                </div>
+              ) : (
+                "X"
+              )}
             </TableCell>
             <TableCell className="flex flex-col gap-2">
-              <Button variant="link" className="text-lime-600">
-                Cập nhật
-              </Button>
-              {product.isDraft ? (
+              <Link href={routePath.admin.product.update(product.slug)}>
                 <Button variant="link" className="text-lime-600">
-                  Đẩy sản phẩm
+                  Sửa sản phẩm
                 </Button>
+              </Link>
+              {product.isPublished ? (
+                <Link href="#">
+                  <Button variant="link" className="text-blue-600">
+                    Đẩy sản phẩm
+                  </Button>
+                </Link>
               ) : (
-                <Button variant="link" className="text-lime-600">
-                  Ẩn sản phẩm
-                </Button>
+                <Link href="#">
+                  <Button variant="link" className="text-orange-600">
+                    Ẩn sản phẩm
+                  </Button>
+                </Link>
               )}
-
-              <Button variant="link" className="text-lime-600">
-                Xem trước
-              </Button>
+              <Link href="#">
+                <Button variant="link" className="text-red-600">
+                  Xoá sản phẩm
+                </Button>
+              </Link>
             </TableCell>
           </TableRow>
         ))}

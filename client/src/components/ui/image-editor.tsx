@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useDebounceEffect } from "@/hooks/use-debounced-effect";
 import {
   FlipHorizontal,
   RotateCcw,
@@ -23,14 +24,13 @@ import * as React from "react";
 import ReactCrop, { PixelCrop, type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { canvasPreview } from "./canvas-preview";
-import { useDebounceEffect } from "@/hooks/use-debounced-effect";
+import Image from "next/image";
 
 interface ImageEditorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   imageUrl: string;
   onSave: (editedImage: string) => void;
-  aspectRatio: "1:1" | "3:4";
 }
 
 export function ImageEditor({
@@ -38,7 +38,6 @@ export function ImageEditor({
   onOpenChange,
   imageUrl,
   onSave,
-  aspectRatio,
 }: ImageEditorProps) {
   const [crop, setCrop] = React.useState<Crop>();
   const [zoom, setZoom] = React.useState(1);
@@ -53,20 +52,6 @@ export function ImageEditor({
   const imageRef = React.useRef<HTMLImageElement>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const previewCanvasRef = React.useRef<HTMLCanvasElement>(null);
-
-  //   const handleAspectRatioChange = (value: "1:1" | "3:4") => {
-  //     if (imageRef.current) {
-  //       const width = imageRef.current.width;
-  //       const height = value === "1:1" ? width : (width * 4) / 3;
-  //       setCrop({
-  //         unit: "px",
-  //         width,
-  //         height,
-  //         x: 0,
-  //         y: 0,
-  //       });
-  //     }
-  //   };
 
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.1, 3));
@@ -95,7 +80,7 @@ export function ImageEditor({
     setFlip({ horizontal: false, vertical: false });
     if (imageRef.current) {
       const width = imageRef.current.width;
-      const height = aspectRatio === "1:1" ? width : (width * 4) / 3;
+      const height = (width * 3) / 4;
       setCrop({
         unit: "px",
         width,
@@ -170,7 +155,7 @@ export function ImageEditor({
   React.useEffect(() => {
     if (open && imageRef.current) {
       const width = imageRef.current.width;
-      const height = aspectRatio === "1:1" ? width : (width * 4) / 3;
+      const height = (width * 3) / 4;
       setCrop({
         unit: "px",
         width,
@@ -179,7 +164,7 @@ export function ImageEditor({
         y: 0,
       });
     }
-  }, [open, aspectRatio]);
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -193,11 +178,11 @@ export function ImageEditor({
               <ReactCrop
                 crop={crop}
                 onChange={(c) => setCrop(c)}
-                aspect={aspectRatio === "1:1" ? 1 / 1 : 3 / 4}
+                aspect={4 / 3}
                 onComplete={(c) => setCompletedCrop(c)}
                 className="max-h-[600px]"
               >
-                <img
+                <Image
                   ref={imageRef}
                   src={imageUrl}
                   alt="Edit"
@@ -209,6 +194,9 @@ export function ImageEditor({
                     maxWidth: "100%",
                     height: "auto",
                   }}
+                  width={600}
+                  height={800}
+                  layout="responsive"
                 />
               </ReactCrop>
             </div>
@@ -217,7 +205,7 @@ export function ImageEditor({
             <div className="font-medium">Xem trước</div>
             <div
               className="border rounded-lg overflow-hidden bg-neutral-100"
-              style={{ height: 200 * (aspectRatio === "1:1" ? 1 : 1.33) }}
+              style={{ height: 200 * 0.75 }}
             >
               <canvas
                 ref={previewCanvasRef}

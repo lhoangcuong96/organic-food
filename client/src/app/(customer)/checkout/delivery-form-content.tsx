@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { locations } from "@/constants/order";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { Controller, useFormContext } from "react-hook-form";
 
 export default function DeliveryFormContent() {

@@ -22,7 +22,7 @@ import { Link } from "@/components/ui/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { routePath } from "@/constants/routes";
 import { useAppContext } from "@/provider/app-provider";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { Account } from "@prisma/client";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";

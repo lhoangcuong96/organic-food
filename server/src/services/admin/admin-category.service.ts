@@ -1,21 +1,21 @@
 import prisma from '@/database'
-import { CreateCategoryBodyType } from '@/schemaValidations/category.schema'
+import { CreateCategoryBodyType } from '@/schemaValidations/admin/admin-category-schema'
 import { StatusError } from '@/utils/errors'
 
 export default class AdminCategoryService {
   static async list() {
-    return prisma.category.findMany({
+    const data = await prisma.category.findMany({
       select: {
         id: true,
         name: true,
+        slug: true,
         image: {
           select: {
             featured: true,
-            sample: true
+            thumbnail: true
           }
         },
-        subCategories: true,
-        attributes: true
+        subCategories: true
       },
       where: {
         parent: {
@@ -23,6 +23,7 @@ export default class AdminCategoryService {
         }
       }
     })
+    return data
   }
 
   static async create(data: CreateCategoryBodyType) {

@@ -8,12 +8,41 @@ import { useAppContext } from "@/provider/app-provider";
 import { Menu, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { menuItems } from "./menu";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function MobileHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const { cart, account } = useAppContext();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleSearch = () => {
+    if (searchRef.current) {
+      const paramsObject: Record<string, string | string[]> = {};
+
+      // Process search params to support multiple values per key
+      searchParams.forEach((value, key) => {
+        if (paramsObject[key]) {
+          paramsObject[key] = Array.isArray(paramsObject[key])
+            ? [...paramsObject[key], value] // Append new values to existing array
+            : [paramsObject[key], value]; // Convert single value to array
+        } else {
+          paramsObject[key] = value; // Store as string initially
+        }
+      });
+      paramsObject["search"] = searchRef.current.value;
+      console.log(paramsObject);
+      router.push(
+        routePath.customer.products({
+          ...paramsObject,
+        })
+      );
+    }
+  };
 
   return (
     <header className="max-w-screen-xl w-full h-fit mt-5 relative z-50 font-medium block lg:hidden">
@@ -32,8 +61,8 @@ export default function MobileHeader() {
                     <Image
                       src="/images/logo-3.jpeg"
                       alt="Heo sạch nhà Thoa"
-                      width={150}
-                      height={150}
+                      width={120}
+                      height={120}
                       className="mx-auto"
                     />
                   </div>
@@ -120,7 +149,7 @@ export default function MobileHeader() {
                 >
                   <ShoppingBag className="!h-6 !w-6" />
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cart?.items.length}
+                    {cart?.items.length || 0}
                   </span>
                 </Button>
               </Link>
@@ -134,10 +163,18 @@ export default function MobileHeader() {
           <Input
             placeholder="Bạn muốn tìm gì..."
             className="w-full pl-4 pr-10 border-lime-600"
+            ref={searchRef}
+            defaultValue={searchParams.get("search") || ""}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                return handleSearch();
+              }
+            }}
           />
           <Button
             size="icon"
             className="absolute right-0 top-0 h-full bg-lime-600 hover:bg-lime-600/90 rounded-l-none"
+            onClick={handleSearch}
           >
             <Search className="h-4 w-4" />
           </Button>

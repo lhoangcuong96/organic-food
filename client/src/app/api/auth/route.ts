@@ -2,11 +2,14 @@ import { TokenType } from "@/constants/types";
 import { SetCookieRequestDataType } from "@/validation-schema/auth";
 import { jwtDecode } from "jwt-decode";
 
-type PayloadJWT = {
+export type PayloadJWT = {
   iat: number; // thời gian tạo token(issue at)
   exp: number;
   tokenType: string;
-  userId: string;
+  account: {
+    id: string;
+    role: string;
+  };
 };
 
 // set cookie trả về cho client

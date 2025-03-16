@@ -2,16 +2,27 @@ import prisma from '@/database'
 import { Category } from '@prisma/client/'
 
 export class CategoryService {
-  static list = () => {
-    return prisma.category.findMany({
+  static async list() {
+    const data = await prisma.category.findMany({
       select: {
         id: true,
         name: true,
-        description: true,
         slug: true,
-        image: true
+        image: {
+          select: {
+            featured: true,
+            thumbnail: true
+          }
+        },
+        subCategories: true
+      },
+      where: {
+        parent: {
+          is: null
+        }
       }
     })
+    return data
   }
 
   static getCategoryBySlug = ({ slug, select }: { slug: string; select?: Array<keyof Category> }) => {
@@ -47,6 +58,26 @@ export class CategoryService {
         id
       },
       select: selectObject
+    })
+  }
+
+  static getFeaturedCategories = () => {
+    return prisma.category.findMany({
+      where: {
+        products: {
+          some: {}
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        image: {
+          select: {
+            thumbnail: true
+          }
+        }
+      }
     })
   }
 }

@@ -4,7 +4,7 @@ import orderRequestApis from "@/api-request/order";
 import { locations, Period } from "@/constants/order";
 import { routePath } from "@/constants/routes";
 import useCart from "@/hooks/modules/use-cart";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { useAppContext } from "@/provider/app-provider";
 import { CartType } from "@/validation-schema/cart";
 import { CreateOrderBodyType } from "@/validation-schema/order";

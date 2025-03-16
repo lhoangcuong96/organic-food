@@ -4,6 +4,7 @@ import { routePath } from "@/constants/routes";
 import LocalStore, { STORE_KEYS } from "@/helper/local-store";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 type MenuSubItem = {
   label: string;
@@ -23,7 +24,7 @@ const menuItems: MenuItem[] = [
     subItems: [
       {
         label: "Tất cả ",
-        url: routePath.customer.account.orders,
+        url: routePath.admin.order.list,
         key: "orders",
       },
       {
@@ -197,7 +198,7 @@ const SidebarItem = ({
         {item.subItems && isExpand && (
           <div className="ml-6 mb-2 ">
             {item.subItems.map((subItem) => {
-              return <SidebarSubItem key={subItem.url} item={subItem} />;
+              return <SidebarSubItem key={subItem.key} item={subItem} />;
             })}
           </div>
         )}
@@ -209,7 +210,7 @@ const SidebarItem = ({
 const SidebarSubItem = ({ item }: { item: MenuSubItem }) => {
   const isActive = window.location.pathname.includes(item.key);
   return (
-    <a
+    <Link
       key={item.url}
       href={item.url}
       className={cn(
@@ -218,7 +219,7 @@ const SidebarSubItem = ({ item }: { item: MenuSubItem }) => {
       )}
     >
       {item.label}
-    </a>
+    </Link>
   );
 };
 

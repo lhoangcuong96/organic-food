@@ -2,6 +2,7 @@ import envConfig from '@/config'
 import prisma from '@/database'
 import { AuthError } from '@/utils/errors'
 import { verifyToken } from '@/utils/jwt'
+import { RoleType } from '@prisma/client'
 import { FastifyReply, FastifyRequest } from 'fastify'
 
 export const requireLoggedHook = async (request: FastifyRequest) => {
@@ -29,7 +30,7 @@ export const requireLoggedHook = async (request: FastifyRequest) => {
 }
 
 export const requireAminHook = async (request: FastifyRequest, reply: FastifyReply) => {
-  if (request.account?.role !== 'ADMIN') {
+  if (request.account?.role !== RoleType.ADMIN) {
     throw new AuthError('Bạn không có quyền truy cập')
   }
 }

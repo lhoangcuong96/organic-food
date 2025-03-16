@@ -80,6 +80,7 @@ export function CategorySelector({
     queryKey: ["categories"],
     queryFn: async () => {
       const response = await categoryRequestApis.getCategoryList();
+      console.log(response);
       return response.payload?.data;
     },
   });
@@ -89,8 +90,6 @@ export function CategorySelector({
       setColumns([categories]);
     }
   }, [categories]);
-
-  console.log(columns, selectedPath);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

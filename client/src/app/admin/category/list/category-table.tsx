@@ -10,21 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import TableSpinner from "@/components/ui/table-spinner";
+import useCategory from "@/hooks/modules/use-category";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { CategoryInListType } from "@/validation-schema/category";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import TableSpinner from "@/components/ui/table-spinner";
+import { useState } from "react";
 
 export default function CategoryTable() {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   );
-  const [categories, setCategories] = useState<CategoryInListType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { messageApi } = useHandleMessage();
+  const { categories } = useCategory();
 
   const addChildCategory = (
     categories: CategoryInListType[],
@@ -132,19 +133,17 @@ export default function CategoryTable() {
             </div>
           </TableCell>
           <TableCell>
-            {category.image.sample.map((src: string) => (
-              <Image
-                src={src}
-                key={src}
-                alt={category.name}
-                height={64}
-                width={64}
-                className={`${
-                  depth === 0 ? "!h-16 !w-16" : "!h-12 !w-12"
-                } object-cover`}
-                unoptimized={true}
-              />
-            ))}
+            <Image
+              src={category.image.thumbnail}
+              key={category.image.thumbnail}
+              alt={category.name}
+              height={64}
+              width={64}
+              className={`${
+                depth === 0 ? "!h-16 !w-16" : "!h-12 !w-12"
+              } object-cover`}
+              unoptimized={true}
+            />
           </TableCell>
           <TableCell>
             <Image
@@ -158,7 +157,7 @@ export default function CategoryTable() {
               unoptimized={true}
             />
           </TableCell>
-          <TableCell>{category.attributes.join(" - ")}</TableCell>
+          {/* <TableCell>{category.attributes.join(" - ")}</TableCell> */}
           <TableCell>
             <Button
               variant="link"
@@ -177,24 +176,6 @@ export default function CategoryTable() {
     );
   };
 
-  const getListCategory = async () => {
-    try {
-      setIsLoading(true);
-      const res = await categoryRequestApis.getCategoryList();
-      if (!res.payload?.data)
-        throw new Error("Không thể lấy danh sách danh mục");
-      setCategories(res.payload.data);
-    } catch (error) {
-      messageApi.error({
-        error: error as Error,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    getListCategory();
-  }, []);
   return (
     <Table>
       <TableHeader>

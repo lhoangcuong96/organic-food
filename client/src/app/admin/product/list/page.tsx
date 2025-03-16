@@ -5,12 +5,12 @@ import { Order } from "@/validation-schema/common";
 import { ChevronRight } from "lucide-react";
 import { ProductSearch } from "./product-search";
 import { ProductTable } from "./product-table";
-import { ProductListType } from "@/validation-schema/admin/product";
+import { ProductInListType } from "@/validation-schema/admin/product";
 import Link from "next/link";
 import { routePath } from "@/constants/routes";
 
 export default async function ProductList() {
-  let products: ProductListType = [];
+  let products: ProductInListType = [];
   try {
     const response = await adminProductApiRequest.getProducts({
       page: 1,
@@ -21,7 +21,7 @@ export default async function ProductList() {
     });
     console.log(response);
     if (response.payload?.data) {
-      products = response.payload.data as ProductListType;
+      products = response.payload.data as ProductInListType;
     }
   } catch (e) {
     console.log(e);
@@ -37,20 +37,18 @@ export default async function ProductList() {
       <div className="space-y-4 p-8">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Tất cả sản phẩm</h2>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-            <Link href={routePath.admin.product.add}>
+          <Link href={routePath.admin.product.add}>
+            <Button className="bg-orange-500 hover:bg-orange-600 text-white">
               + Thêm 1 sản phẩm mới
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
 
         <Tabs defaultValue="all">
           <TabsList>
             <TabsTrigger value="all">Tất cả</TabsTrigger>
             <TabsTrigger value="active">Đang hoạt động (3)</TabsTrigger>
-            <TabsTrigger value="violation">Vi phạm (0)</TabsTrigger>
-            <TabsTrigger value="pending">Chờ duyệt bởi Shopee (0)</TabsTrigger>
-            <TabsTrigger value="unapproved">Chưa được dáng (0)</TabsTrigger>
+            <TabsTrigger value="unapproved">Chưa được đăng (0)</TabsTrigger>
           </TabsList>
 
           <div className="mt-4">

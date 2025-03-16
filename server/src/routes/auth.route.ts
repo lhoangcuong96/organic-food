@@ -18,7 +18,7 @@ import {
   SocialAuthRes,
   SocialAuthResType
 } from '@/schemaValidations/auth.schema'
-import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseType } from '@/schemaValidations/common.schema'
 import { SocialEnum } from '@prisma/client'
 import { addMilliseconds } from 'date-fns'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
@@ -80,7 +80,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
       }
     }
   )
-  fastify.post<{ Reply: MessageResponseSchemaType }>(
+  fastify.post<{ Reply: MessageResponseType }>(
     '/logout',
     {
       schema: {

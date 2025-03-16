@@ -8,7 +8,9 @@ export default class ProductController {
   }
 
   getProductList = (params: ProductListQueryType) => {
-    return this.service.list(params)
+    // convert string "false" to boolean
+    const newParams = JSON.parse(JSON.stringify(params))
+    return this.service.list(newParams)
   }
 
   getProductDetail = (slug: string) => {

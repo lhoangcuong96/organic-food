@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import orderRequestApis from "@/api-request/order";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { GetListOrderDataType } from "@/validation-schema/order";
 import { orderStatusEnum } from "@/constants/order";
 
@@ -77,7 +77,7 @@ export default function OrdersTable() {
     getOrders();
   }, []);
   return (
-    <div className="container">
+    <div className="container min-h-96">
       <div className="mb-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -97,9 +97,11 @@ export default function OrdersTable() {
         </div>
       )}
       {!isLoading && (!orders || orders.length === 0) && (
-        <div className="text-center py-8">
+        <div className="text-center py-14">
           <Package className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-lg font-semibold">Không có dữ liệu</p>
+          <p className="mt-2 text-lg font-semibold">
+            Không có đơn hàng nào được tìm thấy
+          </p>
         </div>
       )}
       {!isLoading &&
@@ -179,14 +181,6 @@ export default function OrdersTable() {
             </CardContent>
           </Card>
         ))}
-      {orders.length === 0 && (
-        <div className="text-center py-8">
-          <Package className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-lg font-semibold">
-            Không có đơn hàng nào được tìm thấy
-          </p>
-        </div>
-      )}
     </div>
   );
 }

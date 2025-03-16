@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { PayloadJWT } from "../api/auth/route";
 
 export default async function Layout({
   children,
@@ -17,7 +18,7 @@ export default async function Layout({
   const accessToken = cookieStore.get("accessToken")?.value;
   let account: Partial<Account> | undefined;
   if (accessToken) {
-    const tokenPayload = jwtDecode<{ account: Partial<Account> }>(accessToken);
+    const tokenPayload = jwtDecode<PayloadJWT>(accessToken);
     account = tokenPayload?.account;
   }
 

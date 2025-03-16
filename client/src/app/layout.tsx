@@ -9,9 +9,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ReactQueryProvider from "@/provider/react-query-provider";
 import { AccountType } from "@/validation-schema/account";
 import { CartType } from "@/validation-schema/cart";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import "swiper/css";
 import "./globals.css";
+import FacebookMessengerChat from "@/components/ui/facebook-message-chat";
+import { redirect } from "next/navigation";
+import { routePath } from "@/constants/routes";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -38,6 +41,8 @@ export default async function RootLayout({
 
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
+  const headersList = await headers();
+  const pathname = headersList.get("pathname") || "/";
   try {
     if (accessToken) {
       const getMeResponse = await accountApiRequest.getMe();
@@ -49,7 +54,8 @@ export default async function RootLayout({
     }
   } catch (error) {
     console.error("Something went wrong", error);
-    // redirect(routePath.signOut);
+    console.error("pathname", pathname);
+    // if (pathname !== routePath.signOut) redirect(routePath.signOut);
   }
 
   return (
@@ -67,6 +73,7 @@ export default async function RootLayout({
             </TooltipProvider>
           </ReactQueryProvider>
         </AppProvider>
+        <FacebookMessengerChat />
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ import {
   UpdateShippingAddressBody,
   UpdateShippingAddressBodyType
 } from '@/schemaValidations/account.schema'
-import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
+import { MessageResponseSchema, MessageResponseType } from '@/schemaValidations/common.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 
 export default async function accountRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -52,7 +52,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     }
   )
 
-  fastify.post<{ Rely: MessageResponseSchemaType; Body: ChangePasswordBodyType }>(
+  fastify.post<{ Rely: MessageResponseType; Body: ChangePasswordBodyType }>(
     '/change-password',
     {
       schema: {
@@ -70,7 +70,7 @@ export default async function accountRoutes(fastify: FastifyInstance, options: F
     }
   )
 
-  fastify.put<{ Reply: MessageResponseSchemaType; Body: UpdateShippingAddressBodyType }>(
+  fastify.put<{ Reply: MessageResponseType; Body: UpdateShippingAddressBodyType }>(
     '/shipping-address',
     {
       schema: {

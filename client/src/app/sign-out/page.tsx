@@ -3,7 +3,7 @@
 import { authApiRequest } from "@/api-request/auth";
 import { routePath } from "@/constants/routes";
 import SessionStore from "@/helper/local-store/session-store";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

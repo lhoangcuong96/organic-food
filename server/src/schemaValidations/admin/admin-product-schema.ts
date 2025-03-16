@@ -1,31 +1,29 @@
 import z from 'zod'
-import { CommonQuery } from '../../common.schema'
+import { CommonQuery } from '../common.schema'
+import { ProductSchema } from '@/schemaValidations/product.schema'
+
+export type ProductType = z.TypeOf<typeof ProductSchema>
 
 /*----------------Create---------------------*/
-export const ProductImageSchema = z.object({
-  thumbnail: z.string().nullable().optional(),
-  banner: z.string().nullable().optional(),
-  featured: z.string().nullable().optional(),
-  gallery: z.array(z.string()).nullable().optional()
-})
 
-export const CreateProductBodySchema = z.object({
-  name: z.string().min(1).max(256),
-  title: z.string().min(1).max(256),
-  price: z.number().positive(),
-  description: z.string().max(10000),
-  slug: z.string().min(1).max(256),
-  stock: z.number().positive(),
-  image: z.object({
-    thumbnail: z.string(),
-    banner: z.string().nullable().optional(),
-    featured: z.string().nullable().optional(),
-    gallery: z.array(z.string())
-  }),
-  categoryId: z.string(),
-  tags: z.array(z.string()).optional(),
-  attributes: z.array(z.any())
+export const CreateProductBodySchema = ProductSchema.omit({
+  id: true,
+  sold: true,
+  createdAt: true,
+  updatedAt: true,
+  slug: true,
+  isPromotion: true,
+  promotionPercent: true,
+  promotionStart: true,
+  promotionEnd: true,
+  isPublished: true
 })
+  .merge(
+    z.object({
+      categoryId: z.string()
+    })
+  )
+  .strip()
 
 export type CreateProductBodyType = z.TypeOf<typeof CreateProductBodySchema>
 /*----------------End Create---------------------*/
@@ -41,45 +39,64 @@ export type UpdateProductBodyType = CreateProductBodyType
 /*----------------End Update---------------------*/
 
 /*----------------List---------------------*/
-export const ProductListQuerySchema = z.object({
+export const ProductListQueryParamsSchema = z.object({
   ...CommonQuery.shape,
   category: z.string().optional()
 })
 
-export const ProductListSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.number(),
-  stock: z.number(),
-  image: ProductImageSchema
+export const ProductInListSchema = ProductSchema.pick({
+  id: true,
+  name: true,
+  price: true,
+  stock: true,
+  sold: true,
+  slug: true,
+  isFeatured: true,
+  isBestSeller: true,
+  isPublished: true,
+  isPromotion: true,
+  promotionPercent: true,
+  promotionStart: true,
+  promotionEnd: true,
+  image: true
 })
 
 export const ProductListResSchema = z.object({
-  data: z.array(ProductListSchema),
+  data: z.array(ProductInListSchema),
   message: z.string()
 })
-export type ProductListQueryType = z.TypeOf<typeof ProductListQuerySchema>
+export type ProductListQueryType = z.TypeOf<typeof ProductListQueryParamsSchema>
 export type ProductListResType = z.TypeOf<typeof ProductListResSchema>
-export type ProductListType = z.TypeOf<typeof ProductListSchema>[]
+export type ProductInListType = z.TypeOf<typeof ProductInListSchema>[]
 
 /*----------------End List---------------------*/
 
 /*----------------Detail---------------------*/
 export const ProductDetailParamsSchema = z.object({
-  slug: z.coerce.string()
+  slug: z.string()
 })
-export const ProductDetailSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.number(),
-  slug: z.string(),
-  description: z.string().optional().nullable(),
-  title: z.string().optional().nullable(),
-  stock: z.number(),
-  image: ProductImageSchema,
-  isDraft: z.boolean(),
-  isPublished: z.boolean()
-})
+
+export const ProductDetailSchema = ProductSchema.omit({
+  sold: true,
+  createdAt: true,
+  updatedAt: true,
+  slug: true,
+  isPromotion: true,
+  promotionPercent: true,
+  promotionStart: true,
+  promotionEnd: true,
+  isPublished: true
+}).merge(
+  z.object({
+    category: z
+      .object({
+        id: z.string(),
+        name: z.string()
+      })
+      .optional()
+      .nullable()
+  })
+)
 export const ProductDetailResponseSchema = z.object({
   data: ProductDetailSchema,
   message: z.string()

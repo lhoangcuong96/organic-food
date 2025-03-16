@@ -21,12 +21,14 @@ export const menuItems: MenuProps[] = [
     label: "Trang chủ",
   },
   {
-    path: routePath.customer.products,
+    path: routePath.customer.products(),
     label: "Sản phẩm",
     key: "product",
   },
   {
-    path: routePath.customer.products,
+    path: routePath.customer.products({
+      isPromotion: true,
+    }),
     label: "Sản phẩm khuyến mãi",
     isHot: true,
   },

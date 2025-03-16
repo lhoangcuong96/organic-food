@@ -1,6 +1,6 @@
 "use client";
 
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import {
   QueryCache,
   QueryClient,

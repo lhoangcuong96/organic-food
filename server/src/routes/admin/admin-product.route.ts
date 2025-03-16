@@ -1,13 +1,15 @@
-import AdminProductController from '@/controllers/admin/admin-product-controller'
-import { requireLoggedHook } from '@/hooks/auth.hooks'
+import AdminProductController from '@/controllers/admin/admin-product.controller'
 import {
+  CreateProductBodySchema,
   CreateProductBodyType,
   DeleteProductParamsSchema,
   DeleteProductParamsType,
+  ProductDetailParamsSchema,
   ProductDetailParamsType,
+  ProductDetailResponseSchema,
   ProductDetailResponseType,
   ProductDetailSchema,
-  ProductListQuerySchema,
+  ProductListQueryParamsSchema,
   ProductListQueryType,
   ProductListResSchema,
   ProductListResType,
@@ -15,9 +17,9 @@ import {
   UpdateProductBodyType,
   UpdateProductParamsSchema,
   UpdateProductParamsType
-} from '@/schemaValidations/admin/product/admin-product-schema'
-import { MessageResponseSchema, MessageResponseSchemaType } from '@/schemaValidations/common.schema'
-import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+} from '@/schemaValidations/admin/admin-product-schema'
+import { MessageResponseSchema, MessageResponseType } from '@/schemaValidations/common.schema'
+import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify'
 
 export default async function AdminProductRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const controller = new AdminProductController()
@@ -33,7 +35,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
         response: {
           200: ProductListResSchema
         },
-        querystring: ProductListQuerySchema
+        querystring: ProductListQueryParamsSchema
       }
     },
     async (request, reply) => {
@@ -55,9 +57,9 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
     '/:slug',
     {
       schema: {
-        params: ProductDetailSchema,
+        params: ProductDetailParamsSchema,
         response: {
-          200: ProductDetailSchema
+          200: ProductDetailResponseSchema
         }
       }
     },
@@ -72,21 +74,20 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
 
   fastify.post<{
     Body: CreateProductBodyType
-    Reply: ProductDetailResponseType
+    Reply: MessageResponseType
   }>(
-    '',
+    '/',
     {
       schema: {
-        body: UpdateProductBodySchema,
+        body: CreateProductBodySchema,
         response: {
-          200: ProductDetailSchema
+          200: MessageResponseSchema
         }
       }
     },
-    async (request, reply) => {
-      const product = await controller.createProduct(request.body)
+    async (request: FastifyRequest<{ Body: CreateProductBodyType }>, reply: FastifyReply) => {
+      await controller.createProduct(request.body)
       reply.send({
-        data: product as any,
         message: 'Tạo sản phẩm thành công!'
       })
     }
@@ -95,7 +96,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
   fastify.put<{
     Params: UpdateProductParamsType
     Body: UpdateProductBodyType
-    Reply: MessageResponseSchemaType
+    Reply: MessageResponseType
   }>(
     '/:id',
     {
@@ -105,8 +106,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
         response: {
           200: MessageResponseSchema
         }
-      },
-      preValidation: fastify.auth([requireLoggedHook])
+      }
     },
     async (request, reply) => {
       await controller.updateProduct(request.params.id, request.body)
@@ -118,7 +118,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
 
   fastify.delete<{
     Params: DeleteProductParamsType
-    Reply: MessageResponseSchemaType
+    Reply: MessageResponseType
   }>(
     '/:id',
     {
@@ -127,8 +127,7 @@ export default async function AdminProductRoutes(fastify: FastifyInstance, optio
         response: {
           200: MessageResponseSchema
         }
-      },
-      preValidation: fastify.auth([requireLoggedHook])
+      }
     },
     async (request, reply) => {
       await controller.deleteProduct(request.params.id)

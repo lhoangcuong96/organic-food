@@ -1,5 +1,5 @@
 import prisma from '@/database'
-import { CreateOrderBodyType, GetListOrderDataType, GetOrderDataType } from '@/schemaValidations/order.schema'
+import { CreateOrderBodyType, OrderInListDataType, GetOrderDataType } from '@/schemaValidations/order.schema'
 import { Order, Prisma } from '@prisma/client'
 import { CartService } from './cart.service'
 
@@ -131,7 +131,7 @@ export default class OrderService {
     return order
   }
 
-  static async getOrders(accountId?: string): Promise<GetListOrderDataType[]> {
+  static async getOrders(accountId?: string): Promise<OrderInListDataType[]> {
     if (!accountId) {
       throw new Error('Thông tin tài khoản không hợp lệ')
     }

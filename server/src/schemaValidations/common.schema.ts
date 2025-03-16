@@ -11,7 +11,7 @@ export const MessageResponseSchema = z
   })
   .strict()
 
-export type MessageResponseSchemaType = z.TypeOf<typeof MessageResponseSchema>
+export type MessageResponseType = z.TypeOf<typeof MessageResponseSchema>
 
 export const PaginationQuery = z.object({
   // positive: số dương

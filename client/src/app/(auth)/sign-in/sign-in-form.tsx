@@ -18,7 +18,7 @@ import Spinner from "@/components/ui/spinner";
 import XButton from "@/components/ui/x-button";
 import { routePath } from "@/constants/routes";
 import SessionStore from "@/helper/local-store/session-store";
-import { useHandleMessage } from "@/hooks/use-hande-message";
+import { useHandleMessage } from "@/hooks/use-handle-message";
 import { useAppContext } from "@/provider/app-provider";
 import { SignInRequestDataType, signInSchema } from "@/validation-schema/auth";
 import { useRouter } from "next/navigation";
@@ -32,10 +32,6 @@ export function SignInForm() {
 
   const { control, handleSubmit, setError } = useForm<SignInRequestDataType>({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
     mode: "all",
   });
 
@@ -95,7 +91,7 @@ export function SignInForm() {
       <div className="mb-4">
         <Controller
           control={control}
-          name="email"
+          name="phoneNumber"
           render={({ field, fieldState: { error } }) => (
             <>
               <FormInput
@@ -103,11 +99,12 @@ export function SignInForm() {
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 value={field.value}
-                placeholder="Email"
+                placeholder="Số điện thoại"
                 className="w-full"
-                type="email"
+                // type="email"
                 formNoValidate
                 error={error?.message}
+                type="number"
               />
               {error?.message && <FormError error={error.message} />}
             </>

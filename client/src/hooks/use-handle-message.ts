@@ -7,7 +7,7 @@ import { UseFormSetError } from "react-hook-form";
 export const useHandleMessage = () => {
   const { toast } = useToast();
 
-  const handleError = ({
+  const handleError: ({
     title,
     error,
     setError,
@@ -17,7 +17,7 @@ export const useHandleMessage = () => {
     error: EntityError | Error | string;
     setError?: UseFormSetError<any>;
     duration?: number;
-  }) => {
+  }) => void = ({ title, error, setError, duration }) => {
     if (error instanceof EntityError && setError) {
       error.payload.errors.forEach((item) => {
         setError(item.field, {
@@ -27,7 +27,8 @@ export const useHandleMessage = () => {
       });
     } else {
       const errorMessage =
-        error instanceof String ? error : (error as Error).message;
+        typeof error === "string" ? error : (error as Error).message;
+      console.log(error);
       toast({
         variant: "destructive",
         title: title || "Đã có lỗi xảy ra",
@@ -48,7 +49,7 @@ export const useHandleMessage = () => {
     duration?: number;
   }) => {
     toast({
-      title: title || "Success",
+      title: title || "Thành công",
       variant: "success",
       type: "foreground",
       description: description || "Thành công",

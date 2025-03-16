@@ -19,10 +19,9 @@ model Product {
     updatedAt   DateTime     @updatedAt
     tags        String[] // Danh sách tag cho sản phẩm
 
-    productAttributes Json?
+    attributes Json?
 
     // product status
-    isDraft     Boolean @default(true)
     isPublished Boolean @default(false)
 
     // 1 product có 1 category
@@ -32,4 +31,12 @@ model Product {
     stock Int   @default(0)
     price Float @default(0)
     sold  Int   @default(0)
+
+    isFeatured   Boolean @default(false)
+    isBestSeller Boolean @default(false)
+
+    isPromotion      Boolean   @default(false)
+    promotionPercent Int?
+    promotionStart   DateTime?
+    promotionEnd     DateTime?
 }
