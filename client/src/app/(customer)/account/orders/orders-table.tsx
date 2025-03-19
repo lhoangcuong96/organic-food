@@ -157,7 +157,7 @@ export default function OrdersTable() {
                     {order.items.map((item, index) => (
                       <TableRow key={index}>
                         <TableCell>
-                          <div className="flex flex-col md:flex-row gap-4 items-center">
+                          <div className="flex flex-col md:flex-row gap-4 items-start">
                             <Image
                               src={item.productImage || "/placeholder.svg"}
                               alt={item.productName}

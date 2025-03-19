@@ -17,13 +17,16 @@ import BasicInfo from "./basic-info";
 import SaleInfo from "./sale-info";
 import Link from "next/link";
 import { routePath } from "@/constants/routes";
+import { useState } from "react";
 
 export function ProductForm({
   productDetail,
 }: {
   productDetail?: ProductDetailType;
 }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { messageApi } = useHandleMessage();
+
   const form = useForm<ProductCreationFormValues>({
     resolver: zodResolver(ProductCreationFormSchema),
     defaultValues: {
@@ -75,24 +78,29 @@ export function ProductForm({
       isFeatured: data.isFeatured,
       isBestSeller: data.isBestSeller,
     };
-    console.log(productDetail);
     try {
+      setIsSubmitting(true);
       if (productDetail) {
         await adminProductApiRequest.updateProduct(
           productDetail.id,
           requestData
         );
+        messageApi.success({
+          description: "Sửa sản phẩm thành công",
+        });
       } else {
         await adminProductApiRequest.createProduct(requestData);
+        messageApi.success({
+          description: "Tạo sản phẩm thành công",
+        });
+        form.reset();
       }
-      messageApi.success({
-        description: "Tạo sản phẩm thành công",
-      });
-      form.reset();
     } catch (e) {
       messageApi.error({
         error: (e as Error).message,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

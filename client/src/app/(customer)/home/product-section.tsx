@@ -85,8 +85,8 @@ export function ProductSection({
   return (
     <div
       className={`max-w-full w-screen h-fit mt-5 relative z-50 grid ${
-        banner ? "grid-cols-[max-content_auto]" : "grid-cols-1"
-      } gap-8 `}
+        banner ? "grid-cols-[max-content_auto] md:gap-8" : "grid-cols-1"
+      } `}
     >
       {banner && (
         <Link href={viewAllUrl || "#"} className="">
@@ -95,7 +95,7 @@ export function ProductSection({
             alt={`${title} banner`}
             width="287"
             height="410"
-            className="rounded-sm hidden md:block"
+            className="rounded-sm hidden lg:block"
           ></Image>
         </Link>
       )}

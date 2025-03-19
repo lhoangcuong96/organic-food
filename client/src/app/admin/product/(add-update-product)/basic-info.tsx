@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/form";
 import { ImageEditor } from "@/components/ui/image-editor";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useHandleMessage } from "@/hooks/use-handle-message";
+import envConfig from "@/envConfig";
+import { Editor } from "@tinymce/tinymce-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, useRef, useState } from "react";
 import {
@@ -28,10 +29,9 @@ const MAX_PRODUCT_IMAGES = 1;
 
 export default function BasicInfo() {
   const form = useFormContext();
-  const [isOpenCategorySelector, setIsOpenCategorySelector] = useState(false);
   const [editedImage, setEditedImage] = useState<string | null>(null);
+  const [isEditorLoading, setIsEditorLoading] = useState(true);
 
-  const { messageApi } = useHandleMessage();
   const productImageRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (
@@ -60,100 +60,6 @@ export default function BasicInfo() {
     <div className="rounded-lg border bg-white p-6 flex flex-col gap-6">
       <h2 className="mb-4 text-lg font-medium">Thông tin cơ bản</h2>
 
-      {/* <FormField
-        control={form.control}
-        name="thumbnail"
-        render={({ field }) => {
-          const productImages = field.value || [];
-          const urls = productImages.map((item: File | string) => {
-            if (typeof item === "string") {
-              return item;
-            }
-            return URL.createObjectURL(item);
-          });
-          return (
-            <FormItem className="grid grid-cols-[max-content_auto] gap-2">
-              <FormLabel className="w-36 pt-2">
-                Hình ảnh sản phẩm (thumbnail)
-                <span className="text-destructive">*</span>
-              </FormLabel>
-              <div className="!m-0 flex flex-col gap-4 h-auto">
-                <FormControl>
-                  <div className="inline-flex gap-4 flex-wrap">
-                    {urls.map((url: string, index: number) => (
-                      <div key={index} className="relative group">
-                        <Image
-                          src={url}
-                          alt={`Product ${index + 1}`}
-                          className="rounded-lg object-contain"
-                          width={150}
-                          height={112}
-                          placeholder="blur"
-                          blurDataURL="/images/blur-image.png"
-                        />
-                        <div
-                          className="w-full absolute bottom-0 h-fit group-hover:opacity-100 
-                        flex items-center justify-center gap-2 opacity-0 transition-opacity duration-200 bg-lime-50"
-                        >
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
-                            onClick={() => setEditedImage(url)}
-                          >
-                            <CiEdit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="bg-transparent text-gray-700 shadow-none hover:bg-transparent hover:text-gray-700 "
-                            onClick={() => deleteProductImage(index, field)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="relative">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="absolute inset-0 cursor-pointer opacity-0"
-                        onChange={(e) => {
-                          handleImageUpload(e, field);
-                        }}
-                        ref={productImageRef}
-                      />
-                      {productImages.length < MAX_PRODUCT_IMAGES && (
-                        <div
-                          className="w-[150px] h-28 flex flex-col items-center justify-center rounded-lg border-2 border-dashed cursor-pointer"
-                          onClick={() => {
-                            if (productImageRef?.current) {
-                              productImageRef.current.click();
-                            }
-                          }}
-                        >
-                          <ImagePlus className="h-6 w-6 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground mx mt-2">
-                            Thêm hình ảnh
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {productImages.length}/{MAX_PRODUCT_IMAGES}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </div>
-            </FormItem>
-          );
-        }}
-      /> */}
       <FormField
         control={form.control}
         name="thumbnail"
@@ -338,11 +244,54 @@ export default function BasicInfo() {
             </FormLabel>
             <div className="!m-0">
               <FormControl>
-                <Textarea
-                  {...field}
-                  className="min-h-[200px]"
-                  placeholder="Nhập mô tả sản phẩm của bạn"
-                />
+                <div className="relative min-h-[400px]">
+                  {isEditorLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  )}
+                  <Editor
+                    apiKey={envConfig?.NEXT_PUBLIC_TINYMCE_API_KEY}
+                    value={field.value}
+                    onEditorChange={field.onChange}
+                    onBlur={field.onBlur}
+                    onInit={() => {
+                      console.log("init");
+                      setIsEditorLoading(false);
+                    }}
+                    init={{
+                      height: 400,
+                      menubar: true,
+                      plugins: [
+                        "advlist",
+                        "autolink",
+                        "lists",
+                        "link",
+                        "image",
+                        "charmap",
+                        "preview",
+                        "anchor",
+                        "searchreplace",
+                        "visualblocks",
+                        "code",
+                        "fullscreen",
+                        "insertdatetime",
+                        "media",
+                        "table",
+                        "code",
+                        "help",
+                        "wordcount",
+                      ],
+                      toolbar:
+                        "undo redo | blocks | " +
+                        "bold italic forecolor | alignleft aligncenter " +
+                        "alignright alignjustify | bullist numlist outdent indent | " +
+                        "removeformat | help",
+                      content_style:
+                        "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                    }}
+                  />
+                </div>
               </FormControl>
               <div className="inline-flex justify-between w-full gap-6">
                 <FormMessage />

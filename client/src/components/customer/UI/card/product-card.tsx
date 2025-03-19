@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: ProductInListType }) {
     ? product.price - (product.price * product.promotionPercent) / 100
     : 0;
   return (
-    <Card className="w-full max-w-56 p-3 rounded-lg relative gap-1 m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline">
+    <Card className="w-full max-w-40 md:max-w-56 p-3 rounded-lg relative gap-1 m-[2px] shadow hover:outline-2 hover:outline-lime-600 hover:outline">
       <Link
         className="w-full h-full flex flex-col gap-1"
         href={`${routePath.customer.productDetail}/${product.slug}`}

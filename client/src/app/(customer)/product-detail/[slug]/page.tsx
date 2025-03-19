@@ -108,7 +108,11 @@ export default async function ProductDetail({
                   <div className="lg:col-span-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <ProductImages
-                        images={productDetail?.image.gallery || []}
+                        images={
+                          productDetail?.image.thumbnail
+                            ? [productDetail?.image.thumbnail]
+                            : []
+                        }
                       />
                       <ProductInfo product={productDetail} />
                     </div>

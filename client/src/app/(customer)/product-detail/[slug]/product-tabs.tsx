@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function ProductTabs({ description }: { description: string }) {
+export function ProductTabs({ description }: { description?: string | null }) {
   return (
     <div className="mt-8">
       <Tabs defaultValue="description">
@@ -10,7 +10,9 @@ export function ProductTabs({ description }: { description: string }) {
         </TabsList>
         <TabsContent value="description" className="mt-4">
           <div className="prose max-w-none leading-loose border border-lime-600 p-3 rounded-lg text-sm">
-            {description}
+            {description && (
+              <div dangerouslySetInnerHTML={{ __html: description }}></div>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="guide">

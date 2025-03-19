@@ -72,6 +72,7 @@ export default function MobileHeader() {
                         <Link
                           href={routePath.customer.account.profile}
                           className="flex items-center py-2"
+                          onClick={() => setIsOpen(false)}
                         >
                           <Button className="w-full bg-lime-600 hover:bg-lime-600/90">
                             Tài khoản
@@ -80,6 +81,7 @@ export default function MobileHeader() {
                         <Link
                           href={routePath.signOut}
                           className="flex items-center py-2"
+                          onClick={() => setIsOpen(false)}
                         >
                           <Button className="w-full bg-lime-600 hover:bg-lime-600/90">
                             Đăng xuất
@@ -88,10 +90,16 @@ export default function MobileHeader() {
                       </>
                     ) : (
                       <>
-                        <Button className="w-full bg-lime-600 hover:bg-lime-600/90">
+                        <Button
+                          className="w-full bg-lime-600 hover:bg-lime-600/90"
+                          onClick={() => setIsOpen(false)}
+                        >
                           Đăng ký
                         </Button>
-                        <Button className="w-full bg-lime-600 hover:bg-lime-600/90">
+                        <Button
+                          className="w-full bg-lime-600 hover:bg-lime-600/90"
+                          onClick={() => setIsOpen(false)}
+                        >
                           Đăng nhập
                         </Button>
                       </>
@@ -105,6 +113,7 @@ export default function MobileHeader() {
                           href={item.path}
                           className="flex items-center py-2"
                           key={item.label}
+                          onClick={() => setIsOpen(false)}
                         >
                           {item.label}
                         </Link>

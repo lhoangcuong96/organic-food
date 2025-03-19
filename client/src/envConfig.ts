@@ -7,6 +7,7 @@ const envConfigSchema = z.object({
   NEXT_PUBLIC_URL: z.string(),
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
   NEXT_PUBLIC_FACEBOOK_PAGE_ID: z.string(),
+  NEXT_PUBLIC_TINYMCE_API_KEY: z.string(),
 });
 const configProject = envConfigSchema.safeParse({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -15,6 +16,7 @@ const configProject = envConfigSchema.safeParse({
   NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   NEXT_PUBLIC_FACEBOOK_PAGE_ID: process.env.NEXT_PUBLIC_FACEBOOK_PAGE_ID,
+  NEXT_PUBLIC_TINYMCE_API_KEY: process.env.NEXT_PUBLIC_TINYMCE_API_KEY,
 });
 
 if (configProject.error?.issues) {

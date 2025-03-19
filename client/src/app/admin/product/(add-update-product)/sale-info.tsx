@@ -85,6 +85,7 @@ export default function SaleInfo() {
                 onCheckedChange={(checked: CheckedState) => {
                   field.onChange(checked);
                 }}
+                checked={field.value}
               />
             </FormControl>
             <FormMessage />
@@ -106,6 +107,7 @@ export default function SaleInfo() {
                 onCheckedChange={(checked: CheckedState) => {
                   field.onChange(checked);
                 }}
+                checked={field.value}
               />
             </FormControl>
             <FormMessage />
